@@ -1,0 +1,11 @@
+const menu = document.querySelector('.menu-button');
+const nav = document.querySelector('nav');
+menu?.addEventListener('click', () => { const open = nav.classList.toggle('open'); menu.setAttribute('aria-expanded', String(open)); });
+nav?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { nav.classList.remove('open'); menu?.setAttribute('aria-expanded','false'); }));
+const video = document.querySelector('.hero-video');
+document.querySelector('#videoToggle')?.addEventListener('click', e => { if (!video) return; const b=e.currentTarget; if(video.paused){video.play();b.innerHTML='Ⅱ <span>暫停背景</span>';}else{video.pause();b.innerHTML='▶ <span>播放背景</span>';} });
+const audio = document.querySelector('#themeAudio'); const audioButton = document.querySelector('#audioToggle');
+audioButton?.addEventListener('click', async () => { if (!audio) return; try { if (audio.paused) { await audio.play(); audioButton.querySelector('span:last-child').textContent='仙樂播放中'; } else { audio.pause(); audioButton.querySelector('span:last-child').textContent='開啟仙樂'; } } catch { audioButton.querySelector('span:last-child').textContent='請放入 theme.mp3'; } });
+const modal=document.querySelector('#trailerModal'); document.querySelector('#trailerButton')?.addEventListener('click',()=>modal.hidden=false); document.querySelector('#modalClose')?.addEventListener('click',()=>modal.hidden=true); modal?.addEventListener('click',e=>{if(e.target===modal)modal.hidden=true});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal)modal.hidden=true});
+const observer=new IntersectionObserver(entries=>entries.forEach(x=>x.isIntersecting&&x.target.classList.add('visible')),{threshold:.1}); document.querySelectorAll('.reveal').forEach(x=>observer.observe(x));
