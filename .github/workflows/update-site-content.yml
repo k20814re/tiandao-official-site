@@ -1,0 +1,52 @@
+name: Update website content
+
+on:
+  push:
+    paths:
+      - "TianDao_Website_Content.xlsx"
+      - "tools/excel_to_json.py"
+      - ".github/workflows/update-site-content.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: update-website-content
+  cancel-in-progress: true
+
+jobs:
+  update-content:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install converter
+        run: pip install openpyxl==3.1.5
+
+      - name: Convert Excel to website data
+        run: python tools/excel_to_json.py
+
+      - name: Commit generated website data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/site-content.json
+          if git diff --cached --quiet; then
+            echo "Website data is already current."
+          else
+            git commit -m "自動更新官網內容"
+            git push
+          fi
+
+      - name: Request GitHub Pages rebuild
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds"
