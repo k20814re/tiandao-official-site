@@ -21,6 +21,7 @@ GitHub 儲存庫 → Actions → Update website content。
 1. 在「網站素材」修改要使用的檔案路徑，例如 assets/images/hero-poster.webp、assets/video/hero-cinematic.mp4、assets/music/theme.mp3。
 2. 新圖片、影片或音樂檔案仍要另外上傳到 GitHub 對應的 assets 資料夾；Excel 只負責指定網站要讀哪個檔案。
 3. 「預告影片」留空時，網站保留原本的「遊戲預告製作中」畫面。
+4. 「社群連結」的「圖示路徑」可填 `assets/images/social-icons/discord.svg` 等檔案；留空時會使用內建預設圖示。
 
 六、與 Epic／網域的關係
 此功能只更新首頁顯示內容，不會變更 tiandaoonline.com、CNAME、privacy.html、服務條款或 Epic Games／EOS 連結。Epic／EOS 連結不放在「網站素材」表內。

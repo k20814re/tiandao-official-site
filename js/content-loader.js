@@ -288,7 +288,16 @@
       }
       const icon = document.createElement("b");
       const platform = item.platform.trim();
-      icon.textContent = PLATFORM_ICONS[platform.toLowerCase()] || platform.slice(0, 1).toUpperCase();
+      const iconPath = safeImagePath(item.icon);
+      if (iconPath) {
+        const image = document.createElement("img");
+        image.src = iconPath;
+        image.alt = "";
+        image.setAttribute("aria-hidden", "true");
+        icon.appendChild(image);
+      } else {
+        icon.textContent = PLATFORM_ICONS[platform.toLowerCase()] || platform.slice(0, 1).toUpperCase();
+      }
       const name = document.createElement("small");
       name.textContent = platform;
       const status = document.createElement("em");

@@ -213,6 +213,7 @@ nav a:hover::after, nav a.active::after { right: 0; left: 0; }
 .social-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .social { position: relative; min-height: 87px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-left: 1px solid rgba(255,255,255,.08); }
 .social b { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: #5865f2; font: 700 20px Arial, sans-serif; }
+.social b img { width: 100%; height: 100%; display: block; object-fit: contain; border-radius: inherit; }
 .social-2 b { background: #2375d8; }
 .social-3 b { border-radius: 10px; background: #e62b28; font-size: 16px; }
 .social-4 b { border-radius: 10px; background: #050505; }

@@ -22,7 +22,7 @@ EXPECTED_HEADERS = {
     "網站素材": ["Key", "值", "用途"],
     "最新消息": ["啟用", "日期", "標題", "說明", "圖片路徑", "標章"],
     "開發進度": ["啟用", "階段", "標題", "說明", "目前階段"],
-    "社群連結": ["啟用", "平台", "狀態文字", "網址"],
+    "社群連結": ["啟用", "平台", "狀態文字", "網址", "圖示路徑"],
     "世界歷程": ["啟用", "排序", "名稱", "目前階段"],
     "修煉境界": ["啟用", "排序", "名稱"],
     "宗門流派": ["啟用", "排序", "名稱"],
@@ -69,6 +69,10 @@ def rows_for(workbook, sheet_name: str) -> list[dict[str, Any]]:
     sheet = workbook[sheet_name]
     expected = EXPECTED_HEADERS[sheet_name]
     actual = [clean(sheet.cell(row=3, column=index).value) for index in range(1, len(expected) + 1)]
+    legacy_social_headers = ["啟用", "平台", "狀態文字", "網址"]
+    if sheet_name == "社群連結" and actual[:4] == legacy_social_headers and not actual[4]:
+        expected = legacy_social_headers
+        actual = actual[:4]
     if actual != expected:
         raise ValueError(
             f"{sheet_name} 第 3 列欄位不可更名。預期 {expected}，目前為 {actual}"
@@ -143,6 +147,7 @@ def build_content(workbook) -> dict[str, Any]:
             "platform": clean(row["平台"]),
             "status": clean(row["狀態文字"]),
             "url": clean(row["網址"]),
+            "icon": clean(row.get("圖示路徑", "")),
         }
         for row in rows_for(workbook, "社群連結")
         if enabled(row["啟用"]) and clean(row["平台"])
@@ -233,7 +238,7 @@ def build_content(workbook) -> dict[str, Any]:
     }
 
     return {
-        "schemaVersion": 3,
+        "schemaVersion": 4,
         "settings": settings,
         "text": site_text,
         "media": site_media,

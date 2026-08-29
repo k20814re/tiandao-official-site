@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "settings": {
     "heroKicker": "東方仙俠 × 現實自律 × 開放世界 MMORPG",
     "heroTitle": "天道自律傳",
@@ -98,14 +98,14 @@
   "news": [
     {
       "date": "2026-08-29",
-      "title": "官網 v1.1 更新版",
+      "title": "官網 v10.1 自動內容版",
       "description": "新增累計造訪人數、目前在線人數與 Excel 自動內容管理。",
       "image": "assets/images/hero-poster.webp",
       "badge": "新"
     },
     {
       "date": "2026-08-05",
-      "title": "官網 v1.0 正式版",
+      "title": "官網 v9.0 正式版",
       "description": "互動、捲動與 GitHub Pages 部署流程全面整理。",
       "image": "assets/images/hero-poster.webp",
       "badge": ""
@@ -142,22 +142,26 @@
     {
       "platform": "Discord",
       "status": "即將公開",
-      "url": ""
+      "url": "",
+      "icon": "assets/images/social-icons/discord.svg"
     },
     {
       "platform": "Facebook",
       "status": "即將公開",
-      "url": ""
+      "url": "",
+      "icon": "assets/images/social-icons/facebook.svg"
     },
     {
       "platform": "YouTube",
       "status": "即將公開",
-      "url": ""
+      "url": "",
+      "icon": "assets/images/social-icons/youtube.svg"
     },
     {
       "platform": "X (Twitter)",
       "status": "即將公開",
-      "url": ""
+      "url": "",
+      "icon": "assets/images/social-icons/x.svg"
     }
   ],
   "features": [
@@ -375,23 +379,23 @@
   "mapItems": [
     {
       "order": 1,
-      "name": "凡界玉雲谷"
+      "name": "青雲谷"
     },
     {
       "order": 2,
-      "name": "凡界劍天山"
+      "name": "天劍山"
     },
     {
       "order": 3,
-      "name": "凡界萬重古森林"
+      "name": "萬妖森林"
     },
     {
       "order": 4,
-      "name": "凡界九鬼蠱屍深淵"
+      "name": "幽冥深淵"
     },
     {
       "order": 5,
-      "name": "天道自律宗"
+      "name": "九天仙界"
     }
   ]
 }
