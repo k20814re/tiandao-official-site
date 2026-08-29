@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 3,
   "settings": {
     "heroKicker": "東方仙俠 × 現實自律 × 開放世界 MMORPG",
     "heroTitle": "天道自律傳",
@@ -9,6 +9,91 @@
     "joinTitle": "諸天無凡人，唯有自律者能改命",
     "joinDescription": "首測消息將於官網優先公布。",
     "appStatus": "Alpha 開發中"
+  },
+  "text": {
+    "pageTitle": "天道自律傳：諸天無凡人｜TianDao Online",
+    "pageVersion": "10.1",
+    "pageDescription": "現實自律 × 東方仙俠 × 開放世界 MMORPG。你在現實走過的每一步，皆是此界的修行。",
+    "ogTitle": "天道自律傳：諸天無凡人",
+    "ogDescription": "修仙，不只是遊戲，而是一場改變人生的修行。",
+    "brandName": "天道自律傳",
+    "brandTagline": "諸天無凡人",
+    "navHome": "首頁",
+    "navFeatures": "遊戲介紹",
+    "navWorld": "世界觀",
+    "navNews": "最新消息",
+    "navRoadmap": "開發日誌",
+    "navDownload": "下載",
+    "navCommunity": "社群",
+    "navStudio": "關於我們",
+    "headerCta": "立即加入",
+    "heroTagline": "自律傳奇",
+    "heroButton": "立即加入修仙",
+    "videoPauseLabel": "暫停背景",
+    "videoPlayLabel": "播放背景",
+    "featuresTitle": "遊戲特色",
+    "newsTitle": "最新消息",
+    "newsViewAll": "查看全部 ›",
+    "trailerTitle": "遊戲預告",
+    "trailerKicker": "ALPHA TEASER",
+    "trailerTime": "0:00 / 1:32",
+    "trailerPosterAlt": "天道自律傳遊戲預告場景",
+    "galleryKicker": "SCENES OF THE HEAVENS",
+    "galleryTitle": "諸天畫卷",
+    "roadmapKicker": "DEVELOPMENT ROADMAP",
+    "roadmapTitle": "開發日誌",
+    "roadmapSubtitle": "先完成可玩的核心，再一步步擴大諸天。",
+    "appKicker": "TAIYI COMPASS APP",
+    "appTitle": "太乙天機羅盤",
+    "appDescription": "每日修行、GPS 探索、靈氣採集、五行成長與角色管理，將現實中的每一步同步到 PC 世界。",
+    "appIconAlt": "太乙天機羅盤 App 圖示",
+    "studioKicker": "CK STUDIO",
+    "studioTitle": "凱哥工作室",
+    "studioDescription": "以「刺鴨」作為吉祥物主體，結合修真、力量與堅毅，讓《天道自律傳》擁有自己的品牌記憶。",
+    "studioArtAlt": "凱哥工作室手繪標誌",
+    "studioButton": "查看品牌識別",
+    "communityTitle": "加入我們的修仙之旅",
+    "communityDescription": "關注官方社群，獲取最新消息與專屬福利！",
+    "joinButton": "追蹤開發進度",
+    "statsKicker": "TAIYI HEAVENLY OBSERVATORY",
+    "statsTitle": "太乙天機觀測",
+    "visitorLabel": "累計造訪人數",
+    "visitorDescription": "曾踏入天門的獨立訪客",
+    "onlineLabel": "目前在線人數",
+    "onlineDescription": "此刻仍在諸天修行的訪客",
+    "audioButton": "開啟仙樂",
+    "audioPlaying": "仙樂播放中",
+    "audioMissing": "請放入音樂檔案",
+    "trailerModalKicker": "ALPHA TEASER",
+    "trailerModalTitle": "遊戲預告製作中",
+    "trailerModalDescription": "正式影片完成後即可替換。",
+    "creditsLabel": "素材與 AI 說明",
+    "privacyLabel": "隱私權政策",
+    "termsLabel": "服務條款",
+    "footerRights": "© 2026 CK Studio / TianDao Online. All rights reserved.",
+    "footerNote": "部分視覺由生成式 AI 輔助並經人工選圖、編排與後製；開發內容以正式公告為準。",
+    "brandLinkLabel": "品牌識別",
+    "brandHomeLabel": "天道自律傳首頁",
+    "menuLabel": "開啟網站選單",
+    "trailerButtonLabel": "開啟遊戲預告",
+    "modalCloseLabel": "關閉預告視窗",
+    "noscriptNotice": "本網站需要啟用 JavaScript 才能使用動畫、預告彈窗、互動導覽與即時人數統計；文字內容仍可直接瀏覽。",
+    "statsLoading": "正在感應諸天來客……",
+    "statsReady": "天機連線正常 · 人數即時更新",
+    "statsDisconnected": "天機連線暫時中斷，正在重新感應……",
+    "statsDatabaseMissing": "統計資料庫尚未啟用",
+    "statsError": "人數統計暫時無法連線"
+  },
+  "media": {
+    "heroVideo": "assets/video/hero-cinematic.mp4",
+    "heroPoster": "assets/images/hero-poster.webp",
+    "joinBackground": "assets/images/gallery-valley.webp",
+    "trailerVideo": "",
+    "trailerPoster": "assets/images/trailer-poster.webp",
+    "appIcon": "assets/images/app-icon-v8.png",
+    "studioArt": "assets/images/ck-studio-sketch.webp",
+    "themeMusic": "assets/music/theme.mp3",
+    "favicon": "favicon.svg"
   },
   "news": [
     {
@@ -67,7 +152,7 @@
     {
       "platform": "YouTube",
       "status": "即將公開",
-      "url": "https://youtube.com/channel/UC9vdmalNEpCMnOaP2BkwETA?si=L880zOauLC9jr5Tx"
+      "url": ""
     },
     {
       "platform": "X (Twitter)",
@@ -75,6 +160,94 @@
       "url": ""
     }
   ],
+  "features": [
+    {
+      "order": 1,
+      "title": "現實自律 × 異界修仙",
+      "description": "將現實的自律轉化為修行，五行養成改變你的命運。"
+    },
+    {
+      "order": 2,
+      "title": "LBS 探索採集",
+      "description": "手機外出探索、收集靈氣與資源，讓現實足跡成為仙途。"
+    },
+    {
+      "order": 3,
+      "title": "3A 級戰鬥體驗",
+      "description": "PC 端電影級開放世界，硬派戰鬥、彈反與多人首領。"
+    },
+    {
+      "order": 4,
+      "title": "萬人宗門戰",
+      "description": "與同門並肩作戰，爭奪靈脈，問鼎諸天。"
+    },
+    {
+      "order": 5,
+      "title": "跨界儲物袋",
+      "description": "雙端互通、資源共享，無縫連結現實與異界。"
+    }
+  ],
+  "appTags": [
+    {
+      "order": 1,
+      "name": "每日修行"
+    },
+    {
+      "order": 2,
+      "name": "LBS 探索"
+    },
+    {
+      "order": 3,
+      "name": "五行養成"
+    },
+    {
+      "order": 4,
+      "name": "角色管理"
+    }
+  ],
+  "gallery": [
+    {
+      "order": 1,
+      "layout": "wide",
+      "image": "assets/images/hero-poster.webp",
+      "alt": "月夜太乙天門與仙山",
+      "caption": "太乙天門 · 月夜啟封"
+    },
+    {
+      "order": 2,
+      "layout": "normal",
+      "image": "assets/images/trailer-poster.webp",
+      "alt": "修行者俯瞰仙山",
+      "caption": "青雲谷 · 初入仙途"
+    },
+    {
+      "order": 3,
+      "layout": "normal",
+      "image": "assets/images/gallery-valley.webp",
+      "alt": "雲海仙山世界",
+      "caption": "諸天萬界 · 雲海之上"
+    }
+  ],
+  "world": {
+    "kicker": "THE BROKEN HEAVEN",
+    "title": "天道已碎，萬界待啟",
+    "subtitle": "太乙天門封印千年。如今靈氣再臨，而你，正是改寫因果之人。",
+    "realm": {
+      "label": "修煉境界",
+      "title": "從凡人至萬界主宰",
+      "description": "二十七重境界，一步一印，沒有天生至尊。"
+    },
+    "sect": {
+      "label": "宗門勢力",
+      "title": "正道、中立與魔道",
+      "description": "太虛宗、天劍門、丹霞谷、靈獸宗、九幽教等勢力，共同爭奪靈脈與天命。"
+    },
+    "map": {
+      "label": "世界地圖",
+      "title": "五境踏遍諸天",
+      "description": "太乙天門開啟後，依序進入青雲谷、天劍山、萬妖森林、幽冥深淵與九天仙界。"
+    }
+  },
   "worldFlow": [
     {
       "order": 1,
@@ -175,6 +348,50 @@
     {
       "order": 12,
       "name": "登天境"
+    }
+  ],
+  "sectTags": [
+    {
+      "order": 1,
+      "name": "劍修"
+    },
+    {
+      "order": 2,
+      "name": "法修"
+    },
+    {
+      "order": 3,
+      "name": "丹修"
+    },
+    {
+      "order": 4,
+      "name": "陣修"
+    },
+    {
+      "order": 5,
+      "name": "御獸"
+    }
+  ],
+  "mapItems": [
+    {
+      "order": 1,
+      "name": "青雲谷"
+    },
+    {
+      "order": 2,
+      "name": "天劍山"
+    },
+    {
+      "order": 3,
+      "name": "萬妖森林"
+    },
+    {
+      "order": 4,
+      "name": "幽冥深淵"
+    },
+    {
+      "order": 5,
+      "name": "九天仙界"
     }
   ]
 }

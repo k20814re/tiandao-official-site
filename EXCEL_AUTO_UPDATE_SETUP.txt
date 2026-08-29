@@ -2,8 +2,8 @@
 
 一、平常怎麼更新
 1. 開啟 TianDao_Website_Content.xlsx。
-2. 修改首頁設定、最新消息、開發進度、社群連結、世界歷程或修煉境界。
-3. 不要改檔名、工作表名稱與第 3 列欄位名稱。
+2. 修改首頁設定、網站文字、網站素材、遊戲特色、App標籤、畫廊內容、最新消息、開發進度、社群連結、世界歷程、世界觀設定、宗門流派、世界地圖或修煉境界。
+3. 文字與素材路徑可修改；不要改檔名、工作表名稱與第 3 列欄位名稱。
 4. 把新版 Excel 上傳到 GitHub 儲存庫根目錄並 Commit changes。
 5. GitHub Actions 會自動更新 data/site-content.json 並要求 GitHub Pages 重新發布，通常數分鐘內顯示新內容。
 
@@ -17,5 +17,10 @@ GitHub 儲存庫 → Actions → Update website content。
 四、安全保護
 若 Excel 欄位被改名、日期無法辨識或資料有錯，工作流程會停止，不會覆蓋目前正常的網站資料。網站若暫時讀不到 JSON，也會保留 index.html 內建內容。
 
-五、與 Epic／網域的關係
-此功能只更新首頁顯示內容，不會變更 tiandaoonline.com、CNAME、privacy.html、服務條款或 Epic Games 連結。
+五、圖片、影片與音樂
+1. 在「網站素材」修改要使用的檔案路徑，例如 assets/images/hero-poster.webp、assets/video/hero-cinematic.mp4、assets/music/theme.mp3。
+2. 新圖片、影片或音樂檔案仍要另外上傳到 GitHub 對應的 assets 資料夾；Excel 只負責指定網站要讀哪個檔案。
+3. 「預告影片」留空時，網站保留原本的「遊戲預告製作中」畫面。
+
+六、與 Epic／網域的關係
+此功能只更新首頁顯示內容，不會變更 tiandaoonline.com、CNAME、privacy.html、服務條款或 Epic Games／EOS 連結。Epic／EOS 連結不放在「網站素材」表內。

@@ -18,12 +18,15 @@
   videoButton?.addEventListener('click', e => {
     if (!video || video.hidden) return;
     const button = e.currentTarget;
+    const pauseLabel = button.dataset.pauseLabel || '暫停背景';
+    const playLabel = button.dataset.playLabel || '播放背景';
+    const label = button.querySelector('span');
     if (video.paused) {
       video.play().catch(() => {});
-      button.innerHTML = 'Ⅱ <span>暫停背景</span>';
+      if (label) label.textContent = pauseLabel;
     } else {
       video.pause();
-      button.innerHTML = '▶ <span>播放背景</span>';
+      if (label) label.textContent = playLabel;
     }
   });
 
@@ -31,26 +34,30 @@
   const audioButton = document.querySelector('#audioToggle');
   const audioLabel = audioButton?.querySelector('span:last-child');
   const soundBars = audioButton?.querySelector('.sound-bars');
-  audio?.addEventListener('error', () => { if (audioLabel) audioLabel.textContent = '請放入 theme.mp3'; });
+  const audioMissingLabel = () => audioButton?.dataset.missingLabel || '請放入音樂檔案';
+  const audioDefaultLabel = () => audioButton?.dataset.defaultLabel || '開啟仙樂';
+  const audioPlayingLabel = () => audioButton?.dataset.playingLabel || '仙樂播放中';
+  audio?.addEventListener('error', () => { if (audioLabel) audioLabel.textContent = audioMissingLabel(); });
   audioButton?.addEventListener('click', async () => {
     if (!audio) return;
     try {
       if (audio.paused) {
         await audio.play();
-        if (audioLabel) audioLabel.textContent = '仙樂播放中';
+        if (audioLabel) audioLabel.textContent = audioPlayingLabel();
         soundBars?.classList.add('playing');
         audioButton.setAttribute('aria-pressed', 'true');
       } else {
         audio.pause();
-        if (audioLabel) audioLabel.textContent = '開啟仙樂';
+        if (audioLabel) audioLabel.textContent = audioDefaultLabel();
         soundBars?.classList.remove('playing');
         audioButton.setAttribute('aria-pressed', 'false');
       }
-    } catch { if (audioLabel) audioLabel.textContent = '請放入 theme.mp3'; }
+    } catch { if (audioLabel) audioLabel.textContent = audioMissingLabel(); }
   });
 
   const modal = document.querySelector('#trailerModal');
   const modalDialog = modal?.querySelector('.trailer-modal');
+  const trailerVideo = document.querySelector('#trailerVideo');
   const lastFocused = { element: null };
   const setModal = open => {
     if (!modal) return;
@@ -60,7 +67,10 @@
     if (open) {
       lastFocused.element = document.activeElement;
       document.querySelector('#modalClose')?.focus();
+      if (trailerVideo && !trailerVideo.hidden) trailerVideo.play().catch(() => {});
     } else if (lastFocused.element instanceof HTMLElement) {
+      trailerVideo?.pause();
+      if (trailerVideo) trailerVideo.currentTime = 0;
       lastFocused.element.focus();
     }
   };

@@ -1,11 +1,11 @@
 /*
- * Firebase Web App 設定：TianDao Online Website Stats
- * 這些網頁端設定不是管理員密碼；真正的資料限制由 Firebase 規則保護。
+ * 將 Firebase 控制台提供的 Web App 設定貼到下方，並把 enabled 改成 true。
+ * 這些 Web 設定值不是管理員密碼；真正的寫入限制由 Firebase 規則保護。
  */
 window.TIANDAO_STATS_CONFIG = {
   enabled: true,
   firebase: {
-    apiKey: "AIzaSyCP_99GGezJVDMXDdG4anXgrMNAzkGT_IY",
+    apiKey: "AIzaSyCP_99GGEzJVDMXDdG4anXgrMNAzkGT_IY",
     authDomain: "tiandao-online-website-stats.firebaseapp.com",
     databaseURL: "https://tiandao-online-website-stats-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "tiandao-online-website-stats",
