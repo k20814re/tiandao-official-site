@@ -98,14 +98,14 @@
   "news": [
     {
       "date": "2026-08-29",
-      "title": "官網 v10.1 自動內容版",
+      "title": "官網 v1.1 更新版",
       "description": "新增累計造訪人數、目前在線人數與 Excel 自動內容管理。",
       "image": "assets/images/hero-poster.webp",
       "badge": "新"
     },
     {
       "date": "2026-08-05",
-      "title": "官網 v9.0 正式版",
+      "title": "官網 v1.0 正式版",
       "description": "互動、捲動與 GitHub Pages 部署流程全面整理。",
       "image": "assets/images/hero-poster.webp",
       "badge": ""
@@ -375,23 +375,23 @@
   "mapItems": [
     {
       "order": 1,
-      "name": "青雲谷"
+      "name": "凡界玉雲谷"
     },
     {
       "order": 2,
-      "name": "天劍山"
+      "name": "凡界劍天山"
     },
     {
       "order": 3,
-      "name": "萬妖森林"
+      "name": "凡界萬重古森林"
     },
     {
       "order": 4,
-      "name": "幽冥深淵"
+      "name": "凡界九鬼蠱屍深淵"
     },
     {
       "order": 5,
-      "name": "九天仙界"
+      "name": "天道自律宗"
     }
   ]
 }
