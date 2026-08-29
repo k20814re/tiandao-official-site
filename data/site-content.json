@@ -93,7 +93,7 @@
     "appIcon": "assets/images/app-icon-v8.png",
     "studioArt": "assets/images/ck-studio-sketch.webp",
     "themeMusic": "assets/music/theme.mp3",
-    "favicon": "favicon.svg"
+    "favicon": "assets/images/site-favicon.png"
   },
   "news": [
     {
@@ -308,6 +308,50 @@
     {
       "order": 1,
       "name": "凡塵者"
+    },
+    {
+      "order": 2,
+      "name": "強身境"
+    },
+    {
+      "order": 3,
+      "name": "納靈境"
+    },
+    {
+      "order": 4,
+      "name": "聚源境"
+    },
+    {
+      "order": 5,
+      "name": "靈台境"
+    },
+    {
+      "order": 6,
+      "name": "凝核境"
+    },
+    {
+      "order": 7,
+      "name": "靈胎境"
+    },
+    {
+      "order": 8,
+      "name": "神覺境"
+    },
+    {
+      "order": 9,
+      "name": "破界境"
+    },
+    {
+      "order": 10,
+      "name": "天合境"
+    },
+    {
+      "order": 11,
+      "name": "萬象境"
+    },
+    {
+      "order": 12,
+      "name": "登天境"
     }
   ],
   "sectTags": [
