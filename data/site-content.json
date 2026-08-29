@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "settings": {
+    "heroKicker": "東方仙俠 × 現實自律 × 開放世界 MMORPG",
+    "heroTitle": "天道自律傳",
+    "heroSubtitle": "諸 天 無 凡 人",
+    "heroStrong": "你，就是遊戲的主角本體",
+    "heroDescription": "用真實人生的自律，逆襲浩瀚的異界",
+    "joinTitle": "諸天無凡人，唯有自律者能改命",
+    "joinDescription": "首測消息將於官網優先公布。",
+    "appStatus": "Alpha 開發中"
+  },
+  "news": [
+    {
+      "date": "2026-08-29",
+      "title": "官網 v10.1 自動內容版",
+      "description": "新增累計造訪人數、目前在線人數與 Excel 自動內容管理。",
+      "image": "assets/images/hero-poster.webp",
+      "badge": "新"
+    },
+    {
+      "date": "2026-08-05",
+      "title": "官網 v9.0 正式版",
+      "description": "互動、捲動與 GitHub Pages 部署流程全面整理。",
+      "image": "assets/images/hero-poster.webp",
+      "badge": ""
+    },
+    {
+      "date": "2026-07-31",
+      "title": "Alpha 開發進度",
+      "description": "Epic 登入、EOS 與第一章流程持續整合。",
+      "image": "assets/images/trailer-poster.webp",
+      "badge": ""
+    }
+  ],
+  "roadmap": [
+    {
+      "phase": "ALPHA",
+      "title": "凡塵覺醒",
+      "description": "官網、EOS 登入、新手村、50–100 人同步測試。",
+      "current": true
+    },
+    {
+      "phase": "BETA",
+      "title": "宗門初立",
+      "description": "宗門、副本、世界 Boss、拍賣場與社交系統。",
+      "current": false
+    },
+    {
+      "phase": "RELEASE",
+      "title": "諸天開門",
+      "description": "Epic Games Store、Steam、賽季、跨服與世界事件。",
+      "current": false
+    }
+  ],
+  "social": [
+    {
+      "platform": "Discord",
+      "status": "即將公開",
+      "url": ""
+    },
+    {
+      "platform": "Facebook",
+      "status": "即將公開",
+      "url": ""
+    },
+    {
+      "platform": "YouTube",
+      "status": "即將公開",
+      "url": ""
+    },
+    {
+      "platform": "X (Twitter)",
+      "status": "即將公開",
+      "url": ""
+    }
+  ],
+  "worldFlow": [
+    {
+      "order": 1,
+      "name": "混沌初開",
+      "current": false
+    },
+    {
+      "order": 2,
+      "name": "天地誕生",
+      "current": false
+    },
+    {
+      "order": 3,
+      "name": "靈氣復甦",
+      "current": false
+    },
+    {
+      "order": 4,
+      "name": "萬族並起",
+      "current": false
+    },
+    {
+      "order": 5,
+      "name": "仙魔大戰",
+      "current": false
+    },
+    {
+      "order": 6,
+      "name": "天道破碎",
+      "current": false
+    },
+    {
+      "order": 7,
+      "name": "太乙封印",
+      "current": false
+    },
+    {
+      "order": 8,
+      "name": "玩家降世",
+      "current": true
+    },
+    {
+      "order": 9,
+      "name": "重新問道",
+      "current": false
+    },
+    {
+      "order": 10,
+      "name": "飛升諸天",
+      "current": false
+    }
+  ],
+  "realms": [
+    {
+      "order": 1,
+      "name": "凡塵者"
+    },
+    {
+      "order": 2,
+      "name": "強身境"
+    },
+    {
+      "order": 3,
+      "name": "納靈境"
+    },
+    {
+      "order": 4,
+      "name": "聚源境"
+    },
+    {
+      "order": 5,
+      "name": "靈台境"
+    },
+    {
+      "order": 6,
+      "name": "凝核境"
+    },
+    {
+      "order": 7,
+      "name": "靈胎境"
+    },
+    {
+      "order": 8,
+      "name": "神覺境"
+    },
+    {
+      "order": 9,
+      "name": "破界境"
+    },
+    {
+      "order": 10,
+      "name": "天合境"
+    },
+    {
+      "order": 11,
+      "name": "萬象境"
+    },
+    {
+      "order": 12,
+      "name": "登天境"
+    }
+  ]
+}

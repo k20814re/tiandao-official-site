@@ -1,0 +1,59 @@
+《天道自律傳》官網人數統計啟用說明
+====================================
+
+此版本已完成「累計造訪人數」與「目前在線人數」介面及程式。
+GitHub Pages 無法自行保存共同數據，因此要先建立免費 Firebase 專案。
+
+一、建立專案
+1. 前往 https://console.firebase.google.com/
+2. 建立專案，名稱可填：TianDao Online Website
+3. Google Analytics 可先選擇「停用」。
+4. 在專案首頁加入「網頁應用程式」，暱稱可填：TianDao Official Site。
+
+二、啟用匿名登入
+1. 左側選單進入 Authentication。
+2. 點「開始使用」→ Sign-in method。
+3. 啟用「匿名」。
+
+三、建立 Realtime Database
+1. 左側選單進入 Realtime Database。
+2. 點「建立資料庫」。
+3. 區域建議選 asia-southeast1（新加坡）。
+4. 建立後進入「規則」，完整覆蓋為：
+
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "siteStats": {
+      "visitors": {
+        ".read": "auth != null",
+        "$uid": {
+          ".write": "auth != null && auth.uid === $uid"
+        }
+      },
+      "presence": {
+        ".read": "auth != null",
+        "$uid": {
+          "$connection": {
+            ".write": "auth != null && auth.uid === $uid"
+          }
+        }
+      }
+    }
+  }
+}
+
+按「發布」。不要使用公開讀寫的測試規則。
+
+四、貼上網站設定
+1. Firebase 專案設定 → 你的應用程式 → SDK 設定與配置。
+2. 複製 firebaseConfig 中的 apiKey、authDomain、databaseURL、projectId、appId。
+3. 打開 js/stats-config.js，替換五個 PASTE 欄位。
+4. 把 enabled: false 改成 enabled: true。
+5. 儲存後，把整包網站檔案上傳 GitHub。
+
+統計定義
+- 累計造訪人數：依瀏覽器的匿名 Firebase 帳號計算；同一瀏覽器重開不重複計數，清除網站資料或更換瀏覽器後會視為新訪客。
+- 目前在線人數：計算仍與官網保持即時連線的匿名訪客；關閉頁面或斷線後會自動移除。
+- 不要求訪客提供姓名、電子郵件或遊戲帳號。

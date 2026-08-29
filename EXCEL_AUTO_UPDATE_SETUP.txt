@@ -1,0 +1,21 @@
+天道自律傳｜Excel 自動更新官網設定
+
+一、平常怎麼更新
+1. 開啟 TianDao_Website_Content.xlsx。
+2. 修改首頁設定、最新消息、開發進度、社群連結、世界歷程或修煉境界。
+3. 不要改檔名、工作表名稱與第 3 列欄位名稱。
+4. 把新版 Excel 上傳到 GitHub 儲存庫根目錄並 Commit changes。
+5. GitHub Actions 會自動更新 data/site-content.json 並要求 GitHub Pages 重新發布，通常數分鐘內顯示新內容。
+
+二、第一次使用可能要設定一次
+GitHub 儲存庫 → Settings → Actions → General → Workflow permissions，選擇 Read and write permissions，再按 Save。
+
+三、如何查看是否成功
+GitHub 儲存庫 → Actions → Update website content。
+出現綠色勾勾代表已轉換成功；接著查看最新 Commit 是否出現「自動更新官網內容」。
+
+四、安全保護
+若 Excel 欄位被改名、日期無法辨識或資料有錯，工作流程會停止，不會覆蓋目前正常的網站資料。網站若暫時讀不到 JSON，也會保留 index.html 內建內容。
+
+五、與 Epic／網域的關係
+此功能只更新首頁顯示內容，不會變更 tiandaoonline.com、CNAME、privacy.html、服務條款或 Epic Games 連結。
