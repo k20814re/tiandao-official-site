@@ -308,50 +308,6 @@
     {
       "order": 1,
       "name": "凡塵者"
-    },
-    {
-      "order": 2,
-      "name": "強身境"
-    },
-    {
-      "order": 3,
-      "name": "納靈境"
-    },
-    {
-      "order": 4,
-      "name": "聚源境"
-    },
-    {
-      "order": 5,
-      "name": "靈台境"
-    },
-    {
-      "order": 6,
-      "name": "凝核境"
-    },
-    {
-      "order": 7,
-      "name": "靈胎境"
-    },
-    {
-      "order": 8,
-      "name": "神覺境"
-    },
-    {
-      "order": 9,
-      "name": "破界境"
-    },
-    {
-      "order": 10,
-      "name": "天合境"
-    },
-    {
-      "order": 11,
-      "name": "萬象境"
-    },
-    {
-      "order": 12,
-      "name": "登天境"
     }
   ],
   "sectTags": [
@@ -379,23 +335,23 @@
   "mapItems": [
     {
       "order": 1,
-      "name": "青雲谷"
+      "name": "凡界玉雲谷"
     },
     {
       "order": 2,
-      "name": "天劍山"
+      "name": "凡界劍天山"
     },
     {
       "order": 3,
-      "name": "萬妖森林"
+      "name": "凡界萬重古森林"
     },
     {
       "order": 4,
-      "name": "幽冥深淵"
+      "name": "凡界九鬼蠱屍深淵"
     },
     {
       "order": 5,
-      "name": "九天仙界"
+      "name": "天道自律宗"
     }
   ]
 }
