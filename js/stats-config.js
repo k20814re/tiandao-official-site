@@ -5,7 +5,7 @@
 window.TIANDAO_STATS_CONFIG = {
   enabled: true,
   firebase: {
-    apiKey: "AIzaSyCP_99GGEzJVDMXDdG4anXgrMNAzkGT_IY",
+    apiKey: "AIzaSyCP_99GGezJVDMXDdG4anXgrMNAzkGT_IY",
     authDomain: "tiandao-online-website-stats.firebaseapp.com",
     databaseURL: "https://tiandao-online-website-stats-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "tiandao-online-website-stats",
