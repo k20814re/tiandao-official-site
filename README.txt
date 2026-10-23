@@ -1,14 +1,19 @@
-TradePilot AI 全球跨境商務情報平台原型
+天道 Tiandao 品牌網站更新包 v1
 
-本版採用深石墨藍黑色系，並加入資料來源、更新時間、核實狀態與錯誤回報的可信資訊展示。
+網站頁面
+- index.html：品牌入口與服務介紹
+- services.html：服務方向
+- about.html：關於天道
+- contact.html：合作聯絡方式（使用者郵件程式）
+- css/site.css：網站樣式
+- legal/：隱私權說明與網站使用說明
+- CNAME：tiandaoonline.com 網域設定
 
-套件內容
-- index.html：全球商務工作台首頁與可信資料示範流程
-- favicon.svg：TradePilot AI 圖示
-- legal/privacy.html：原型隱私權說明
-- legal/terms.html：網站使用說明
-- CNAME：保留 tiandaoonline.com 網域設定
+網站目前提供品牌介紹與合作洽談資訊，不含線上商品交易、會員、付款、資料庫或天氣功能。聯絡按鈕會開啟使用者的電子郵件程式；網站沒有表單伺服器。
 
-重要限制：目前天氣、展覽、交通、物流、供應商與市場內容沒有連接真實資料來源。未連接的資訊以「未連接／未核實」呈現；錯誤回報只示範介面，不會儲存或傳送。正式版須串接官方來源、建立時間戳與過期規則，並將回報流程接到管理後台。
+更新 GitHub 儲存庫
+1. 解壓縮 ZIP。
+2. 將全部檔案與資料夾上傳至網站儲存庫根目錄，保留資料夾結構並覆蓋同名舊檔。
+3. 部署完成後開啟 https://tiandaoonline.com/ 確認。
 
-套用方式：將上述檔案依相同路徑放入 tiandao-official-site repository 根目錄（legal 頁放入 legal/），取代同名檔案。發布前可先檢視 index.html 預覽。
+注意：GitHub Pages 官方限制不適合用作主要促成商業交易的網站主機。此品牌資訊站不含交易功能；若日後加入商業交易、會員或 SaaS 功能，應改用適合該用途的託管服務並重新檢視法律及隱私文件。本包只產生本機檔案，尚未發布。
