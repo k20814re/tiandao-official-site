@@ -1,0 +1,230 @@
+{
+  "schemaVersion": 1,
+  "settings": {
+    "schemaVersion": 1,
+    "siteName": "天道商貿 B2B",
+    "demoLabelZh": "示範商品",
+    "demoLabelEn": "DEMO LISTING",
+    "發布流程": "步驟",
+    "Excel → JSON": 5
+  },
+  "categories": [
+    {
+      "order": 1,
+      "id": "food",
+      "icon": "🍵",
+      "nameZh": "食品飲品",
+      "nameEn": "Food & Beverage",
+      "descriptionZh": "台灣茶品、常溫點心與企業禮盒。出口食品須另行確認標示、保存及目的地規範。",
+      "descriptionEn": "Tea, shelf-stable snacks and corporate gifts from Taiwan."
+    },
+    {
+      "order": 2,
+      "id": "industrial",
+      "icon": "⚙️",
+      "nameZh": "工業零組件",
+      "nameEn": "Industrial Components",
+      "descriptionZh": "感測模組與加工品。技術規格與品質文件需由供應商提供並驗證。",
+      "descriptionEn": "Sensors and manufactured components for industrial buyers."
+    },
+    {
+      "order": 3,
+      "id": "sports",
+      "icon": "🚲",
+      "nameZh": "運動與零組件",
+      "nameEn": "Sports & Components",
+      "descriptionZh": "自行車零件及相關加工品，可依型號與數量詢價。",
+      "descriptionEn": "Bicycle parts and related manufactured components."
+    },
+    {
+      "order": 4,
+      "id": "textiles",
+      "icon": "🧵",
+      "nameZh": "紡織材料",
+      "nameEn": "Textiles & Materials",
+      "descriptionZh": "機能布料可依材質、克重、測試需求及採購量詢價。",
+      "descriptionEn": "Performance textiles by material, weight and test requirements."
+    },
+    {
+      "order": 5,
+      "id": "packaging",
+      "icon": "📦",
+      "nameZh": "包裝材料",
+      "nameEn": "Packaging",
+      "descriptionZh": "包裝材料可依材質、尺寸及食品接觸需求詢價。",
+      "descriptionEn": "Packaging by material, dimensions and food-contact requirements."
+    }
+  ],
+  "suppliers": [
+    {
+      "order": 1,
+      "id": "misty-ridge",
+      "icon": "🍵",
+      "nameZh": "山嵐茶品",
+      "nameEn": "Misty Ridge Tea",
+      "categoryId": "food",
+      "descriptionZh": "台灣茶品示範供應商。可詢問茶款、產區、包裝及出口需求。",
+      "descriptionEn": "Demo tea supplier for varieties, origins, packaging and export needs.",
+      "itemsZh": "茶葉、茶包、企業禮盒",
+      "itemsEn": "Tea leaves, tea bags, corporate gifts"
+    },
+    {
+      "order": 2,
+      "id": "island-bakehouse",
+      "icon": "🍍",
+      "nameZh": "島嶼烘焙",
+      "nameEn": "Island Bakehouse",
+      "categoryId": "food",
+      "descriptionZh": "烘焙禮盒示範供應商。出口前須確認食品標示、保存期限與目的地法規。",
+      "descriptionEn": "Demo bakery supplier; verify labeling, shelf life and destination rules.",
+      "itemsZh": "鳳梨酥、常溫點心、禮盒",
+      "itemsEn": "Pineapple cakes, shelf-stable snacks, gifts"
+    },
+    {
+      "order": 3,
+      "id": "precision-smart",
+      "icon": "⚙️",
+      "nameZh": "精準智造",
+      "nameEn": "Precision Smart Manufacturing",
+      "categoryId": "industrial",
+      "descriptionZh": "工業模組示範供應商。技術規格、測試文件及認證皆待實際供應商驗證。",
+      "descriptionEn": "Demo industrial supplier; specifications, tests and certifications require verification.",
+      "itemsZh": "感測模組、工業零件",
+      "itemsEn": "Sensor modules, industrial parts"
+    },
+    {
+      "order": 4,
+      "id": "island-link",
+      "icon": "🚲",
+      "nameZh": "島鏈零件",
+      "nameEn": "Island Link Components",
+      "categoryId": "sports",
+      "descriptionZh": "零組件示範供應商，可依型號與數量詢問供貨條件。",
+      "descriptionEn": "Demo component supplier for model- and quantity-based inquiries.",
+      "itemsZh": "自行車零件、金屬加工件",
+      "itemsEn": "Bicycle parts, machined metal parts"
+    },
+    {
+      "order": 5,
+      "id": "weave-materials",
+      "icon": "🧵",
+      "nameZh": "織境材料",
+      "nameEn": "Weave Materials",
+      "categoryId": "textiles",
+      "descriptionZh": "機能布料示範供應商，可詢問成分、克重、色卡與測試。",
+      "descriptionEn": "Demo performance-textile supplier.",
+      "itemsZh": "機能布料、樣品色卡",
+      "itemsEn": "Performance textiles, sample swatches"
+    },
+    {
+      "order": 6,
+      "id": "green-box",
+      "icon": "📦",
+      "nameZh": "綠盒方案",
+      "nameEn": "Green Box Solutions",
+      "categoryId": "packaging",
+      "descriptionZh": "包裝材料示範供應商，可依用途與尺寸詢價。",
+      "descriptionEn": "Demo packaging supplier for use- and size-based requests.",
+      "itemsZh": "環保包裝、食品接觸材料",
+      "itemsEn": "Eco packaging, food-contact materials"
+    }
+  ],
+  "products": [
+    {
+      "order": 1,
+      "id": "tea",
+      "icon": "🍵",
+      "nameZh": "台灣高山茶",
+      "nameEn": "Taiwan High Mountain Tea",
+      "categoryId": "food",
+      "supplierId": "misty-ridge",
+      "descriptionZh": "產區、採收季與茶款規格可依買方需求提供。",
+      "descriptionEn": "Origin, harvest season and tea specifications can be provided to buyers.",
+      "moqZh": "待供應商確認",
+      "moqEn": "To be confirmed",
+      "pricingZh": "依需求詢價",
+      "pricingEn": "Request a quote",
+      "featured": true
+    },
+    {
+      "order": 2,
+      "id": "snack",
+      "icon": "🍍",
+      "nameZh": "鳳梨酥禮盒",
+      "nameEn": "Pineapple Cake Gift Box",
+      "categoryId": "food",
+      "supplierId": "island-bakehouse",
+      "descriptionZh": "適合企業贈禮與通路採購，包裝規格可洽談。",
+      "descriptionEn": "Gift-ready packaging options for corporate and retail buyers.",
+      "moqZh": "待供應商確認",
+      "moqEn": "To be confirmed",
+      "pricingZh": "依需求詢價",
+      "pricingEn": "Request a quote",
+      "featured": true
+    },
+    {
+      "order": 3,
+      "id": "sensor",
+      "icon": "⚙️",
+      "nameZh": "工業感測模組",
+      "nameEn": "Industrial Sensor Module",
+      "categoryId": "industrial",
+      "supplierId": "precision-smart",
+      "descriptionZh": "展示型產品資料；技術規格與認證需由供應商確認。",
+      "descriptionEn": "Demo listing; technical specifications and certifications require supplier verification.",
+      "moqZh": "待供應商確認",
+      "moqEn": "To be confirmed",
+      "pricingZh": "依需求詢價",
+      "pricingEn": "Request a quote",
+      "featured": true
+    },
+    {
+      "order": 4,
+      "id": "bike",
+      "icon": "🚲",
+      "nameZh": "自行車零組件",
+      "nameEn": "Bicycle Components",
+      "categoryId": "sports",
+      "supplierId": "island-link",
+      "descriptionZh": "可依型號、材質、表面處理與採購量進一步詢價。",
+      "descriptionEn": "Request a quote by model, material, finish and order quantity.",
+      "moqZh": "待供應商確認",
+      "moqEn": "To be confirmed",
+      "pricingZh": "依需求詢價",
+      "pricingEn": "Request a quote",
+      "featured": false
+    },
+    {
+      "order": 5,
+      "id": "textile",
+      "icon": "🧵",
+      "nameZh": "機能布料樣品",
+      "nameEn": "Performance Textile Samples",
+      "categoryId": "textiles",
+      "supplierId": "weave-materials",
+      "descriptionZh": "可詢問成分、克重、色卡、測試報告及樣品寄送。",
+      "descriptionEn": "Ask about composition, weight, swatches, test reports and samples.",
+      "moqZh": "待供應商確認",
+      "moqEn": "To be confirmed",
+      "pricingZh": "依需求詢價",
+      "pricingEn": "Request a quote",
+      "featured": false
+    },
+    {
+      "order": 6,
+      "id": "packaging",
+      "icon": "📦",
+      "nameZh": "環保包裝材料",
+      "nameEn": "Eco Packaging Materials",
+      "categoryId": "packaging",
+      "supplierId": "green-box",
+      "descriptionZh": "採購前請確認材質、尺寸、食品接觸適用性與出口要求。",
+      "descriptionEn": "Confirm materials, dimensions, food-contact suitability and export requirements.",
+      "moqZh": "待供應商確認",
+      "moqEn": "To be confirmed",
+      "pricingZh": "依需求詢價",
+      "pricingEn": "Request a quote",
+      "featured": false
+    }
+  ]
+}
