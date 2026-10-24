@@ -57,27 +57,61 @@
     <section class="event-section" id="events" aria-labelledby="events-title">
       <div class="wrap">
         <div class="section-intro split-intro event-intro">
-          <div><p class="eyebrow">VERIFIED TRADE FAIR DISCOVERY</p><h2 id="events-title">從官方來源，找到下一場商務機會</h2></div>
-          <p>以商展、國家、產業與日期篩選。每筆資料都附主辦方或官方展會連結；日期與內容仍以來源網站最新公告為準。</p>
+          <div><p class="eyebrow">SEARCH THE OPEN WEB</p><h2 id="events-title">搜尋網路上的全球商展</h2></div>
+          <p>此處將接入可授權的網路搜尋服務；接通前不顯示結果、不跳轉搜尋引擎，也不使用 Excel 或示範資料冒充網路資料。</p>
         </div>
-        <form class="event-filters" id="event-filters" role="search" aria-label="商展搜尋與篩選">
-          <label class="search-field"><span>搜尋商展或城市</span><input id="event-query" type="search" placeholder="例如：CES、德國、食品" autocomplete="off"></label>
-          <label><span>國家／地區</span><select id="event-country"><option value="">全部國家／地區</option></select></label>
-          <label><span>產業</span><select id="event-industry"><option value="">全部產業</option></select></label>
+        <form class="event-filters" id="event-filters" role="search" aria-label="網路商展搜尋">
+          <label class="search-field"><span>想找什麼商展</span><input id="event-query" type="search" placeholder="例如：汽車零件、食品、AI、東京" autocomplete="off" required></label>
+          <label><span>國家／城市</span><input id="event-country" placeholder="請輸入國家或城市"></label>
+          <label><span>產業</span><input id="event-industry" placeholder="請輸入產業關鍵字"></label>
           <label><span>開始日期</span><input id="event-from" type="date"></label>
           <label><span>結束日期</span><input id="event-to" type="date"></label>
-          <button class="filter-reset" id="filter-reset" type="reset">清除篩選</button>
+          <div class="search-actions"><button class="web-search-button" type="submit">搜尋商展</button><button class="filter-reset" id="filter-reset" type="reset">清除</button></div>
         </form>
-        <div class="data-bar" id="data-bar" aria-live="polite">
-          <div><span class="data-dot" aria-hidden="true"></span><b id="data-label">正在連接資料來源…</b><small id="data-detail">請稍候</small></div>
-          <button class="retry-button" id="retry-events" type="button" hidden>重新載入</button>
-        </div>
-        <div class="event-status" id="event-status" role="status" aria-live="polite"><span class="spinner" aria-hidden="true"></span><p>正在載入商展資料…</p></div>
-        <div class="event-grid" id="event-results" aria-label="商展搜尋結果" hidden></div>
-        <noscript><div class="event-status is-error"><p>此搜尋工具需要 JavaScript。你仍可使用下方官方來源連結自行查詢。</p></div></noscript>
+        <div class="web-search-note" id="web-search-note" aria-live="polite"><span aria-hidden="true">◎</span><div><b>網路搜尋尚未接通</b><small>需先設定搜尋 API 與安全的後端代理；目前不會送出查詢或顯示資料。</small></div></div>
+        <div class="event-grid" id="event-results" aria-label="商展搜尋結果"><div class="event-status"><p><b>目前沒有搜尋結果</b><br>真實網路搜尋服務接通後，結果才會顯示在這裡。</p></div></div>
+        <noscript><div class="event-status is-error"><p>請啟用 JavaScript 使用搜尋表單。</p></div></noscript>
       </div>
     </section>
 
+    <section class="detail-section" id="event-detail" aria-labelledby="detail-title">
+      <div class="wrap">
+        <div class="section-intro split-intro"><div><p class="eyebrow">SELECTED EVENT</p><h2 id="detail-title">商展詳細資料</h2></div><p>真實搜尋服務接通並選擇結果後，才會顯示有來源的商展資料；未查證欄位不會猜測。</p></div>
+        <div class="detail-shell" id="detail-shell"><div class="event-status"><p><b>尚未選擇商展</b><br>選擇商展後，這裡會顯示日期、開放時段、場館、主辦單位、報名方式與來源。</p></div></div>
+      </div>
+    </section>
+
+    <section class="journey-section" id="journey" aria-labelledby="journey-title">
+      <div class="wrap">
+        <div class="section-intro split-intro"><div><p class="eyebrow">FOOD · WEATHER · STAY · MOVE · PLAY</p><h2 id="journey-title">食衣住行玩樂情報</h2></div><p>此區已完成操作版型；真實地點、天氣、房價與交通班次須等待合法 API 接入，現在不顯示虛構推薦。</p></div>
+        <div class="journey-tabs" role="tablist" aria-label="旅程情報分類">
+          <button class="journey-tab is-active" type="button" data-journey="food">食<small>美食</small></button><button class="journey-tab" type="button" data-journey="wear">衣<small>天氣穿搭</small></button><button class="journey-tab" type="button" data-journey="stay">住<small>住宿</small></button><button class="journey-tab" type="button" data-journey="move">行<small>交通</small></button><button class="journey-tab" type="button" data-journey="play">玩<small>觀光</small></button><button class="journey-tab" type="button" data-journey="leisure">樂<small>休閒</small></button>
+        </div>
+        <div class="journey-panel" id="journey-panel"><div><span class="status-chip">P1 · 尚未接通</span><h3>食類資料尚未接通</h3><p>選定有可靠來源的商展並接入相應資料服務後，才會顯示內容。</p></div><div class="pending-card"><b>目前沒有資料</b><span>不使用固定推薦或虛構即時資訊。</span></div></div>
+      </div>
+    </section>
+
+    <section class="planner-section" id="planner" aria-labelledby="planner-title">
+      <div class="wrap planner-layout">
+        <div class="planner-copy"><p class="eyebrow">SPIKY DUCK BUSINESS TRAVEL ASSISTANT</p><h2 id="planner-title">刺鴨全球商務旅程助手</h2><p>旅程條件表單已保留；AI、真實商展與交通資料接通前，不產生固定或虛構行程，也不儲存個資。</p><img src="assets/guide-black-gold.png" alt="黑金刺鴨旅程助手" width="1280" height="1280"></div>
+        <form class="planner-form" id="planner-form">
+          <div class="planner-grid">
+            <label><span>出發地</span><input name="origin" required placeholder="例如：台北"></label><label><span>目的地</span><input name="destination" required placeholder="例如：東京"></label>
+            <label class="full"><span>展覽名稱</span><input name="event" required placeholder="請輸入或從上方選擇"></label>
+            <label><span>出發日期</span><input name="depart" type="date" required></label><label><span>返回日期</span><input name="return" type="date" required></label>
+            <label><span>每日可活動時段</span><input name="hours" placeholder="請輸入可活動時段"></label><label><span>預算</span><input name="budget" inputmode="decimal" placeholder="請輸入預算"></label>
+            <label><span>幣別</span><input name="currency" placeholder="請輸入幣別"></label><label><span>交通偏好</span><input name="transport" placeholder="請輸入交通偏好"></label>
+            <label><span>飲食需求</span><input name="diet" placeholder="無、素食、清真等"></label><label><span>住宿需求</span><input name="stay" placeholder="展館附近、近車站等"></label>
+            <label class="full"><span>觀光與商務偏好</span><textarea name="preferences" placeholder="例如：商展優先、保留兩小時洽談、安排一處夜間景點"></textarea></label>
+          </div>
+          <button class="button planner-submit" type="submit">建立智慧行程</button>
+          <p class="form-fineprint">目前不會傳送或儲存表單內容。AI 排程、即時交通、房價與餐廳資料尚未接通。</p>
+        </form>
+      </div>
+      <div class="wrap"><div class="timeline-output" id="timeline-output" hidden></div></div>
+    </section>
+
+    <section class="launch-gates" aria-labelledby="gate-title"><div class="wrap"><div class="section-intro"><p class="eyebrow">LEGAL &amp; COST GATES</p><h2 id="gate-title">正式接入前，先通過法律與成本檢查</h2></div><div class="gate-grid"><article><span>法律</span><h3>資訊與廣告真實</h3><p>價格、開放時間、班次與推薦不得表現為保證；付費合作內容需明確揭露。</p></article><article><span>個資</span><h3>蒐集前完整告知</h3><p>啟用收藏、登入或行程儲存前，需說明目的、期間、對象、方式與使用者權利。</p></article><article><span>授權</span><h3>只摘錄必要事實</h3><p>保留來源與一般超連結，不任意重製第三方照片、評論、地圖或大段文字。</p></article><article><span>費用</span><h3>API 設上限</h3><p>搜尋、地圖、AI 通常按量付費；上線前需設定每日額度、快取、告警與停用開關。</p></article></div></div></section>
     <section class="route-section" id="route" aria-labelledby="route-title">
       <div class="wrap">
         <div class="section-intro split-intro">
@@ -137,18 +171,17 @@
 
     <section class="source-section" aria-labelledby="source-title">
       <div class="wrap source-layout">
-        <div><p class="eyebrow">DATA &amp; SAFETY</p><h2 id="source-title">資料怎麼來，頁面就怎麼說</h2><p>本頁不產生 AI 推薦、不推測參展效益，也不顯示虛構的即時人數或熱度。資料庫可用時，只讀取已公開發布的商展資料；無法連線時，顯示隨網站版本一同查證的官方來源備援資料。</p></div>
+        <div><p class="eyebrow">SEARCH &amp; SAFETY</p><h2 id="source-title">網路搜尋，不包裝成自有資料</h2><p>本站搜尋服務尚未接通，目前不回傳任何商展結果。本頁不產生 AI 推薦、不推測參展效益，也不顯示虛構的即時人數或熱度。</p></div>
         <ul class="source-list">
           <li><b>官方連結</b><span>每筆資料保留來源與查核日期</span></li>
-          <li><b>唯讀連線</b><span>瀏覽器只使用 Supabase publishable key，寫入權限由 RLS 控制</span></li>
-          <li><b>狀態透明</b><span>載入中、無結果、連線錯誤與備援模式皆明確顯示</span></li>
+          <li><b>公開網路</b><span>接入合法搜尋服務後，才會查詢並顯示可追溯來源</span></li>
+          <li><b>界線透明</b><span>未接通的功能明確標示，不以寫死資料代替搜尋結果</span></li>
         </ul>
       </div>
     </section>
   </main>
 
-  <footer class="footer"><div class="wrap footer-inner"><span>© 2026 TianDao B2B · 全球商務探索原型</span><span><a href="../../index.html">返回天道原網站</a> · <a href="../index.html">B2B 首頁</a></span></div></footer>
-  <script src="../js/supabase-config.js"></script>
+  <footer class="footer"><div class="wrap"><p class="service-disclaimer">天道商貿提供全球商展、商務旅程、交通、住宿、美食與觀光等資訊整理及智慧行程建議。本平台不提供機票、車票、飯店或展覽門票之代訂及代收款服務。各項價格、開放時間、班次與活動資訊可能異動，請以官方公告為準。</p><div class="footer-inner"><span>© 2026 TianDao B2B · 全球商務探索原型</span><span><a href="../../index.html">返回天道原網站</a> · <a href="../index.html">B2B 首頁</a></span></div></div></footer>
   <script src="js/explore.js"></script>
   <script src="js/explore-events.js"></script>
 </body>
