@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#080b18">
-  <meta name="description" content="天道商貿全球商務探索：以引導式路徑整理市場、供應與合規思考，開始跨境 B2B 探索。">
-  <title>全球商務探索｜天道商貿 B2B</title>
+  <meta name="description" content="天道商貿台灣商務探索：聚焦台灣商展、產業、城市與商務旅程資訊。">
+  <title>台灣商務探索｜天道商貿 B2B</title>
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/explore.css">
 </head>
@@ -15,7 +15,7 @@
     <div class="wrap nav">
       <a class="brand" href="../index.html" aria-label="返回天道商貿 B2B 首頁">
         <span class="brand-mark">道</span>
-        <span>天道商貿<small>TIANDAO · GLOBAL EXPLORER</small></span>
+        <span>天道商貿<small>TIANDAO · TAIWAN EXPLORER</small></span>
       </a>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">選單</button>
       <nav class="links" id="primary-nav" aria-label="主要導覽">
@@ -23,7 +23,7 @@
         <a href="../products.html">商品目錄</a>
         <a href="../suppliers.html">供應商</a>
         <a href="../inquiry.html">採購詢價</a>
-        <a class="nav-current" href="index.html" aria-current="page">全球探索</a>
+        <a class="nav-current" href="index.html" aria-current="page">台灣探索</a>
       </nav>
     </div>
   </header>
@@ -33,9 +33,9 @@
       <div class="hero-sky" aria-hidden="true"></div>
       <div class="wrap hero-grid">
         <div class="hero-copy">
-          <p class="eyebrow">GLOBAL BUSINESS EXPLORATION · 全球商務探索</p>
-          <h1 id="hero-title">讓每一段跨境旅程，<br><span>先看清方向。</span></h1>
-          <p class="hero-lead">跟著黑金刺鴨，從市場訊號、供應條件到合規準備，一步步整理你的商務探索路徑。這裡提供判斷框架，不假裝有即時答案。</p>
+          <p class="eyebrow">TAIWAN BUSINESS EXPLORATION · 台灣商務探索</p>
+          <h1 id="hero-title">先把台灣商展，<br><span>查清楚再出發。</span></h1>
+          <p class="hero-lead">先聚焦台灣各地商展、產業與城市資訊，跟著黑金刺鴨一步步整理商務探索路徑；資料不足時不猜測，也不假裝有即時答案。</p>
           <div class="hero-actions">
             <a class="button" href="#route">開始探索 <span aria-hidden="true">↘</span></a>
             <a class="button ghost" href="../inquiry.html">前往採購詢價</a>
@@ -43,7 +43,7 @@
         </div>
         <div class="guide-stage">
           <div class="guide-halo" aria-hidden="true"></div>
-          <div class="guide-bubble"><b>黑金刺鴨</b><span>你的全球商務引導員</span></div>
+          <div class="guide-bubble"><b>黑金刺鴨</b><span>你的台灣商務引導員</span></div>
           <img src="assets/guide-black-gold.png" alt="黑金配色、刺蝟造型的鴨子商務引導員" width="1280" height="1280">
           <div class="orbit-chip chip-one">市場</div>
           <div class="orbit-chip chip-two">供應</div>
@@ -56,11 +56,11 @@
     <section class="event-section" id="events" aria-labelledby="events-title">
       <div class="wrap">
         <div class="section-intro split-intro event-intro">
-          <div><p class="eyebrow">SEARCH THE OPEN WEB</p><h2 id="events-title">搜尋網路上的全球商展</h2></div>
+          <div><p class="eyebrow">TAIWAN TRADE FAIR SEARCH</p><h2 id="events-title">搜尋台灣各地商展</h2></div>
         </div>
-        <form class="event-filters" id="event-filters" role="search" aria-label="網路商展搜尋">
-          <label class="search-field"><span>想找什麼商展</span><input id="event-query" type="search" placeholder="例如：汽車零件、食品、AI、東京" autocomplete="off" required></label>
-          <label><span>國家／城市</span><input id="event-country" placeholder="請輸入國家或城市"></label>
+        <form class="event-filters" id="event-filters" role="search" aria-label="台灣商展搜尋"><input type="hidden" name="country" value="TW">
+          <label class="search-field"><span>想找什麼商展</span><input id="event-query" type="search" placeholder="例如：汽車零件、食品、AI、工具機" autocomplete="off" required></label>
+          <label><span>城市／地區</span><input id="event-country" name="city" placeholder="例如：台北、台中、高雄" autocomplete="address-level2"></label>
           <label><span>產業</span><input id="event-industry" placeholder="請輸入產業關鍵字"></label>
           <label><span>開始日期</span><input id="event-from" type="date"></label>
           <label><span>結束日期</span><input id="event-to" type="date"></label>
@@ -90,14 +90,14 @@
 
     <section class="planner-section" id="planner" aria-labelledby="planner-title">
       <div class="wrap planner-layout">
-        <div class="planner-copy"><p class="eyebrow">SPIKY DUCK BUSINESS TRAVEL ASSISTANT</p><h2 id="planner-title">刺鴨全球商務旅程助手</h2><img src="assets/guide-black-gold.png" alt="黑金刺鴨旅程助手" width="1280" height="1280"></div>
+        <div class="planner-copy"><p class="eyebrow">SPIKY DUCK TAIWAN BUSINESS ASSISTANT</p><h2 id="planner-title">刺鴨台灣商務旅程助手</h2><img src="assets/guide-black-gold.png" alt="黑金刺鴨旅程助手" width="1280" height="1280"></div>
         <form class="planner-form" id="planner-form">
           <div class="planner-grid">
-            <label><span>出發地</span><input name="origin" required placeholder="例如：台北"></label><label><span>目的地</span><input name="destination" required placeholder="例如：東京"></label>
+            <label><span>出發地</span><input name="origin" required placeholder="例如：新竹"></label><label><span>目的地</span><input name="destination" required placeholder="例如：台北"></label>
             <label class="full"><span>展覽名稱</span><input name="event" required placeholder="請輸入或從上方選擇"></label>
             <label><span>出發日期</span><input name="depart" type="date" required></label><label><span>返回日期</span><input name="return" type="date" required></label>
             <label><span>每日可活動時段</span><input name="hours" placeholder="請輸入可活動時段"></label><label><span>預算</span><input name="budget" inputmode="decimal" placeholder="請輸入預算"></label>
-            <label><span>幣別</span><input name="currency" placeholder="請輸入幣別"></label><label><span>交通偏好</span><input name="transport" placeholder="請輸入交通偏好"></label>
+            <label><span>幣別</span><input name="currency" value="TWD" aria-label="幣別"></label><label><span>交通偏好</span><input name="transport" placeholder="高鐵、台鐵、捷運或開車"></label>
             <label><span>飲食需求</span><input name="diet" placeholder="無、素食、清真等"></label><label><span>住宿需求</span><input name="stay" placeholder="展館附近、近車站等"></label>
             <label class="full"><span>觀光與商務偏好</span><textarea name="preferences" placeholder="例如：商展優先、保留兩小時洽談、安排一處夜間景點"></textarea></label>
           </div>
@@ -166,17 +166,17 @@
 
     <section class="source-section" aria-labelledby="source-title">
       <div class="wrap source-layout">
-        <div><p class="eyebrow">SEARCH &amp; SAFETY</p><h2 id="source-title">網路搜尋，不包裝成自有資料</h2><p>本站搜尋服務尚未接通，目前不回傳任何商展結果。本頁不產生 AI 推薦、不推測參展效益，也不顯示虛構的即時人數或熱度。</p></div>
+        <div><p class="eyebrow">SOURCE &amp; SAFETY</p><h2 id="source-title">先查台灣官方來源</h2><p>商展資料將優先連結台灣主辦單位、展館與政府公開來源。搜尋服務尚未接通前，不回傳商展結果、不產生 AI 推薦，也不顯示虛構的即時人數或熱度。</p></div>
         <ul class="source-list">
           <li><b>官方連結</b><span>每筆資料保留來源與查核日期</span></li>
-          <li><b>公開網路</b><span>接入合法搜尋服務後，才會查詢並顯示可追溯來源</span></li>
+          <li><b>台灣優先</b><span>第一階段僅查詢台灣商展與台灣境內旅程資訊</span></li>
           <li><b>界線透明</b><span>未接通的功能明確標示，不以寫死資料代替搜尋結果</span></li>
         </ul>
       </div>
     </section>
   </main>
 
-  <footer class="footer"><div class="wrap"><p class="service-disclaimer">天道商貿提供全球商展、商務旅程、交通、住宿、美食與觀光等資訊整理及智慧行程建議。本平台不提供機票、車票、飯店或展覽門票之代訂及代收款服務。各項價格、開放時間、班次與活動資訊可能異動，請以官方公告為準。</p><div class="footer-inner"><span>© 2026 TianDao B2B · 全球商務探索原型</span><span><a href="../../index.html">返回天道原網站</a> · <a href="../index.html">B2B 首頁</a></span></div></div></footer>
+  <footer class="footer"><div class="wrap"><p class="service-disclaimer">天道商貿提供台灣商展、商務旅程、交通、住宿、美食與觀光等資訊整理及智慧行程建議。本平台不提供車票、飯店或展覽門票之代訂及代收款服務。各項價格、開放時間、班次與活動資訊可能異動，請以官方公告為準。</p><div class="footer-inner"><span>© 2026 TianDao B2B · 台灣商務探索</span><span><a href="../../index.html">返回天道原網站</a> · <a href="../index.html">B2B 首頁</a></span></div></div></footer>
   <script src="js/explore.js"></script>
   <script src="js/explore-events.js"></script>
 </body>
