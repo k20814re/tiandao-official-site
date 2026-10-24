@@ -4,23 +4,16 @@
   const byId = id => document.getElementById(id);
   const ui = {
     form: byId('event-filters'),
-    results: byId('event-results'),
-    note: byId('web-search-note')
+    results: byId('event-results')
   };
 
   ui.form.addEventListener('submit', event => {
     event.preventDefault();
     if (!ui.form.reportValidity()) return;
-    ui.note.classList.add('is-searched');
-    ui.note.querySelector('b').textContent = '網路搜尋尚未接通';
-    ui.note.querySelector('small').textContent = '需要搜尋 API 與安全的後端代理；本次查詢未送出，也沒有產生結果。';
     ui.results.innerHTML = '<div class="event-status is-error"><p><b>目前無法搜尋網路</b><br>服務接通前不顯示寫死資料或假結果。</p></div>';
   });
 
   ui.form.addEventListener('reset', () => requestAnimationFrame(() => {
-    ui.note.classList.remove('is-searched');
-    ui.note.querySelector('b').textContent = '網路搜尋尚未接通';
-    ui.note.querySelector('small').textContent = '需先設定搜尋 API 與安全的後端代理；目前不會送出查詢或顯示資料。';
     ui.results.innerHTML = '<div class="event-status"><p><b>目前沒有搜尋結果</b><br>真實網路搜尋服務接通後，結果才會顯示在這裡。</p></div>';
   }));
 
