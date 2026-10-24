@@ -64,10 +64,10 @@
           <div><p class="eyebrow">TAIWAN TRADE FAIR SEARCH</p><h2 id="events-title">搜尋台灣各地商展</h2></div>
         </div>
         <form class="event-filters easy-search" id="event-filters" role="search" aria-label="台灣商展搜尋"><input type="hidden" name="country" value="TW">
-          <div class="quick-row full-row"><span class="quick-label">① 想看哪一類？</span><div class="choice-chips" data-target="event-query"><button type="button" data-value="食品">食品</button><button type="button" data-value="工具機">工具機</button><button type="button" data-value="電子科技">電子科技</button><button type="button" data-value="醫療生技">醫療生技</button><button type="button" data-value="汽車零件">汽車零件</button><button type="button" data-value="文創設計">文創設計</button></div></div>
+          <div class="quick-row full-row"><span class="quick-label">① 想看哪一類？</span><div class="choice-chips" data-target="event-query"><button class="is-selected" type="button" data-value="">全部展覽</button><button type="button" data-value="食品">食品</button><button type="button" data-value="工具機">工具機</button><button type="button" data-value="電子科技">電子科技</button><button type="button" data-value="醫療生技">醫療生技</button><button type="button" data-value="汽車零件">汽車零件</button><button type="button" data-value="文創設計">文創設計</button></div></div>
           <div class="quick-row full-row"><span class="quick-label">② 想去哪裡？</span><div class="choice-chips" data-target="event-country"><button type="button" data-value="">全台灣</button><button type="button" data-value="台北">台北</button><button type="button" data-value="桃園">桃園</button><button type="button" data-value="台中">台中</button><button type="button" data-value="台南">台南</button><button type="button" data-value="高雄">高雄</button></div></div>
           <div class="quick-row full-row"><span class="quick-label">③ 什麼時候？</span><div class="choice-chips date-chips"><button type="button" data-date-range="30">未來 30 天</button><button type="button" data-date-range="90">未來 3 個月</button><button type="button" data-date-range="365">今年內</button></div></div>
-          <label class="search-field"><span>也可以直接說想找什麼</span><input id="event-query" name="query" type="search" placeholder="例如：食品展" autocomplete="off"></label>
+          <label class="search-field"><span>也可以直接說想找什麼</span><input id="event-query" name="query" type="search" placeholder="全部展覽（不限制產業）" autocomplete="off"></label>
           <label><span>城市</span><select id="event-country" name="city"><option value="">全台灣</option><option>台北</option><option>桃園</option><option>台中</option><option>台南</option><option>高雄</option><option>其他地區</option></select></label>
           <label><span>開始日期</span><input id="event-from" name="from" type="date"></label>
           <label><span>結束日期</span><input id="event-to" name="to" type="date"></label>
@@ -203,7 +203,7 @@
     byId('event-from').value = toValue(start); byId('event-to').value = toValue(end);
     document.querySelectorAll('[data-date-range]').forEach(item => item.classList.toggle('is-selected', item === button));
   }));
-  byId('event-filters').addEventListener('reset', () => requestAnimationFrame(() => document.querySelectorAll('.choice-chips button').forEach(item => item.classList.remove('is-selected'))));
+  byId('event-filters').addEventListener('reset', () => requestAnimationFrame(() => document.querySelectorAll('.choice-chips button').forEach(item => item.classList.remove('is-selected')); document.querySelector('.choice-chips[data-target="event-query"] button[data-value=""]').classList.add('is-selected')));
 })();
 </script>
 </body>
