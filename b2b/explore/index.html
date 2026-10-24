@@ -8,6 +8,11 @@
   <title>台灣商務探索｜天道商貿 B2B</title>
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/explore.css">
+<style>
+/* Click-first controls */
+.easy-search{grid-template-columns:2fr 1fr 1fr 1fr auto}.full-row{grid-column:1/-1}.quick-row{display:grid;grid-template-columns:125px 1fr;align-items:center;gap:12px}.quick-label{color:var(--cream);font-size:12px;font-weight:800}.choice-chips{display:flex;flex-wrap:wrap;gap:8px}.choice-chips button{min-height:36px;padding:7px 14px;border:1px solid #ffffff24;border-radius:999px;background:#12192a;color:#d5d1d4;cursor:pointer}.choice-chips button:hover,.choice-chips button:focus-visible,.choice-chips button.is-selected{border-color:var(--gold);background:#2b241d;color:var(--gold-light);box-shadow:0 0 0 2px #e8b85e15}.tap-hint{margin:0 0 18px;padding:12px 14px;border-left:3px solid var(--gold);background:#e8b85e0d;color:#cbc6ca;font-size:12px}@media(max-width:1020px){.easy-search{grid-template-columns:2fr 1fr 1fr}.easy-search .search-actions{grid-column:1/-1}}@media(max-width:680px){.easy-search{grid-template-columns:1fr 1fr}.quick-row{grid-template-columns:1fr;gap:7px}.choice-chips{display:grid;grid-template-columns:repeat(3,1fr)}.choice-chips button{padding-inline:8px}.easy-search .search-field,.easy-search .search-actions{grid-column:1/-1}}@media(max-width:420px){.choice-chips{grid-template-columns:repeat(2,1fr)}.easy-search{grid-template-columns:1fr}.easy-search .search-field,.easy-search .search-actions{grid-column:auto}}
+
+</style>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要內容</a>
@@ -58,13 +63,15 @@
         <div class="section-intro split-intro event-intro">
           <div><p class="eyebrow">TAIWAN TRADE FAIR SEARCH</p><h2 id="events-title">搜尋台灣各地商展</h2></div>
         </div>
-        <form class="event-filters" id="event-filters" role="search" aria-label="台灣商展搜尋"><input type="hidden" name="country" value="TW">
-          <label class="search-field"><span>想找什麼商展</span><input id="event-query" type="search" placeholder="例如：汽車零件、食品、AI、工具機" autocomplete="off" required></label>
-          <label><span>城市／地區</span><input id="event-country" name="city" placeholder="例如：台北、台中、高雄" autocomplete="address-level2"></label>
-          <label><span>產業</span><input id="event-industry" placeholder="請輸入產業關鍵字"></label>
-          <label><span>開始日期</span><input id="event-from" type="date"></label>
-          <label><span>結束日期</span><input id="event-to" type="date"></label>
-          <div class="search-actions"><button class="web-search-button" type="submit">搜尋商展</button><button class="filter-reset" id="filter-reset" type="reset">清除</button></div>
+        <form class="event-filters easy-search" id="event-filters" role="search" aria-label="台灣商展搜尋"><input type="hidden" name="country" value="TW">
+          <div class="quick-row full-row"><span class="quick-label">① 想看哪一類？</span><div class="choice-chips" data-target="event-query"><button type="button" data-value="食品">食品</button><button type="button" data-value="工具機">工具機</button><button type="button" data-value="電子科技">電子科技</button><button type="button" data-value="醫療生技">醫療生技</button><button type="button" data-value="汽車零件">汽車零件</button><button type="button" data-value="文創設計">文創設計</button></div></div>
+          <div class="quick-row full-row"><span class="quick-label">② 想去哪裡？</span><div class="choice-chips" data-target="event-country"><button type="button" data-value="">全台灣</button><button type="button" data-value="台北">台北</button><button type="button" data-value="桃園">桃園</button><button type="button" data-value="台中">台中</button><button type="button" data-value="台南">台南</button><button type="button" data-value="高雄">高雄</button></div></div>
+          <div class="quick-row full-row"><span class="quick-label">③ 什麼時候？</span><div class="choice-chips date-chips"><button type="button" data-date-range="30">未來 30 天</button><button type="button" data-date-range="90">未來 3 個月</button><button type="button" data-date-range="365">今年內</button></div></div>
+          <label class="search-field"><span>也可以直接說想找什麼</span><input id="event-query" name="query" type="search" placeholder="例如：食品展" autocomplete="off"></label>
+          <label><span>城市</span><select id="event-country" name="city"><option value="">全台灣</option><option>台北</option><option>桃園</option><option>台中</option><option>台南</option><option>高雄</option><option>其他地區</option></select></label>
+          <label><span>開始日期</span><input id="event-from" name="from" type="date"></label>
+          <label><span>結束日期</span><input id="event-to" name="to" type="date"></label>
+          <div class="search-actions"><button class="web-search-button" type="submit">幫我找商展</button><button class="filter-reset" id="filter-reset" type="reset">重選</button></div>
         </form>
         <div class="event-grid" id="event-results" aria-label="商展搜尋結果"><div class="event-status"><p><b>目前沒有搜尋結果</b><br>真實網路搜尋服務接通後，結果才會顯示在這裡。</p></div></div>
         <noscript><div class="event-status is-error"><p>請啟用 JavaScript 使用搜尋表單。</p></div></noscript>
@@ -92,14 +99,15 @@
       <div class="wrap planner-layout">
         <div class="planner-copy"><p class="eyebrow">SPIKY DUCK TAIWAN BUSINESS ASSISTANT</p><h2 id="planner-title">刺鴨台灣商務旅程助手</h2><img src="assets/guide-black-gold.png" alt="黑金刺鴨旅程助手" width="1280" height="1280"></div>
         <form class="planner-form" id="planner-form">
+          <p class="tap-hint">大多數條件用選的就好；商展接通後，選中的展覽會自動帶入。</p>
           <div class="planner-grid">
-            <label><span>出發地</span><input name="origin" required placeholder="例如：新竹"></label><label><span>目的地</span><input name="destination" required placeholder="例如：台北"></label>
-            <label class="full"><span>展覽名稱</span><input name="event" required placeholder="請輸入或從上方選擇"></label>
+            <label><span>從哪裡出發</span><select name="origin" required><option value="">請選擇</option><option>基隆</option><option>台北</option><option>新北</option><option>桃園</option><option>新竹</option><option>台中</option><option>彰化</option><option>嘉義</option><option>台南</option><option>高雄</option><option>屏東</option><option>宜蘭</option><option>花蓮</option><option>台東</option></select></label><label><span>要去哪裡</span><select name="destination" required><option value="">請選擇</option><option>台北</option><option>南港</option><option>桃園</option><option>台中</option><option>台南</option><option>高雄</option><option>其他地區</option></select></label>
+            <label class="full"><span>展覽名稱</span><select name="event" required><option value="">請先從上方搜尋並選擇商展</option></select></label>
             <label><span>出發日期</span><input name="depart" type="date" required></label><label><span>返回日期</span><input name="return" type="date" required></label>
-            <label><span>每日可活動時段</span><input name="hours" placeholder="請輸入可活動時段"></label><label><span>預算</span><input name="budget" inputmode="decimal" placeholder="請輸入預算"></label>
-            <label><span>幣別</span><input name="currency" value="TWD" aria-label="幣別"></label><label><span>交通偏好</span><input name="transport" placeholder="高鐵、台鐵、捷運或開車"></label>
-            <label><span>飲食需求</span><input name="diet" placeholder="無、素食、清真等"></label><label><span>住宿需求</span><input name="stay" placeholder="展館附近、近車站等"></label>
-            <label class="full"><span>觀光與商務偏好</span><textarea name="preferences" placeholder="例如：商展優先、保留兩小時洽談、安排一處夜間景點"></textarea></label>
+            <label><span>每日活動時段</span><select name="hours"><option value="09:00–18:00">白天 09:00–18:00</option><option value="08:00–20:00">整天 08:00–20:00</option><option value="13:00–21:00">午後 13:00–21:00</option></select></label><label><span>每人預算</span><select name="budget"><option value="">不限定</option><option value="5000">5,000 元內</option><option value="10000">10,000 元內</option><option value="20000">20,000 元內</option><option value="30000">30,000 元內</option></select></label>
+            <input type="hidden" name="currency" value="TWD"><label><span>交通偏好</span><select name="transport"><option>大眾運輸優先</option><option>高鐵優先</option><option>台鐵優先</option><option>自行開車</option><option>無偏好</option></select></label>
+            <label><span>飲食需求</span><select name="diet"><option>無特殊需求</option><option>素食</option><option>全素</option><option>清真</option><option>不吃牛</option></select></label><label><span>住宿需求</span><select name="stay"><option>展館附近</option><option>車站附近</option><option>價格優先</option><option>交通便利優先</option><option>不需要住宿</option></select></label>
+            <label class="full"><span>旅程重點</span><select name="preferences"><option>商展優先</option><option>商展＋商務洽談</option><option>商展＋附近觀光</option><option>輕鬆不趕行程</option></select></label>
           </div>
           <button class="button planner-submit" type="submit">建立智慧行程</button>
           <p class="form-fineprint">目前不會傳送或儲存表單內容。AI 排程、即時交通、房價與餐廳資料尚未接通。</p>
@@ -179,5 +187,24 @@
   <footer class="footer"><div class="wrap"><p class="service-disclaimer">天道商貿提供台灣商展、商務旅程、交通、住宿、美食與觀光等資訊整理及智慧行程建議。本平台不提供車票、飯店或展覽門票之代訂及代收款服務。各項價格、開放時間、班次與活動資訊可能異動，請以官方公告為準。</p><div class="footer-inner"><span>© 2026 TianDao B2B · 台灣商務探索</span><span><a href="../../index.html">返回天道原網站</a> · <a href="../index.html">B2B 首頁</a></span></div></div></footer>
   <script src="js/explore.js"></script>
   <script src="js/explore-events.js"></script>
+<script>
+(() => {
+  const byId = id => document.getElementById(id);
+  document.querySelectorAll('.choice-chips').forEach(group => group.addEventListener('click', event => {
+    const button = event.target.closest('button[data-value]');
+    if (!button) return;
+    byId(group.dataset.target).value = button.dataset.value;
+    group.querySelectorAll('button').forEach(item => item.classList.toggle('is-selected', item === button));
+  }));
+  document.querySelectorAll('[data-date-range]').forEach(button => button.addEventListener('click', () => {
+    const start = new Date(); const end = new Date(start);
+    end.setDate(end.getDate() + Number(button.dataset.dateRange));
+    const toValue = date => date.toISOString().slice(0, 10);
+    byId('event-from').value = toValue(start); byId('event-to').value = toValue(end);
+    document.querySelectorAll('[data-date-range]').forEach(item => item.classList.toggle('is-selected', item === button));
+  }));
+  byId('event-filters').addEventListener('reset', () => requestAnimationFrame(() => document.querySelectorAll('.choice-chips button').forEach(item => item.classList.remove('is-selected'))));
+})();
+</script>
 </body>
 </html>
