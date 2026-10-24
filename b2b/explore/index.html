@@ -203,7 +203,7 @@
     byId('event-from').value = toValue(start); byId('event-to').value = toValue(end);
     document.querySelectorAll('[data-date-range]').forEach(item => item.classList.toggle('is-selected', item === button));
   }));
-  byId('event-filters').addEventListener('reset', () => requestAnimationFrame(() => document.querySelectorAll('.choice-chips button').forEach(item => item.classList.remove('is-selected')); document.querySelector('.choice-chips[data-target="event-query"] button[data-value=""]').classList.add('is-selected')));
+  byId('event-filters').addEventListener('reset', () => requestAnimationFrame(() => { document.querySelectorAll('.choice-chips button').forEach(item => item.classList.remove('is-selected')); document.querySelector('.choice-chips[data-target="event-query"] button[data-value=""]').classList.add('is-selected'); }));
 })();
 </script>
 </body>
