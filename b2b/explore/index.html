@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#080b18">
   <meta name="description" content="天道商貿全球商務探索：以引導式路徑整理市場、供應與合規思考，開始跨境 B2B 探索。">
   <title>全球商務探索｜天道商貿 B2B</title>
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/explore.css">
 </head>
 <body>
@@ -51,6 +52,30 @@
         </div>
       </div>
       <a class="scroll-cue" href="#route">SCROLL TO EXPLORE <span>↓</span></a>
+    </section>
+
+    <section class="event-section" id="events" aria-labelledby="events-title">
+      <div class="wrap">
+        <div class="section-intro split-intro event-intro">
+          <div><p class="eyebrow">VERIFIED TRADE FAIR DISCOVERY</p><h2 id="events-title">從官方來源，找到下一場商務機會</h2></div>
+          <p>以商展、國家、產業與日期篩選。每筆資料都附主辦方或官方展會連結；日期與內容仍以來源網站最新公告為準。</p>
+        </div>
+        <form class="event-filters" id="event-filters" role="search" aria-label="商展搜尋與篩選">
+          <label class="search-field"><span>搜尋商展或城市</span><input id="event-query" type="search" placeholder="例如：CES、德國、食品" autocomplete="off"></label>
+          <label><span>國家／地區</span><select id="event-country"><option value="">全部國家／地區</option></select></label>
+          <label><span>產業</span><select id="event-industry"><option value="">全部產業</option></select></label>
+          <label><span>開始日期</span><input id="event-from" type="date"></label>
+          <label><span>結束日期</span><input id="event-to" type="date"></label>
+          <button class="filter-reset" id="filter-reset" type="reset">清除篩選</button>
+        </form>
+        <div class="data-bar" id="data-bar" aria-live="polite">
+          <div><span class="data-dot" aria-hidden="true"></span><b id="data-label">正在連接資料來源…</b><small id="data-detail">請稍候</small></div>
+          <button class="retry-button" id="retry-events" type="button" hidden>重新載入</button>
+        </div>
+        <div class="event-status" id="event-status" role="status" aria-live="polite"><span class="spinner" aria-hidden="true"></span><p>正在載入商展資料…</p></div>
+        <div class="event-grid" id="event-results" aria-label="商展搜尋結果" hidden></div>
+        <noscript><div class="event-status is-error"><p>此搜尋工具需要 JavaScript。你仍可使用下方官方來源連結自行查詢。</p></div></noscript>
+      </div>
     </section>
 
     <section class="route-section" id="route" aria-labelledby="route-title">
@@ -109,9 +134,22 @@
         <div class="hero-actions"><a class="button" href="../products.html">探索商品目錄</a><a class="button ghost" href="../inquiry.html">整理採購需求</a></div>
       </div>
     </section>
+
+    <section class="source-section" aria-labelledby="source-title">
+      <div class="wrap source-layout">
+        <div><p class="eyebrow">DATA &amp; SAFETY</p><h2 id="source-title">資料怎麼來，頁面就怎麼說</h2><p>本頁不產生 AI 推薦、不推測參展效益，也不顯示虛構的即時人數或熱度。資料庫可用時，只讀取已公開發布的商展資料；無法連線時，顯示隨網站版本一同查證的官方來源備援資料。</p></div>
+        <ul class="source-list">
+          <li><b>官方連結</b><span>每筆資料保留來源與查核日期</span></li>
+          <li><b>唯讀連線</b><span>瀏覽器只使用 Supabase publishable key，寫入權限由 RLS 控制</span></li>
+          <li><b>狀態透明</b><span>載入中、無結果、連線錯誤與備援模式皆明確顯示</span></li>
+        </ul>
+      </div>
+    </section>
   </main>
 
   <footer class="footer"><div class="wrap footer-inner"><span>© 2026 TianDao B2B · 全球商務探索原型</span><span><a href="../../index.html">返回天道原網站</a> · <a href="../index.html">B2B 首頁</a></span></div></footer>
+  <script src="../js/supabase-config.js"></script>
   <script src="js/explore.js"></script>
+  <script src="js/explore-events.js"></script>
 </body>
 </html>
