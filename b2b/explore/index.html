@@ -1,16 +1,117 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>全球商務探索｜天道商貿</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080b18">
+  <meta name="description" content="天道商貿全球商務探索：以引導式路徑整理市場、供應與合規思考，開始跨境 B2B 探索。">
+  <title>全球商務探索｜天道商貿 B2B</title>
+  <link rel="stylesheet" href="css/explore.css">
 </head>
 <body>
-  <main>
-    <h1>天道商貿｜全球商務探索</h1>
-    <p>Global Business Explorer</p>
-    <p>全球商展、產業與跨境商務情報平台</p>
+  <a class="skip-link" href="#main">跳到主要內容</a>
+  <header class="site-header">
+    <div class="wrap nav">
+      <a class="brand" href="../index.html" aria-label="返回天道商貿 B2B 首頁">
+        <span class="brand-mark">道</span>
+        <span>天道商貿<small>TIANDAO · GLOBAL EXPLORER</small></span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">選單</button>
+      <nav class="links" id="primary-nav" aria-label="主要導覽">
+        <a href="../index.html">平台首頁</a>
+        <a href="../products.html">商品目錄</a>
+        <a href="../suppliers.html">供應商</a>
+        <a href="../inquiry.html">採購詢價</a>
+        <a class="nav-current" href="index.html" aria-current="page">全球探索</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-sky" aria-hidden="true"></div>
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">GLOBAL BUSINESS EXPLORATION · 全球商務探索</p>
+          <h1 id="hero-title">讓每一段跨境旅程，<br><span>先看清方向。</span></h1>
+          <p class="hero-lead">跟著黑金刺鴨，從市場訊號、供應條件到合規準備，一步步整理你的商務探索路徑。這裡提供判斷框架，不假裝有即時答案。</p>
+          <div class="hero-actions">
+            <a class="button" href="#route">開始探索 <span aria-hidden="true">↘</span></a>
+            <a class="button ghost" href="../inquiry.html">前往採購詢價</a>
+          </div>
+          <p class="prototype-note"><span>探索原型</span> 本頁不提供即時市場、報價、庫存或交易資料；內容僅供規劃與展示。</p>
+        </div>
+        <div class="guide-stage">
+          <div class="guide-halo" aria-hidden="true"></div>
+          <div class="guide-bubble"><b>黑金刺鴨</b><span>你的全球商務引導員</span></div>
+          <img src="assets/guide-black-gold.png" alt="黑金配色、刺蝟造型的鴨子商務引導員" width="1280" height="1280">
+          <div class="orbit-chip chip-one">市場</div>
+          <div class="orbit-chip chip-two">供應</div>
+          <div class="orbit-chip chip-three">合規</div>
+        </div>
+      </div>
+      <a class="scroll-cue" href="#route">SCROLL TO EXPLORE <span>↓</span></a>
+    </section>
+
+    <section class="route-section" id="route" aria-labelledby="route-title">
+      <div class="wrap">
+        <div class="section-intro split-intro">
+          <div><p class="eyebrow">CHOOSE YOUR ROUTE</p><h2 id="route-title">你現在，最想釐清哪一件事？</h2></div>
+          <p>選一條路徑，查看第一輪應該確認的問題。切換內容只會改變本頁顯示，不會送出或儲存資料。</p>
+        </div>
+        <div class="route-layout">
+          <div class="route-tabs" role="tablist" aria-label="探索路徑">
+            <button class="route-tab is-active" role="tab" id="tab-market" aria-controls="panel-market" aria-selected="true" data-route="market"><span>01</span><b>找市場</b><small>Market signal</small></button>
+            <button class="route-tab" role="tab" id="tab-supply" aria-controls="panel-supply" aria-selected="false" data-route="supply" tabindex="-1"><span>02</span><b>找供應</b><small>Supply fit</small></button>
+            <button class="route-tab" role="tab" id="tab-ready" aria-controls="panel-ready" aria-selected="false" data-route="ready" tabindex="-1"><span>03</span><b>準備出海</b><small>Export readiness</small></button>
+          </div>
+          <div class="route-panels">
+            <article class="route-panel is-active" id="panel-market" role="tabpanel" aria-labelledby="tab-market" data-panel="market">
+              <div><p class="panel-kicker">市場羅盤</p><h3>先定義對的市場問題</h3><p>把「哪裡能賣」拆成客群、通路、價格帶與進入門檻。先用可查證的公開來源建立假設，再進行實地驗證。</p>
+                <ul class="question-list"><li>目標客戶是企業採購、通路商，還是品牌方？</li><li>當地競品用什麼規格、包裝與價值主張？</li><li>你的優勢能否在目標市場被清楚理解？</li></ul>
+              </div>
+              <img src="assets/guide-strategy.png" alt="穿著黑金與白金服飾的紅髮策略角色" width="1254" height="1254">
+            </article>
+            <article class="route-panel" id="panel-supply" role="tabpanel" aria-labelledby="tab-supply" data-panel="supply" hidden>
+              <div><p class="panel-kicker">供應座標</p><h3>把需求翻成可比較條件</h3><p>產品名稱只是起點。規格、預估數量、交期、包裝、文件與貿易條件，才是供需雙方能有效對話的共同語言。</p>
+                <ul class="question-list"><li>哪些規格是必要，哪些可以彈性調整？</li><li>樣品、量產與補貨的預期時程為何？</li><li>詢價時有哪些條件仍需供應商確認？</li></ul>
+              </div>
+              <img src="assets/guide-duck.png" alt="坐在工作桌前的白色絨毛鴨角色" width="611" height="538">
+            </article>
+            <article class="route-panel" id="panel-ready" role="tabpanel" aria-labelledby="tab-ready" data-panel="ready" hidden>
+              <div><p class="panel-kicker">出海清單</p><h3>讓承諾建立在查證之上</h3><p>不同產品與目的地可能涉及不同文件、標示、檢驗與稅務要求。正式交易前，應由合格專業人員依實際情況確認。</p>
+                <ul class="question-list"><li>目的市場與產品分類是否已明確？</li><li>標示、認證與報關文件由誰負責？</li><li>報價、付款、交付與風險界線是否書面化？</li></ul>
+              </div>
+              <img src="assets/guide-scroll.png" alt="帶有天道字樣與金色火焰的卷軸角色" width="1024" height="1024">
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="map-section" aria-labelledby="map-title">
+      <div class="wrap">
+        <div class="section-intro"><p class="eyebrow">THE EXPLORATION MAP</p><h2 id="map-title">三站式商務探索地圖</h2><p>這不是即時儀表板，而是一套能帶進會議、詢價與查證流程的思考順序。</p></div>
+        <div class="map-grid">
+          <article class="map-card"><span class="map-no">01</span><div class="map-icon">✦</div><h3>訊號站</h3><p>蒐集可追溯的市場來源，區分事實、假設與待驗證事項。</p><button class="card-action" type="button" data-guide="signal">查看引導問題 <span>＋</span></button><div class="card-detail" id="guide-signal" hidden>來源何時更新？樣本是否足夠？它支持的是市場規模、客群偏好，還是僅代表單一案例？</div></article>
+          <article class="map-card featured"><span class="map-no">02</span><div class="map-icon">◎</div><h3>媒合站</h3><p>用明確條件比較供應能力，保留尚待雙方確認的欄位。</p><button class="card-action" type="button" data-guide="match">查看引導問題 <span>＋</span></button><div class="card-detail" id="guide-match" hidden>供應商能否回覆規格、MOQ、打樣、交期與文件？哪些資訊只是示範，尚未經過查核？</div></article>
+          <article class="map-card"><span class="map-no">03</span><div class="map-icon">◇</div><h3>決策站</h3><p>整理下一步與責任人，避免把未驗證資訊當成商務承諾。</p><button class="card-action" type="button" data-guide="decide">查看引導問題 <span>＋</span></button><div class="card-detail" id="guide-decide" hidden>下一步是索取樣品、補齊文件、確認成本，還是暫停？誰負責、何時回看、判斷依據是什麼？</div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="moon-cta" aria-labelledby="cta-title">
+      <div class="moon-overlay"></div>
+      <div class="wrap cta-inner">
+        <p class="eyebrow">YOUR NEXT MOVE</p>
+        <h2 id="cta-title">方向清楚了，<br>再開始一場有準備的商務對話。</h2>
+        <p>瀏覽既有示範商品與供應商資料，或前往詢價頁整理需求。所有實際交易條件仍需由雙方另行查證與確認。</p>
+        <div class="hero-actions"><a class="button" href="../products.html">探索商品目錄</a><a class="button ghost" href="../inquiry.html">整理採購需求</a></div>
+      </div>
+    </section>
   </main>
+
+  <footer class="footer"><div class="wrap footer-inner"><span>© 2026 TianDao B2B · 全球商務探索原型</span><span><a href="../../index.html">返回天道原網站</a> · <a href="../index.html">B2B 首頁</a></span></div></footer>
+  <script src="js/explore.js"></script>
 </body>
 </html>
