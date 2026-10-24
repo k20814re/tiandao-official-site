@@ -40,7 +40,6 @@
             <a class="button" href="#route">開始探索 <span aria-hidden="true">↘</span></a>
             <a class="button ghost" href="../inquiry.html">前往採購詢價</a>
           </div>
-          <p class="prototype-note"><span>探索原型</span> 本頁不提供即時市場、報價、庫存或交易資料；內容僅供規劃與展示。</p>
         </div>
         <div class="guide-stage">
           <div class="guide-halo" aria-hidden="true"></div>
@@ -58,7 +57,6 @@
       <div class="wrap">
         <div class="section-intro split-intro event-intro">
           <div><p class="eyebrow">SEARCH THE OPEN WEB</p><h2 id="events-title">搜尋網路上的全球商展</h2></div>
-          <p>此處將接入可授權的網路搜尋服務；接通前不顯示結果、不跳轉搜尋引擎，也不使用 Excel 或示範資料冒充網路資料。</p>
         </div>
         <form class="event-filters" id="event-filters" role="search" aria-label="網路商展搜尋">
           <label class="search-field"><span>想找什麼商展</span><input id="event-query" type="search" placeholder="例如：汽車零件、食品、AI、東京" autocomplete="off" required></label>
@@ -68,7 +66,6 @@
           <label><span>結束日期</span><input id="event-to" type="date"></label>
           <div class="search-actions"><button class="web-search-button" type="submit">搜尋商展</button><button class="filter-reset" id="filter-reset" type="reset">清除</button></div>
         </form>
-        <div class="web-search-note" id="web-search-note" aria-live="polite"><span aria-hidden="true">◎</span><div><b>網路搜尋尚未接通</b><small>需先設定搜尋 API 與安全的後端代理；目前不會送出查詢或顯示資料。</small></div></div>
         <div class="event-grid" id="event-results" aria-label="商展搜尋結果"><div class="event-status"><p><b>目前沒有搜尋結果</b><br>真實網路搜尋服務接通後，結果才會顯示在這裡。</p></div></div>
         <noscript><div class="event-status is-error"><p>請啟用 JavaScript 使用搜尋表單。</p></div></noscript>
       </div>
@@ -76,14 +73,14 @@
 
     <section class="detail-section" id="event-detail" aria-labelledby="detail-title">
       <div class="wrap">
-        <div class="section-intro split-intro"><div><p class="eyebrow">SELECTED EVENT</p><h2 id="detail-title">商展詳細資料</h2></div><p>真實搜尋服務接通並選擇結果後，才會顯示有來源的商展資料；未查證欄位不會猜測。</p></div>
+        <div class="section-intro"><p class="eyebrow">SELECTED EVENT</p><h2 id="detail-title">商展詳細資料</h2></div>
         <div class="detail-shell" id="detail-shell"><div class="event-status"><p><b>尚未選擇商展</b><br>選擇商展後，這裡會顯示日期、開放時段、場館、主辦單位、報名方式與來源。</p></div></div>
       </div>
     </section>
 
     <section class="journey-section" id="journey" aria-labelledby="journey-title">
       <div class="wrap">
-        <div class="section-intro split-intro"><div><p class="eyebrow">FOOD · WEATHER · STAY · MOVE · PLAY</p><h2 id="journey-title">食衣住行玩樂情報</h2></div><p>此區已完成操作版型；真實地點、天氣、房價與交通班次須等待合法 API 接入，現在不顯示虛構推薦。</p></div>
+        <div class="section-intro"><p class="eyebrow">FOOD · WEATHER · STAY · MOVE · PLAY</p><h2 id="journey-title">食衣住行玩樂情報</h2></div>
         <div class="journey-tabs" role="tablist" aria-label="旅程情報分類">
           <button class="journey-tab is-active" type="button" data-journey="food">食<small>美食</small></button><button class="journey-tab" type="button" data-journey="wear">衣<small>天氣穿搭</small></button><button class="journey-tab" type="button" data-journey="stay">住<small>住宿</small></button><button class="journey-tab" type="button" data-journey="move">行<small>交通</small></button><button class="journey-tab" type="button" data-journey="play">玩<small>觀光</small></button><button class="journey-tab" type="button" data-journey="leisure">樂<small>休閒</small></button>
         </div>
@@ -93,7 +90,7 @@
 
     <section class="planner-section" id="planner" aria-labelledby="planner-title">
       <div class="wrap planner-layout">
-        <div class="planner-copy"><p class="eyebrow">SPIKY DUCK BUSINESS TRAVEL ASSISTANT</p><h2 id="planner-title">刺鴨全球商務旅程助手</h2><p>旅程條件表單已保留；AI、真實商展與交通資料接通前，不產生固定或虛構行程，也不儲存個資。</p><img src="assets/guide-black-gold.png" alt="黑金刺鴨旅程助手" width="1280" height="1280"></div>
+        <div class="planner-copy"><p class="eyebrow">SPIKY DUCK BUSINESS TRAVEL ASSISTANT</p><h2 id="planner-title">刺鴨全球商務旅程助手</h2><img src="assets/guide-black-gold.png" alt="黑金刺鴨旅程助手" width="1280" height="1280"></div>
         <form class="planner-form" id="planner-form">
           <div class="planner-grid">
             <label><span>出發地</span><input name="origin" required placeholder="例如：台北"></label><label><span>目的地</span><input name="destination" required placeholder="例如：東京"></label>
