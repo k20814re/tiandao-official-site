@@ -173,7 +173,9 @@ Deno.serve(async (req) => {
           title_zh: String(row.title).trim(),
           summary: description.slice(0, 12000),
           industry: "觀光活動",
-          event_type: "activity",
+          // The production schema currently constrains event_type to
+          // "exhibition". Keep the source classification in industry.
+          event_type: "exhibition",
           country_code: "TW",
           city: "臺北市",
           venue_name: venue || null,
@@ -229,4 +231,3 @@ Deno.serve(async (req) => {
     { headers: { ...cors(origin), "Content-Type": "application/json" } },
   );
 });
-
