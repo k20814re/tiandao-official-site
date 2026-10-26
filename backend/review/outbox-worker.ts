@@ -32,6 +32,11 @@ export async function processOneNotification(config: WorkerConfig, fetcher: type
  if (!Array.isArray(rows)) return {status:"error",detail:"claim_not_array"};
  if (!rows.length) return {status:"empty"};
  const row=rows[0] as OutboxRow;
+ // Without a valid lease identity, never attempt delivery or acknowledgement.
+ // A malformed RPC response is a backend error, not a sendable notification.
+ if (!row || typeof row.id!=="string" || !/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(row.id) ||
+     typeof row.claimed_at!=="string" || !Number.isFinite(Date.parse(row.claimed_at)))
+   return {status:"error",detail:"invalid_claim_identity"};
  const payload=row?.payload;
  const valid=typeof row?.id==="string" && typeof row?.claimed_at==="string" &&
    typeof row?.idempotency_key==="string" && typeof row?.recipient==="string" &&
