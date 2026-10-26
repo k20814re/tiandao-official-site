@@ -16,6 +16,7 @@ const checks=[
  [{...base,venue_name:""}, "E003"],
  [{...base,source_license_cleared:false}, "E005"],
  [{...base,source_checked_at:""}, "E011"],
+ [{...base,source_checked_at:"2099-01-01T00:00:00Z"}, "E011"],
  [{...base,title_zh:""}, "E012"],
  [{...base,facts_verified:false}, "E010"],
  [{...base,publication_status:"published"}, "E013"],
@@ -23,4 +24,4 @@ const checks=[
 for(const [item,code] of checks){
  assert(checkManualCandidate(item).some(x=>x.startsWith(code+":")),code+" must block");
 }
-console.log("10 manual candidate gate scenarios passed");
+console.log("11 manual candidate gate scenarios passed");
