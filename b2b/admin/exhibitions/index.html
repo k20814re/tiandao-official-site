@@ -149,7 +149,7 @@
               <option value="">人工建立</option>
             </select></label
           ><label>外部來源 ID<input name="external_id" maxlength="240" /></label><label>展覽分類<select name="exhibition_category"><option value="">未分類（待人工確認）</option><option value="b2b_trade_show">B2B 專業商展</option><option value="b2c_consumer_fair">B2C 消費展</option><option value="arts_exhibition">藝文展</option><option value="other_event">一般活動</option></select></label><label>官方來源查核日期<input name="source_checked_at" type="date" /></label>
-          ><label
+          <label
             >國家（ISO alpha-2）<input
               name="country_code"
               value="TW"
@@ -217,8 +217,7 @@
         <p>
           至少需要
           <code>title_zh</code
-          >、<code>starts_at</code>、<code>ends_at</code>。匯入一律先存為草稿，以來源＋外部
-          ID 或資料指紋去重。
+          >、<code>starts_at</code>、<code>ends_at</code>。匯入一律先存為草稿，以來源＋標題／開始時間／場館／主辦單位的資料指紋去重。
         </p>
         <label
           >資料來源<select
