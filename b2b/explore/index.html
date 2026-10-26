@@ -34,6 +34,17 @@
 .page-controls button:not(:disabled):hover,.page-controls button:focus-visible{border-color:#ffe2a0;outline:2px solid #e8b85e55}
 .page-ellipsis{padding:0 4px;color:#c8c0b7}
 @media(max-width:600px){.event-pagination{justify-content:center;text-align:center}.page-controls{justify-content:center}}
+
+/* Exhibition-specific, first-party attendee information panel */
+.attendee-info{width:100%;min-width:0}
+.attendee-info h3{margin:12px 0 6px}
+.attendee-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:22px 0}
+.attendee-facts>div{padding:12px 15px;border:1px solid #ffffff25;border-radius:10px;background:#0b1020;overflow-wrap:anywhere}
+.attendee-facts b,.attendee-facts span{display:block}.attendee-facts b{font-size:11px;color:#e8b85e}.attendee-facts span{font-size:13px;color:#f8eed8}
+.attendee-checks{margin:8px 0 20px;padding-left:23px}.attendee-checks li{padding:4px 0}
+.attendee-source{padding:16px;border:1px solid #e8b85e4d;border-radius:12px;background:#e8b85e0b}
+.attendee-source p{margin:8px 0 0;font-size:12px;color:#c8c0b7}
+@media(max-width:600px){.attendee-facts{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -105,7 +116,7 @@
 
     <section class="journey-section" id="journey" aria-labelledby="journey-title">
       <div class="wrap">
-        <div class="section-intro"><p class="eyebrow">FOOD · WEATHER · STAY · MOVE · PLAY</p><h2 id="journey-title">參展周邊資訊</h2><p>先選擇商展，再依展覽所在地與日期查看餐飲、商務穿搭、住宿、交通及會後休閒參考。不提供訂票、訂房、付款或代訂服務。</p></div>
+        <div class="section-intro"><p class="eyebrow">FOOD · WEATHER · STAY · MOVE · PLAY</p><h2 id="journey-title">參展周邊資訊</h2><p>先選擇商展，在本站查看展覽場館、日期與餐飲、商務穿搭、住宿、交通及會後休閒的規劃提醒；有合法授權的周邊資料後再逐步顯示。不提供訂票、訂房、付款或代訂服務。</p></div>
         <p class="event-status" id="journey-context" role="status">請先從上方選擇展覽，才會顯示對應地區的參展配套資訊。</p>
         <div class="journey-tabs" role="tablist" aria-label="參展周邊資訊分類">
           <button class="journey-tab is-active" type="button" data-journey="food">食<small>美食</small></button><button class="journey-tab" type="button" data-journey="wear">衣<small>天氣穿搭</small></button><button class="journey-tab" type="button" data-journey="stay">住<small>住宿</small></button><button class="journey-tab" type="button" data-journey="move">行<small>交通</small></button><button class="journey-tab" type="button" data-journey="play">玩<small>觀光</small></button><button class="journey-tab" type="button" data-journey="leisure">樂<small>休閒</small></button>
@@ -205,7 +216,7 @@
 
   <footer class="footer"><div class="wrap"><p class="service-disclaimer">天道商貿提供台灣商展、商務旅程、交通、住宿、美食與觀光等資訊整理及智慧行程建議。本平台不提供車票、飯店或展覽門票之代訂及代收款服務。各項價格、開放時間、班次與活動資訊可能異動，請以官方公告為準。</p><div class="footer-inner"><span>© 2026 TianDao B2B · 台灣商務探索</span><span><a href="index.html">台灣探索</a></span></div></div></footer>
   <script src="js/explore.js"></script>
-  <script src="js/explore-events.js?v=a142eb43"></script>
+  <script src="js/explore-events.js?v=4489e1b"></script>
 <script>
 (() => {
   const byId = id => document.getElementById(id);
