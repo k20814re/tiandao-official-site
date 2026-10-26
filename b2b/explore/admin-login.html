@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive">
+<title>天道商貿｜管理員登入（開發版）</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;background:#0b1220;color:#e5e7eb}body{max-width:640px;margin:8vh auto;padding:24px}main{background:#172235;border:1px solid #334155;border-radius:16px;padding:28px}h1{margin-top:0}label{display:block;margin:18px 0 6px}input{display:block;width:100%;box-sizing:border-box;padding:12px;border-radius:8px;border:1px solid #64748b;background:#0b1220;color:#fff}button{padding:11px 18px;margin-top:20px;border:0;border-radius:8px;background:#e8b85e;color:#111827;cursor:pointer}button:disabled{opacity:.5}#logout{background:#334155;color:white}p{line-height:1.6}.notice{color:#fbbf24}#panel[hidden],#login[hidden]{display:none}
+</style></head><body><main>
+<h1>天道商貿｜管理員登入</h1>
+<p class="notice">開發階段：僅提供身分與角色查詢。沒有審核、修改或發布權限操作。實際資料存取仍須由資料庫 RLS 強制限制。</p>
+<form id="login"><label for="email">管理員電子郵件</label><input id="email" type="email" autocomplete="username" required>
+<label for="password">密碼</label><input id="password" type="password" autocomplete="current-password" required>
+<button id="submit" type="submit">登入並驗證角色</button></form>
+<section id="panel" hidden><h2>身分驗證通過</h2><p id="identity"></p><p>目前為唯讀開發頁，不提供資料操作。</p><button id="logout" type="button">登出</button></section>
+<p id="status" role="status" aria-live="polite">尚未登入。</p>
+</main><script src="js/admin-login.js" defer></script></body></html>
