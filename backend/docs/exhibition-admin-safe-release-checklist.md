@@ -8,10 +8,10 @@
 ## 正式資料庫檢查（不修改資料）
 
 1. 在 Supabase SQL Editor 執行 `backend/sql/trade_show_preflight_readonly.sql`。
-2. 執行 `backend/sql/trade_show_canonical_key_audit_readonly.sql`。
-3. 確認 `canonical_key` 有唯一索引或唯一約束，且非 NULL 值無重複。
-4. 確認現有 `publication_status` 值與 CHECK 約束，並保留現有 `sync-taipei-events`、`sync-culture-exhibitions` 及全部資料。
-5. 檢查 RLS、trigger 與 `trade_event_sources` 實際欄位，**不得**假設舊 migration 可套用。
+2. 執行 `backend/sql/trade_show_canonical_key_audit_readonly.sql`。\n3. 執行 `backend/sql/exhibition_rls_audit_readonly.sql`，核對所有既有 RLS 政策、GRANT 與觸發器。
+4. 確認 `canonical_key` 有唯一索引或唯一約束，且非 NULL 值無重複。
+5. 確認現有 `publication_status` 值與 CHECK 約束，並保留現有 `sync-taipei-events`、`sync-culture-exhibitions` 及全部資料。
+6. 檢查 RLS、trigger 與 `trade_event_sources` 實際欄位，**不得**假設舊 migration 可套用。
 
 ## 測試資料庫的執行順序
 
