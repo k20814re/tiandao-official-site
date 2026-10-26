@@ -9,18 +9,16 @@
 <p class="warning"><strong>僅限開發測試：未經審核的草稿，不是正式展覽公告。</strong> 本頁不連接 Supabase，不具備審核核准、匯入或發布功能。不要把本頁當作存取權限控管；部署時應限制開發環境存取。</p>
 <label for="file">選擇本機離線預覽 JSON（不會上傳）</label>
 <input id="file" type="file" accept=".json,application/json">
-<p id="summary" role="status">尚未載入資料。請先執行 build-plan-b-local-preview.ts，然後選擇產生的 JSON。</p>
+<p id="summary" role="status">尚未載入資料。開發預覽網域將嘗試自動載入；也可選擇本機 JSON。</p>
 <div id="results"></div>
 <script>
 "use strict";
 const file=document.getElementById("file"),summary=document.getElementById("summary"),results=document.getElementById("results");
 const make=(tag,value)=>{const n=document.createElement(tag);n.textContent=String(value??"");return n};
-file.addEventListener("change",async()=>{
- results.replaceChildren();summary.textContent="正在讀取本機檔案…";
+async function showPreview(data){
+ results.replaceChildren();
  try{
-  const selected=file.files?.[0];if(!selected)throw Error("未選擇檔案");
-  if(selected.size>2_000_000)throw Error("檔案過大（上限 2 MB）");
-  const data=JSON.parse(await selected.text());
+
   if(data.format!=="tiandao-plan-b-local-review-v1"||data.publishable!==0||!Array.isArray(data.records)||data.total!==data.records.length)throw Error("資料格式或安全標記不符");
   if(data.records.some(x=>!x||x.review_only!==true||x.publication_status!=="draft"||!Array.isArray(x.review_blockers)))throw Error("資料包含非草稿或缺少審核欄位");
   summary.textContent="候選 "+data.records.length+" 場｜可發布 0 場｜全部僅供審核";
@@ -38,5 +36,34 @@ file.addEventListener("change",async()=>{
    results.append(card);
   }
  }catch(err){summary.textContent="讀取失敗："+(err instanceof Error?err.message:"未知錯誤")}
+}
+file.addEventListener("change",async()=>{
+ const selected=file.files?.[0];if(!selected)return;
+ if(selected.size>2_000_000){summary.textContent="檔案過大（上限 2 MB）";return;}
+ try{await showPreview(JSON.parse(await selected.text()))}catch{summary.textContent="JSON 格式錯誤"}
 });
+// Only the dedicated preview host can load repository draft data automatically.
+// Production hosts never request the candidate manifest.
+if(location.hostname==="tiandao-b2b-preview.pages.dev"||location.hostname==="localhost"||location.hostname==="127.0.0.1"){
+ fetch("../../backend/review/plan-b-first-batch-candidates.json",{cache:"no-store"})
+  .then(r=>{if(!r.ok)throw Error("候選清單不可讀");return r.json()})
+  .then(manifest=>{
+   if(!Array.isArray(manifest.events))throw Error("候選清單格式錯誤");
+   const records=manifest.events.map((e,i)=>({
+    id:"candidate-"+(i+1),title_zh:e.title_zh,starts_at:e.starts_at,ends_at:e.ends_at,
+    city:e.city,venue_name:e.venue_name,address:e.address,official_url:e.official_url,
+    daily_hours_text:e.daily_hours_text,publication_status:"draft",review_only:true,
+    review_blockers:[
+     ...(!e.source_checked_at?["E011:source_check_missing"]:[]),
+     ...(e.source_license_cleared!==true?["E005:source_license_not_cleared"]:[]),
+     ...(e.facts_verified!==true?["E010:official_facts_not_verified"]:[]),
+     ...(/^https:\\/\\/www\\.tainex\\.com\\.tw\\/event\\?/.test(e.official_url||"")?["E001:generic_event_calendar"]:[]),
+     ...(e.official_url==="https://www.chanchao.com.tw/"?["E001:official_event_specific_url_required"]:[])
+    ]
+   }));
+   return showPreview({format:"tiandao-plan-b-local-review-v1",total:records.length,publishable:0,records});
+  })
+  .catch(()=>{summary.textContent="自動載入不可用，請選擇本機離線預覽 JSON。"});
+}
+
 </script></body></html>
