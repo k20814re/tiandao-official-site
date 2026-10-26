@@ -34,8 +34,8 @@ function selectedSummary(x){
  return ['【天道商貿｜參展資訊】','展覽：'+clean(x.title_zh),'類型：'+eventType(x),'展期：'+date(x.starts_at)+'－'+date(x.ends_at),'每日時段：'+hours(x.daily_hours),'城市：'+clean(x.city||'尚待確認'),'場館：'+clean(x.venue_name||'尚待確認'),'地址：'+clean(x.address||'尚待確認'),'主辦：'+clean(x.organizer_name||'尚待確認'),'入場資訊：'+clean(x.ticket_info||'尚待確認'),'資料查核：'+verified(x.source_checked_at||x.last_verified_at),'活動來源：'+(safeOfficialUrl(x.official_url)||'未提供'),'※ 僅供資訊整理，請向主辦單位確認；不提供代訂、行程安排或收款。'].join('\\n');
 }
 function saveTextFile(filename,content,mime){
- const blob=new Blob([content],{type:mime}),url=URL.createObjectURL(blob),a=document.createElement('a');
- a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ const blob=new Blob([content],{type:mime}),url=window.URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>window.URL.revokeObjectURL(url),1000);
 }
 function eventCalendar(x){
  const iso=d=>{const v=day(d);return /^\\d{4}-\\d{2}-\\d{2}$/.test(v)?v.replaceAll('-',''):null};
