@@ -49,7 +49,6 @@
   async function request(path, options = {}) {
     const r = await fetch(API + path, {
       ...options,
-      _retried: undefined,
       headers: headers(options.headers),
     });
     if (
@@ -429,26 +428,17 @@
     }
     if (errors.length) throw new Error(errors.slice(0, 8).join("；"));
     if (!valid.length) throw new Error("沒有可匯入的資料");
-    // The table must have a unique constraint on canonical_key to avoid concurrent duplicate inserts.
-    // Do not use merge-upsert: it could overwrite already-published editorial changes.
-    // Never overwrite an already-reviewed or published record during import.
+    // Requires a unique index on canonical_key; ignore conflicts atomically.
+    // No merge: never overwrite existing editorial changes or published events.
     let inserted = 0;
     for (let i = 0; i < valid.length; i += 50) {
       const batch = valid.slice(i, i + 50);
-      const keys = batch.map((r) => r.canonical_key);
-      const existing = await request(
-        "/rest/v1/trade_events?select=canonical_key&canonical_key=in.(" +
-          keys.map((k) => '"' + k.replace(/"/g, "") + '"').join(",") + ")",
-      );
-      const known = new Set(existing.map((r) => r.canonical_key));
-      const fresh = batch.filter((r) => !known.has(r.canonical_key));
-      if (!fresh.length) continue;
-      await request("/rest/v1/trade_events", {
+      const result = await request("/rest/v1/trade_events?on_conflict=canonical_key&select=id", {
         method: "POST",
-        headers: { Prefer: "return=minimal" },
-        body: JSON.stringify(fresh),
+        headers: { Prefer: "resolution=ignore-duplicates,return=representation" },
+        body: JSON.stringify(batch),
       });
-      inserted += fresh.length;
+      inserted += Array.isArray(result) ? result.length : 0;
     }
     return inserted;
   }
