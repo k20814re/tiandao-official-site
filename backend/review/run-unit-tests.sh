@@ -9,4 +9,5 @@ node --experimental-strip-types backend/review/outbox-worker.test.ts
 node --experimental-strip-types backend/review/manual-exhibition-gate.test.ts
 node --experimental-strip-types backend/review/audit-plan-b-candidates.test.ts
 node --experimental-strip-types backend/review/build-plan-b-local-preview.test.ts
+node --experimental-strip-types backend/review/plan-b-ten-candidate.integration.test.ts
 echo "All exhibition review mock/policy test scripts completed."
