@@ -49,15 +49,17 @@
   async function request(path, options = {}) {
     const r = await fetch(API + path, {
       ...options,
+      _retried: undefined,
       headers: headers(options.headers),
     });
     if (
       r.status === 401 &&
       session?.refresh_token &&
-      path != "/auth/v1/token?grant_type=refresh_token"
+      !options._retried &&
+      path !== "/auth/v1/token?grant_type=refresh_token"
     ) {
       await refresh();
-      return request(path, options);
+      return request(path, { ...options, _retried: true });
     }
     if (!r.ok) {
       let body = {};
@@ -75,8 +77,9 @@
       e.status = r.status;
       throw e;
     }
-    if (r.status === 204) return null;
-    return r.json();
+    if (r.status === 204 || r.status === 205 || r.headers.get("content-length") === "0") return null;
+    const bodyText = await r.text();
+    return bodyText ? JSON.parse(bodyText) : null;
   }
   async function refresh() {
     const r = await fetch(API + "/auth/v1/token?grant_type=refresh_token", {
@@ -426,10 +429,12 @@
     }
     if (errors.length) throw new Error(errors.slice(0, 8).join("；"));
     if (!valid.length) throw new Error("沒有可匯入的資料");
+    // The table must have a unique constraint on canonical_key to avoid concurrent duplicate inserts.
+    // Do not use merge-upsert: it could overwrite already-published editorial changes.
     // Never overwrite an already-reviewed or published record during import.
     let inserted = 0;
-    for (let i = 0; i < valid.length; i += 100) {
-      const batch = valid.slice(i, i + 100);
+    for (let i = 0; i < valid.length; i += 50) {
+      const batch = valid.slice(i, i + 50);
       const keys = batch.map((r) => r.canonical_key);
       const existing = await request(
         "/rest/v1/trade_events?select=canonical_key&canonical_key=in.(" +
