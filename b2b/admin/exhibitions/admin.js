@@ -47,14 +47,15 @@
     ...extra,
   });
   async function request(path, options = {}) {
+    const { _retried, ...fetchOptions } = options;
     const r = await fetch(API + path, {
-      ...options,
+      ...fetchOptions,
       headers: headers(options.headers),
     });
     if (
       r.status === 401 &&
       session?.refresh_token &&
-      !options._retried &&
+      !_retried &&
       path !== "/auth/v1/token?grant_type=refresh_token"
     ) {
       await refresh();
@@ -178,11 +179,22 @@
   }
   async function loadEvents() {
     msg("app-message", "正在載入…");
-    events = await request(
-      "/rest/v1/trade_events?select=id,title_zh,summary,city,venue_name,address,starts_at,ends_at,organizer_name,official_url,publication_status,source_id,external_id,country_code,timezone,currency_code,translations,updated_at,deleted_at,exhibition_category,source_checked_at&deleted_at=is.null&order=updated_at.desc&limit=1000",
-    );
+    const select = "id,title_zh,summary,city,venue_name,address,starts_at,ends_at,organizer_name,official_url,publication_status,source_id,external_id,country_code,timezone,currency_code,translations,updated_at,deleted_at,exhibition_category,source_checked_at";
+    const pageSize = 500;
+    const maxRows = 10000;
+    const loaded = [];
+    let truncated = false;
+    for (let offset = 0; offset < maxRows; offset += pageSize) {
+      const page = await request("/rest/v1/trade_events?select=" + select +
+        "&deleted_at=is.null&order=updated_at.desc,id.desc&limit=" + pageSize + "&offset=" + offset);
+      if (!Array.isArray(page)) throw new Error("展覽資料回傳格式不正確");
+      loaded.push(...page);
+      if (page.length < pageSize) break;
+      if (offset + pageSize >= maxRows) truncated = true;
+    }
+    events = loaded;
     render();
-    msg("app-message", "共載入 " + events.length + " 筆", "ok");
+    msg("app-message", "共載入 " + events.length + " 筆" + (truncated ? "（已達 10,000 筆上限，請縮小資料範圍）" : ""), truncated ? "error" : "ok");
   }
   const statusName = (s) =>
     ({ draft: "草稿", archived: "已封存", published: "已發布" })[s] || s;
