@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#080b18">
+  <!-- Cloudflare Web Analytics: insert the public site token only after enabling analytics in Cloudflare. No tracking is active until configured. -->
+  <meta name="tiandao-cloudflare-analytics-token" content="">
   <meta name="description" content="天道商貿台灣商務探索：聚焦台灣商展、產業、城市與商務旅程資訊。">
   <title>台灣商務探索｜天道商貿 B2B</title>
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
@@ -46,6 +48,18 @@
 .attendee-source p{margin:8px 0 0;font-size:12px;color:#c8c0b7}
 @media(max-width:600px){.attendee-facts{grid-template-columns:1fr}}
 </style>
+<script>
+/* Optional Cloudflare Web Analytics. Empty token = disabled. Do not place API secrets here. */
+(function(){
+  var token=document.querySelector('meta[name="tiandao-cloudflare-analytics-token"]')?.content.trim();
+  if(!token||!/^[a-f0-9]{32}$/i.test(token))return;
+  var script=document.createElement('script');
+  script.defer=true;
+  script.src='https://static.cloudflareinsights.com/beacon.min.js';
+  script.setAttribute('data-cf-beacon',JSON.stringify({token:token}));
+  document.head.appendChild(script);
+})();
+</script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要內容</a>
