@@ -21,15 +21,17 @@
         "city",
         "venue_name",
         "address",
-        "daily_hours_text",
-        "ticket_info",
         "organizer_name"
       ],
       "source_license_cleared": false,
       "facts_verified": false,
-      "reviewer_notes": "2026-10-27: Official organizer visitor information confirms 11/6 12:00–18:00, 11/7–9 10:00–18:00, ticket prices NT$200/NT$180. TWTC event-specific record confirms organizer, dates, hall. Source reuse/license and final human review pending; do not publish.",
-      "ticket_info": "一般展期票 NT$200；預售票 NT$180（10/15–11/5）；實際票種以官方公告為準",
-      "organizer_name": "財團法人台灣觀光協會"
+      "reviewer_notes": "BLOCKED: official_url currently renders 2025 ITF (Nov 7-10, 2025) and 2025 admission prices; NOT evidence for 2026. Reverify using an explicit 2026 official page. Do not publish or display 2026 ticket information.",
+      "ticket_info": "待2026年官方票價頁確認（先前數值來自2025頁面，不可引用）",
+      "organizer_name": "財團法人台灣觀光協會",
+      "evidence_conflict_codes": [
+        "E002:official_page_shows_2025_not_2026",
+        "E008:ticket_prices_from_2025_page"
+      ]
     },
     {
       "title_zh": "2026 臺灣國際咖啡展",
@@ -47,12 +49,14 @@
         "ends_at",
         "city",
         "venue_name",
-        "address",
-        "daily_hours_text"
+        "address"
       ],
       "source_license_cleared": false,
       "facts_verified": false,
-      "reviewer_notes": "Organizer exhibition detail and official coffee show site agree. Manual final check and licensing pending."
+      "reviewer_notes": "BLOCKED HOURS: organizer expoDetail DCOF2026 displays 10:00–18:00 for Nov 13–16; manifest says Nov 16 ends 17:00. Resolve with official show visitor notice before approval.",
+      "evidence_conflict_codes": [
+        "E002:last_day_hours_conflict"
+      ]
     },
     {
       "title_zh": "2026台北國際建築建材暨產品展",
@@ -75,7 +79,7 @@
       ],
       "source_license_cleared": false,
       "facts_verified": false,
-      "reviewer_notes": "Venue event page and organizer exhibitor schedule agree on dates, hall and opening hours. Licensing and final human review pending."
+      "reviewer_notes": "2026 event-specific TaiNEX /event/678 confirms Dec 10–13, Hall 1, 10:00–18:00 and last day 16:00; source_checked_at not recorded, final review and reuse/rights pending."
     },
     {
       "title_zh": "2026臺灣茶業博覽會",
