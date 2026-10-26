@@ -99,7 +99,7 @@
             >來源<select id="source-filter">
               <option value="">全部來源</option>
             </select></label
-          ><label><input id="trade-only" type="checkbox" /> 商展候選（關鍵字初篩，需人工確認）</label><button id="reload" type="button">重新載入</button
+          ><label>展覽分類<select id="category-filter"><option value="">全部分類</option><option value="b2b_trade_show">B2B 專業商展</option><option value="b2c_consumer_fair">B2C 消費展</option><option value="arts_exhibition">藝文展</option><option value="other_event">一般活動</option><option value="unclassified">未分類</option></select></label><label><input id="trade-only" type="checkbox" /> 商展候選（關鍵字初篩，需人工確認）</label><button id="reload" type="button">重新載入</button
           ><button id="sync-taipei" type="button">同步臺北旅遊網</button
           ><button id="open-import" type="button">批次匯入</button>
         </section>
@@ -148,7 +148,7 @@
             >來源<select name="source_id" id="form-source">
               <option value="">人工建立</option>
             </select></label
-          ><label>外部來源 ID<input name="external_id" maxlength="240" /></label
+          ><label>外部來源 ID<input name="external_id" maxlength="240" /></label><label>展覽分類<select name="exhibition_category"><option value="">未分類（待人工確認）</option><option value="b2b_trade_show">B2B 專業商展</option><option value="b2c_consumer_fair">B2C 消費展</option><option value="arts_exhibition">藝文展</option><option value="other_event">一般活動</option></select></label><label>官方來源查核日期<input name="source_checked_at" type="date" /></label>
           ><label
             >國家（ISO alpha-2）<input
               name="country_code"
