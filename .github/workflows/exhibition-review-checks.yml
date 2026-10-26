@@ -6,6 +6,9 @@ on:
     paths:
       - "backend/review/**"
       - "b2b/explore/review-preview.html"
+      - "b2b/explore/admin-login.html"
+      - "b2b/explore/js/admin-login.js"
+      - "backend/migrations/**"
       - ".github/workflows/exhibition-review-checks.yml"
   pull_request:
     paths:
