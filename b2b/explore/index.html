@@ -12,6 +12,17 @@
 /* Click-first controls */
 .easy-search{grid-template-columns:2fr 1fr 1fr 1fr auto}.full-row{grid-column:1/-1}.quick-row{display:grid;grid-template-columns:125px 1fr;align-items:center;gap:12px}.quick-label{color:var(--cream);font-size:12px;font-weight:800}.choice-chips{display:flex;flex-wrap:wrap;gap:8px}.choice-chips button{min-height:36px;padding:7px 14px;border:1px solid #ffffff24;border-radius:999px;background:#12192a;color:#d5d1d4;cursor:pointer}.choice-chips button:hover,.choice-chips button:focus-visible,.choice-chips button.is-selected{border-color:var(--gold);background:#2b241d;color:var(--gold-light);box-shadow:0 0 0 2px #e8b85e15}.tap-hint{margin:0 0 18px;padding:12px 14px;border-left:3px solid var(--gold);background:#e8b85e0d;color:#cbc6ca;font-size:12px}@media(max-width:1020px){.easy-search{grid-template-columns:2fr 1fr 1fr}.easy-search .search-actions{grid-column:1/-1}}@media(max-width:680px){.easy-search{grid-template-columns:1fr 1fr}.quick-row{grid-template-columns:1fr;gap:7px}.choice-chips{display:grid;grid-template-columns:repeat(3,1fr)}.choice-chips button{padding-inline:8px}.easy-search .search-field,.easy-search .search-actions{grid-column:1/-1}}@media(max-width:420px){.choice-chips{grid-template-columns:repeat(2,1fr)}.easy-search{grid-template-columns:1fr}.easy-search .search-field,.easy-search .search-actions{grid-column:auto}}
 
+
+/* Discovery modules: preview-only; no external data access. */
+.module-preview{padding:72px 0 48px;background:#0b1020}
+.module-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:12px}
+.module-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;min-height:152px;padding:18px 9px;text-align:center;border:1px solid #ffffff22;border-radius:18px;background:#12192a;color:#f8f1e3;text-decoration:none}
+.module-symbol{display:grid;place-items:center;width:43px;height:43px;border:1px solid #e7b65b66;border-radius:50%;color:#e7b65b;font-size:22px}
+.module-tile strong{font-size:19px}.module-tile small{font-size:11px;color:#c5bdaf;line-height:1.5}
+.module-live{border-color:#d9a851;background:#2b241d}.module-live:hover,.module-live:focus-visible{outline:2px solid #e7b65b;outline-offset:3px}
+.module-pending{opacity:.67;cursor:default}
+@media(max-width:1050px){.module-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:600px){.module-preview{padding:46px 0 24px}.module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.module-tile{min-height:125px}}
 </style>
 </head>
 <body>
@@ -51,6 +62,21 @@
         </div>
       </div>
       <a class="scroll-cue" href="#route">SCROLL TO EXPLORE <span>↓</span></a>
+    </section>
+
+    <section class="module-preview" id="modules" aria-labelledby="modules-title">
+      <div class="wrap">
+        <div class="section-intro"><p class="eyebrow">TIANDAO DISCOVERY · ROADMAP</p><h2 id="modules-title">探索分類</h2><p>商展已開放查詢；其他分類正在建置，暫不提供尚未驗證的店家、價格或時段。</p></div>
+        <div class="module-grid">
+          <a class="module-tile module-live" href="#events"><span class="module-symbol">◈</span><strong>商展</strong><small>展覽查詢 · 已開放</small></a>
+          <div class="module-tile module-pending"><span class="module-symbol">食</span><strong>食</strong><small>餐廳與美食 · 建置中</small></div>
+          <div class="module-tile module-pending"><span class="module-symbol">衣</span><strong>衣</strong><small>購物與服飾 · 建置中</small></div>
+          <div class="module-tile module-pending"><span class="module-symbol">住</span><strong>住</strong><small>住宿資訊 · 建置中</small></div>
+          <div class="module-tile module-pending"><span class="module-symbol">行</span><strong>行</strong><small>交通資訊 · 建置中</small></div>
+          <div class="module-tile module-pending"><span class="module-symbol">育</span><strong>育</strong><small>課程與講座 · 建置中</small></div>
+          <div class="module-tile module-pending"><span class="module-symbol">樂</span><strong>樂</strong><small>景點與休閒 · 建置中</small></div>
+        </div>
+      </div>
     </section>
 
     <section class="event-section" id="events" aria-labelledby="events-title">
@@ -180,7 +206,7 @@
     </section>
   </main>
 
-  <footer class="footer"><div class="wrap"><p class="service-disclaimer">天道商貿提供台灣商展、商務旅程、交通、住宿、美食與觀光等資訊整理及智慧行程建議。本平台不提供車票、飯店或展覽門票之代訂及代收款服務。各項價格、開放時間、班次與活動資訊可能異動，請以官方公告為準。</p><div class="footer-inner"><span>© 2026 TianDao B2B · 台灣商務探索</span><span><a href="../../index.html">返回天道原網站</a> · <a href="../index.html">B2B 首頁</a></span></div></div></footer>
+  <footer class="footer"><div class="wrap"><p class="service-disclaimer">天道商貿提供台灣商展、商務旅程、交通、住宿、美食與觀光等資訊整理及智慧行程建議。本平台不提供車票、飯店或展覽門票之代訂及代收款服務。各項價格、開放時間、班次與活動資訊可能異動，請以官方公告為準。</p><div class="footer-inner"><span>© 2026 TianDao B2B · 台灣商務探索</span><span><a href="index.html">台灣探索</a></span></div></div></footer>
   <script src="js/explore.js"></script>
   <script src="js/explore-events.js?v=13137be"></script>
 <script>
