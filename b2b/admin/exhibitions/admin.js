@@ -183,20 +183,28 @@
     msg("app-message", "共載入 " + events.length + " 筆", "ok");
   }
   const statusName = (s) =>
-    ({ draft: "草稿", review: "待審核", published: "已發布" })[s] || s;
+    ({ draft: "草稿", archived: "已封存", published: "已發布" })[s] || s;
+  function isTradeShowCandidate(x) {
+    const title = String(x.title_zh || "");
+    const sourceName = String(sources.find((s) => s.id === x.source_id)?.name || "");
+    const combined = title + " " + sourceName;
+    return /商展|國際.*展|產業展|貿易展|專業展|展售|博覽會|旅展|車展|電腦展|食品展|烘焙展|玩具展|寵物展|工具機展|半導體展|電子展|加盟展|建材展|家具展|機械展|自動化展/.test(combined);
+  }
   function render() {
-    for (const s of ["draft", "review", "published"])
+    for (const s of ["draft", "archived", "published"])
       $("count-" + s).textContent = events.filter(
         (x) => x.publication_status === s,
       ).length;
     $("count-all").textContent = events.length;
     const q = $("search").value.trim().toLowerCase(),
       st = $("status-filter").value,
-      src = $("source-filter").value;
+      src = $("source-filter").value,
+      tradeOnly = $("trade-only").checked;
     const rows = events.filter(
       (x) =>
         (!st || x.publication_status === st) &&
         (!src || x.source_id === src) &&
+        (!tradeOnly || isTradeShowCandidate(x)) &&
         (!q ||
           [x.title_zh, x.city, x.venue_name, x.organizer_name]
             .join(" ")
@@ -372,6 +380,7 @@
         ].join("|"),
       );
       valid.push({
+        canonical_key: "curated:" + sourceId + ":" + fingerprint,
         title_zh: String(r.title_zh).trim(),
         starts_at: start.toISOString(),
         ends_at: end.toISOString(),
@@ -394,13 +403,26 @@
     }
     if (errors.length) throw new Error(errors.slice(0, 8).join("；"));
     if (!valid.length) throw new Error("沒有可匯入的資料");
-    for (let i = 0; i < valid.length; i += 100)
-      await request("/rest/v1/trade_events?on_conflict=source_id,dedupe_key", {
+    // Never overwrite an already-reviewed or published record during import.
+    let inserted = 0;
+    for (let i = 0; i < valid.length; i += 100) {
+      const batch = valid.slice(i, i + 100);
+      const keys = batch.map((r) => r.canonical_key);
+      const existing = await request(
+        "/rest/v1/trade_events?select=canonical_key&canonical_key=in.(" +
+          keys.map((k) => '"' + k.replace(/"/g, "") + '"').join(",") + ")",
+      );
+      const known = new Set(existing.map((r) => r.canonical_key));
+      const fresh = batch.filter((r) => !known.has(r.canonical_key));
+      if (!fresh.length) continue;
+      await request("/rest/v1/trade_events", {
         method: "POST",
-        headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
-        body: JSON.stringify(valid.slice(i, i + 100)),
+        headers: { Prefer: "return=minimal" },
+        body: JSON.stringify(fresh),
       });
-    return valid.length;
+      inserted += fresh.length;
+    }
+    return inserted;
   }
   $("login-form").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -458,7 +480,7 @@
   $("open-import").addEventListener("click", () =>
     $("import-dialog").showModal(),
   );
-  for (const id of ["search", "status-filter", "source-filter"])
+  for (const id of ["search", "status-filter", "source-filter", "trade-only"])
     $(id).addEventListener(id === "search" ? "input" : "change", render);
   document.querySelectorAll("[data-status]").forEach((b) =>
     b.addEventListener("click", () => {
