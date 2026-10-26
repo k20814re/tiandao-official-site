@@ -72,6 +72,78 @@
       "source_license_cleared": false,
       "facts_verified": false,
       "reviewer_notes": "Venue event page and organizer exhibitor schedule agree on dates, hall and opening hours. Licensing and final human review pending."
+    },
+    {
+      "title_zh": "2026臺灣茶業博覽會",
+      "starts_at": "2026-11-13",
+      "ends_at": "2026-11-16",
+      "city": "臺北",
+      "venue_name": "台北南港展覽館一館",
+      "address": "台北市南港區經貿二路1號",
+      "daily_hours_text": "尚待官方活動網站核對",
+      "official_url": "https://www.tainex.com.tw/event/690",
+      "corroboration_url": "https://www.tainex.com.tw/event",
+      "organizer_name": "展昭國際企業股份有限公司",
+      "evidence_fields": [
+        "title_zh",
+        "starts_at",
+        "ends_at",
+        "city",
+        "venue_name",
+        "address",
+        "organizer_name"
+      ],
+      "source_license_cleared": false,
+      "facts_verified": false,
+      "reviewer_notes": "TaiNEX event-specific venue page checked for schedule, venue and organizer; organizer-site confirmation, admission hours and licensing remain pending."
+    },
+    {
+      "title_zh": "2026臺灣國際食品暨設備展",
+      "starts_at": "2026-11-13",
+      "ends_at": "2026-11-16",
+      "city": "臺北",
+      "venue_name": "台北南港展覽館一館",
+      "address": "台北市南港區經貿二路1號",
+      "daily_hours_text": "尚待官方活動網站核對",
+      "official_url": "https://www.tainex.com.tw/event/691",
+      "corroboration_url": "https://www.tainex.com.tw/event",
+      "organizer_name": "展昭國際企業股份有限公司",
+      "evidence_fields": [
+        "title_zh",
+        "starts_at",
+        "ends_at",
+        "city",
+        "venue_name",
+        "address",
+        "organizer_name"
+      ],
+      "source_license_cleared": false,
+      "facts_verified": false,
+      "reviewer_notes": "TaiNEX event-specific venue page checked for schedule, venue and organizer; organizer-site confirmation, admission hours and licensing remain pending."
+    },
+    {
+      "title_zh": "2026台灣醫療科技展",
+      "starts_at": "2026-12-03",
+      "ends_at": "2026-12-06",
+      "city": "臺北",
+      "venue_name": "台北南港展覽館一館",
+      "address": "台北市南港區經貿二路1號",
+      "daily_hours_text": "尚待官方活動網站核對",
+      "official_url": "https://www.tainex.com.tw/event/696",
+      "corroboration_url": "https://www.tainex.com.tw/event",
+      "organizer_name": "財團法人生技醫療科技政策研究中心",
+      "evidence_fields": [
+        "title_zh",
+        "starts_at",
+        "ends_at",
+        "city",
+        "venue_name",
+        "address",
+        "organizer_name"
+      ],
+      "source_license_cleared": false,
+      "facts_verified": false,
+      "reviewer_notes": "TaiNEX event-specific venue page checked for schedule, venue and organizer; organizer-site confirmation, admission hours and licensing remain pending."
     }
   ],
   "safety": "These are research leads. Never expose as published, import to production, or set verification/license booleans without independent review."
