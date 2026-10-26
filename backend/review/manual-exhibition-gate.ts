@@ -23,6 +23,7 @@ export function checkManualCandidate(x:ManualCandidate):string[]{
  else if(url.pathname==="/" || url.pathname==="" || /^\/(?:index\.(?:html?|php))?\/?$/i.test(url.pathname))
   issues.push("E001:official_event_specific_url_required");
  if(!x.source_checked_at||!Number.isFinite(Date.parse(x.source_checked_at)))issues.push("E011:source_check_missing");
+ else if(Date.parse(x.source_checked_at)>Date.now()+5*60*1000)issues.push("E011:source_check_in_future");
  if(x.source_license_cleared!==true)issues.push("E005:source_license_not_cleared");
  if(x.facts_verified!==true)issues.push("E010:official_facts_not_verified");
  if(x.publication_status==="published")issues.push("E013:manual_direct_publish_forbidden");
