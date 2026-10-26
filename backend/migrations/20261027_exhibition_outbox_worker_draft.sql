@@ -23,6 +23,13 @@ begin
   if p_lease_seconds < 30 or p_lease_seconds > 300 then
     raise exception 'invalid_lease';
   end if;
+  -- A worker can crash after its final permitted send attempt.
+  -- Do not leave the exhausted row permanently in 'sending'.
+  update public.exhibition_notification_outbox o
+  set status='failed', lease_until=null,
+      last_error='retry_limit_exhausted_after_lease_expiry'
+  where o.status='sending' and o.lease_until<now() and o.attempts>=5;
+
   return query
   with picked as (
     select o.id
