@@ -67,6 +67,8 @@
       const e = new Error(
         body.message ||
           body.error_description ||
+          body.detail ||
+          (typeof body.error === "string" ? body.error : "") ||
           body.hint ||
           "HTTP " + r.status,
       );
