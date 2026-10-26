@@ -24,6 +24,8 @@ export async function deliverReviewNotice(
   if (!/^[a-z0-9-]{8,128}$/i.test(notice.idempotencyKey)) return {ok:false,retryable:false,reason:"invalid_idempotency_key"};
   if (!config.apiKey || !config.verifiedFromAddress || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(config.verifiedFromAddress))
     return {ok:false,retryable:false,reason:"missing_verified_sender_or_secret"};
+  if (config.verifiedFromAddress.toLowerCase() !== "notifications@tiandaoonline.com")
+    return {ok:false,retryable:false,reason:"sender_not_allowlisted"};
   if (!notice.subject.trim() || !notice.text.trim() || notice.text.length > 100000)
     return {ok:false,retryable:false,reason:"invalid_notice"};
   let response: Response;
