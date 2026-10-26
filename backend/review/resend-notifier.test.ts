@@ -7,7 +7,7 @@ const notice = {
  subject:"[天道商貿] 異常通知",
  text:"E002：展覽日期與官方公告不一致，禁止上架。",
 };
-const config = {apiKey:"test-key",verifiedFromAddress:"alerts@example.org"};
+const config = {apiKey:"test-key",verifiedFromAddress:"notifications@tiandaoonline.com"};
 let calls=0;
 const fakeOk: typeof fetch = async (_input, init) => {
  calls++;
@@ -26,4 +26,6 @@ const permanent=await deliverReviewNotice(notice,config,async()=>new Response("i
 assert(!permanent.ok && !permanent.retryable,"400 should be permanent");
 const network=await deliverReviewNotice(notice,config,async()=>{throw new Error("offline");});
 assert(!network.ok && network.retryable,"network failure should be retryable");
-console.log("5 notifier scenarios passed");
+const spoofed=await deliverReviewNotice(notice,{...config,verifiedFromAddress:"alerts@example.org"},fakeOk);
+assert(!spoofed.ok && calls===1,"must reject unapproved sender before sending");
+console.log("6 notifier scenarios passed");
