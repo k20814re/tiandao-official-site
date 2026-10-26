@@ -12,7 +12,7 @@
       "venue_name": "台北南港展覽館一館",
       "address": "台北市南港區經貿二路1號",
       "daily_hours_text": "11/6 12:00–18:00；11/7–11/9 10:00–18:00",
-      "official_url": "https://www.taiwanitf.org.tw/Information3",
+      "official_url": "https://www.taiwanitf.org.tw/QA",
       "corroboration_url": "https://www.twtc.com.tw/exhibition_more.aspx?id=29751&p=home",
       "evidence_fields": [
         "title_zh",
@@ -21,17 +21,16 @@
         "city",
         "venue_name",
         "address",
-        "organizer_name"
+        "organizer_name",
+        "ticket_info",
+        "daily_hours_text"
       ],
       "source_license_cleared": false,
       "facts_verified": false,
-      "reviewer_notes": "BLOCKED: official_url currently renders 2025 ITF (Nov 7-10, 2025) and 2025 admission prices; NOT evidence for 2026. Reverify using an explicit 2026 official page. Do not publish or display 2026 ticket information.",
-      "ticket_info": "待2026年官方票價頁確認（先前數值來自2025頁面，不可引用）",
+      "reviewer_notes": "2026 official FAQ https://www.taiwanitf.org.tw/QA explicitly labels 2026, confirming Nov 6–9, opening hours, and 2026 ticket tiers; TWTC event 29751 corroborates dates and organizer. Previous 2025-year blocker resolved by 2026-specific source. Per-event source_checked_at, licensing and final human approval still pending; do not publish.",
+      "ticket_info": "2026 早鳥票 NT$150（10/13–10/14）；預售票 NT$180（10/15–11/5）；展期全票 NT$200；優待票 NT$150；愛心票 NT$100。詳見官方常見問答。",
       "organizer_name": "財團法人台灣觀光協會",
-      "evidence_conflict_codes": [
-        "E002:official_page_shows_2025_not_2026",
-        "E008:ticket_prices_from_2025_page"
-      ]
+      "evidence_conflict_codes": []
     },
     {
       "title_zh": "2026 臺灣國際咖啡展",
@@ -41,22 +40,23 @@
       "venue_name": "台北南港展覽館一館",
       "address": "台北市南港區經貿二路1號",
       "daily_hours_text": "11/13–11/15 10:00–18:00；11/16 10:00–17:00",
-      "official_url": "https://www.chanchao.com.tw/expoDetail.asp?id=DCOF2026",
-      "corroboration_url": "https://www.chanchao.com.tw/coffee/",
+      "official_url": "https://www.chanchao.com.tw/coffee/visitor.asp?sid=adR7jN",
+      "corroboration_url": "https://www.chanchao.com.tw/expoDetail.asp?id=DCOF2026",
       "evidence_fields": [
         "title_zh",
         "starts_at",
         "ends_at",
         "city",
         "venue_name",
-        "address"
+        "address",
+        "daily_hours_text",
+        "ticket_info"
       ],
       "source_license_cleared": false,
       "facts_verified": false,
-      "reviewer_notes": "BLOCKED HOURS: organizer expoDetail DCOF2026 displays 10:00–18:00 for Nov 13–16; manifest says Nov 16 ends 17:00. Resolve with official show visitor notice before approval.",
-      "evidence_conflict_codes": [
-        "E002:last_day_hours_conflict"
-      ]
+      "reviewer_notes": "2026 official coffee visitor page and expoDetail both explicitly state Nov 13–16 10:00–18:00 with last day closing 17:00. Previous supposed closing-hour conflict was incorrect; resolved. Per-event source_checked_at, licensing and final human approval still pending; do not publish.",
+      "evidence_conflict_codes": [],
+      "ticket_info": "2026 現場全票 NT$200；優惠票 NT$100；符合官方條件者免費；邀請代碼索票依官方規定。"
     },
     {
       "title_zh": "2026台北國際建築建材暨產品展",
