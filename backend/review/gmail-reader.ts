@@ -70,9 +70,9 @@ export function parseGmailReply(message: GmailMessage): GmailReply {
 }
 /** Only an exact standalone confirmation line is accepted; never parse quoted replies. */
 export function extractConfirmationCode(bodyText: string): string | null {
-  const first = bodyText.replace(/\r/g, "").split("\n").slice(0, 8);
-  const matches = first.map(line => /^CONFIRM\s+([A-Z0-9]{8,24})$/.exec(line.trim())).filter(Boolean);
-  return matches.length === 1 ? matches[0]![1] : null;
+  const first = bodyText.replace(/\r/g, "").split("\n").find(line => line.trim().length > 0);
+  const match = first ? /^CONFIRM ([A-Z0-9]{8,24})$/.exec(first.trim()) : null;
+  return match?.[1] || null;
 }
 export async function getGmailReply(
   accessToken: string,
