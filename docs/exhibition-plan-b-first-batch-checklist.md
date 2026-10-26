@@ -30,3 +30,9 @@
 - 平台只提供資訊，不代訂、不收款。
 
 **尚未完成**：首批逐場來源查核、資料授權判定、隔離 staging 測試、正式發布授權與上線驗收。
+
+## 本機測試紀錄（2026-10-27）
+- 使用 Node v22.16.0 執行 `node --experimental-strip-types backend/review/manual-exhibition-gate.test.ts`。
+- 結果：`11 manual candidate gate scenarios passed`。
+- 僅執行此單一模組測試；未執行完整測試套件、Supabase 整合測試或正式網站驗收。
+- 測試用資料均為假資料，**不是**任何真實展覽的查核結果。
