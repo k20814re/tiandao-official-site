@@ -75,21 +75,6 @@
       <a class="scroll-cue" href="#route">SCROLL TO EXPLORE <span>↓</span></a>
     </section>
 
-    <section class="module-preview" id="modules" aria-labelledby="modules-title">
-      <div class="wrap">
-        <div class="section-intro"><p class="eyebrow">TIANDAO DISCOVERY · ROADMAP</p><h2 id="modules-title">探索分類</h2><p>商展已開放查詢；其他分類正在建置，暫不提供尚未驗證的店家、價格或時段。</p></div>
-        <div class="module-grid">
-          <a class="module-tile module-live" href="#events"><span class="module-symbol">◈</span><strong>商展</strong><small>展覽查詢 · 已開放</small></a>
-          <div class="module-tile module-pending"><span class="module-symbol">食</span><strong>食</strong><small>餐廳與美食 · 建置中</small></div>
-          <div class="module-tile module-pending"><span class="module-symbol">衣</span><strong>衣</strong><small>購物與服飾 · 建置中</small></div>
-          <div class="module-tile module-pending"><span class="module-symbol">住</span><strong>住</strong><small>住宿資訊 · 建置中</small></div>
-          <div class="module-tile module-pending"><span class="module-symbol">行</span><strong>行</strong><small>交通資訊 · 建置中</small></div>
-          <div class="module-tile module-pending"><span class="module-symbol">育</span><strong>育</strong><small>課程與講座 · 建置中</small></div>
-          <div class="module-tile module-pending"><span class="module-symbol">樂</span><strong>樂</strong><small>景點與休閒 · 建置中</small></div>
-        </div>
-      </div>
-    </section>
-
     <section class="event-section" id="events" aria-labelledby="events-title">
       <div class="wrap">
         <div class="section-intro split-intro event-intro">
@@ -120,11 +105,12 @@
 
     <section class="journey-section" id="journey" aria-labelledby="journey-title">
       <div class="wrap">
-        <div class="section-intro"><p class="eyebrow">FOOD · WEATHER · STAY · MOVE · PLAY</p><h2 id="journey-title">食衣住行玩樂情報</h2></div>
-        <div class="journey-tabs" role="tablist" aria-label="旅程情報分類">
+        <div class="section-intro"><p class="eyebrow">FOOD · WEATHER · STAY · MOVE · PLAY</p><h2 id="journey-title">參展周邊資訊</h2><p>先選擇商展，再依展覽所在地與日期查看餐飲、商務穿搭、住宿、交通及會後休閒參考。不提供訂票、訂房、付款或代訂服務。</p></div>
+        <p class="event-status" id="journey-context" role="status">請先從上方選擇展覽，才會顯示對應地區的參展配套資訊。</p>
+        <div class="journey-tabs" role="tablist" aria-label="參展周邊資訊分類">
           <button class="journey-tab is-active" type="button" data-journey="food">食<small>美食</small></button><button class="journey-tab" type="button" data-journey="wear">衣<small>天氣穿搭</small></button><button class="journey-tab" type="button" data-journey="stay">住<small>住宿</small></button><button class="journey-tab" type="button" data-journey="move">行<small>交通</small></button><button class="journey-tab" type="button" data-journey="play">玩<small>觀光</small></button><button class="journey-tab" type="button" data-journey="leisure">樂<small>休閒</small></button>
         </div>
-        <div class="journey-panel" id="journey-panel"><div><span class="status-chip">P1 · 尚未接通</span><h3>食類資料尚未接通</h3><p>選定有可靠來源的商展並接入相應資料服務後，才會顯示內容。</p></div><div class="pending-card"><b>目前沒有資料</b><span>不使用固定推薦或虛構即時資訊。</span></div></div>
+        <div class="journey-panel" id="journey-panel"><div><span class="status-chip">P1 · 尚未接通</span><h3>請先選擇商展</h3><p>選定有可靠來源的商展並接入相應資料服務後，才會顯示內容。</p></div><div class="pending-card"><b>目前沒有資料</b><span>不使用固定推薦或虛構即時資訊。</span></div></div>
       </div>
     </section>
 
@@ -132,7 +118,7 @@
       <div class="wrap planner-layout">
         <div class="planner-copy"><p class="eyebrow">SPIKY DUCK TAIWAN BUSINESS ASSISTANT</p><h2 id="planner-title">刺鴨台灣商務旅程助手</h2><img src="assets/guide-black-gold.png" alt="黑金刺鴨旅程助手" width="1280" height="1280"></div>
         <form class="planner-form" id="planner-form">
-          <p class="tap-hint">大多數條件用選的就好；商展接通後，選中的展覽會自動帶入。</p>
+          <p class="tap-hint">大多數條件用選的就好；先選擇上方展覽，系統會帶入展覽名稱；此行程功能仍在開發中，不會送出訂單。</p>
           <div class="planner-grid">
             <label><span>從哪裡出發</span><select name="origin" required><option value="">請選擇</option><option>基隆</option><option>台北</option><option>新北</option><option>桃園</option><option>新竹</option><option>台中</option><option>彰化</option><option>嘉義</option><option>台南</option><option>高雄</option><option>屏東</option><option>宜蘭</option><option>花蓮</option><option>台東</option></select></label><label><span>要去哪裡</span><select name="destination" required><option value="">請選擇</option><option>台北</option><option>南港</option><option>桃園</option><option>台中</option><option>台南</option><option>高雄</option><option>其他地區</option></select></label>
             <label class="full"><span>展覽名稱</span><select name="event" required><option value="">請先從上方搜尋並選擇商展</option></select></label>
@@ -200,7 +186,7 @@
       <div class="wrap cta-inner">
         <p class="eyebrow">YOUR NEXT MOVE</p>
         <h2 id="cta-title">方向清楚了，<br>再開始一場有準備的商務對話。</h2>
-        <p>瀏覽既有示範商品與供應商資料，或前往詢價頁整理需求。所有實際交易條件仍需由雙方另行查證與確認。</p>
+        <p>選擇商展後查看官方展期、場館與周邊資訊。所有交通、住宿及餐飲服務由第三方提供，本平台不代訂、不代收款。</p>
         <div class="hero-actions"></div>
       </div>
     </section>
