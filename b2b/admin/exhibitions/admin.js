@@ -1,7 +1,11 @@
 "use strict";
 (() => {
   const cfg =
-    window.SUPABASE_CONFIG || window.supabaseConfig || SUPABASE_CONFIG;
+    window.SUPABASE_CONFIG || window.supabaseConfig || null;
+  if (!cfg?.url || !cfg?.publishableKey) {
+    document.body.textContent = "後台設定未載入，請聯絡管理員檢查 Supabase 公開設定。";
+    return;
+  }
   const API = cfg.url,
     KEY = cfg.publishableKey,
     STORE = "tiandao_admin_session";
@@ -149,13 +153,17 @@
       $("login-view").hidden = true;
       $("app-view").hidden = false;
       $("logout").hidden = false;
-      // Load source names before rendering rows and trade-show candidate filters.
-      await loadSources();
-      await loadEvents();
+      // A temporary data-fetch failure must not destroy a valid login session.
+      try {
+        await loadSources();
+        await loadEvents();
+      } catch (dataError) {
+        msg("app-message", "資料載入失敗：" + dataError.message + "。請稍後重新載入。", "error");
+      }
     } catch (e) {
       if (e.status === 404) $("setup-notice").hidden = false;
       msg("login-message", e.message, "error");
-      logout();
+      if (e.status === 401 || e.status === 403 || /尚未指派/.test(e.message)) logout();
     }
   }
   async function loadSources() {
