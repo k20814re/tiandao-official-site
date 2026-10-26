@@ -57,7 +57,7 @@ if(location.hostname==="tiandao-b2b-preview.pages.dev"||location.hostname==="loc
      ...(!e.source_checked_at?["E011:source_check_missing"]:[]),
      ...(e.source_license_cleared!==true?["E005:source_license_not_cleared"]:[]),
      ...(e.facts_verified!==true?["E010:official_facts_not_verified"]:[]),
-     ...(/^https:\\/\\/www\\.tainex\\.com\\.tw\\/event\\?/.test(e.official_url||"")?["E001:generic_event_calendar"]:[]),
+     ...(typeof e.official_url==="string" && e.official_url.startsWith("https://www.tainex.com.tw/event?")?["E001:generic_event_calendar"]:[]),
      ...(e.official_url==="https://www.chanchao.com.tw/"?["E001:official_event_specific_url_required"]:[])
     ]
    }));
