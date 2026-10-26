@@ -166,6 +166,71 @@
       "source_license_cleared": false,
       "facts_verified": false,
       "reviewer_notes": "TaiNEX 2 hall schedule lists the event. This is a hall-filtered calendar, not an event-specific page. Find organizer event URL before passing E001."
+    },
+    {
+      "title_zh": "2026高雄漾藝術博覽會",
+      "starts_at": "2026-11-13",
+      "ends_at": "2026-11-15",
+      "city": "高雄",
+      "venue_name": "駁二藝術特區大勇區P3倉庫",
+      "address": "尚待確認",
+      "daily_hours_text": "11/13–11/14 10:00–20:00；11/15 10:00–19:00",
+      "official_url": "https://yak.khcc.gov.tw/tw",
+      "corroboration_url": "",
+      "evidence_fields": [
+        "title_zh",
+        "starts_at",
+        "ends_at",
+        "city",
+        "venue_name",
+        "daily_hours_text"
+      ],
+      "source_license_cleared": false,
+      "facts_verified": false,
+      "reviewer_notes": "Official event microsite contains event-specific information at root; manual gate currently rejects root paths and needs an explicit exception or dedicated page. No publication until reviewed."
+    },
+    {
+      "title_zh": "2026高雄國際冬季旅展",
+      "starts_at": "2026-11-27",
+      "ends_at": "2026-11-30",
+      "city": "高雄",
+      "venue_name": "高雄展覽館",
+      "address": "尚待確認",
+      "daily_hours_text": "尚待主辦單位核對",
+      "official_url": "https://khmice.kcg.gov.tw/xcexhibition/cont?sid=0Q110550143701779627&xsmsid=0N195602520127054073",
+      "corroboration_url": "https://www.kje.com.tw/exhibition/",
+      "evidence_fields": [
+        "title_zh",
+        "starts_at",
+        "ends_at",
+        "city",
+        "venue_name"
+      ],
+      "source_license_cleared": false,
+      "facts_verified": false,
+      "reviewer_notes": "Government MICE event-specific page corroborates dates and venue; organizer page is a general listing. Human review and license pending."
+    },
+    {
+      "title_zh": "2026展昭高雄寵物用品展-獨霸場",
+      "starts_at": "2026-12-11",
+      "ends_at": "2026-12-14",
+      "city": "高雄",
+      "venue_name": "高雄展覽館",
+      "address": "尚待確認",
+      "daily_hours_text": "10:00–18:00",
+      "official_url": "https://www.chanchao.com.tw/",
+      "corroboration_url": "",
+      "evidence_fields": [
+        "title_zh",
+        "starts_at",
+        "ends_at",
+        "city",
+        "venue_name",
+        "daily_hours_text"
+      ],
+      "source_license_cleared": false,
+      "facts_verified": false,
+      "reviewer_notes": "Organizer calendar listing only, not an event-specific URL; blocked E001 pending direct event link and review."
     }
   ],
   "safety": "These are research leads. Never expose as published, import to production, or set verification/license booleans without independent review."
