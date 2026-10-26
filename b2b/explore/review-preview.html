@@ -20,7 +20,7 @@ async function showPreview(data){
  try{
 
   if(data.format!=="tiandao-plan-b-local-review-v1"||data.publishable!==0||!Array.isArray(data.records)||data.total!==data.records.length)throw Error("資料格式或安全標記不符");
-  if(data.records.some(x=>!x||x.review_only!==true||x.publication_status!=="draft"||!Array.isArray(x.review_blockers)))throw Error("資料包含非草稿或缺少審核欄位");
+  if(data.records.some(x=>!x||x.review_only!==true||x.publication_status!=="draft"||!Array.isArray(x.review_blockers)||x.review_blockers.length===0))throw Error("資料包含非草稿或缺少審核欄位");
   summary.textContent="候選 "+data.records.length+" 場｜可發布 0 場｜全部僅供審核";
   for(const row of data.records){
    const card=document.createElement("article");
@@ -48,7 +48,7 @@ if(location.hostname==="tiandao-b2b-preview.pages.dev"||location.hostname==="loc
  fetch("../../backend/review/plan-b-first-batch-candidates.json",{cache:"no-store"})
   .then(r=>{if(!r.ok)throw Error("候選清單不可讀");return r.json()})
   .then(manifest=>{
-   if(!Array.isArray(manifest.events))throw Error("候選清單格式錯誤");
+   if(!Array.isArray(manifest.events)||manifest.events.length!==10||manifest.publication_status!=="draft"||manifest.license_status!=="pending")throw Error("候選清單格式或狀態不符");
    const records=manifest.events.map((e,i)=>({
     id:"candidate-"+(i+1),title_zh:e.title_zh,starts_at:e.starts_at,ends_at:e.ends_at,
     city:e.city,venue_name:e.venue_name,address:e.address,official_url:e.official_url,
@@ -63,7 +63,7 @@ if(location.hostname==="tiandao-b2b-preview.pages.dev"||location.hostname==="loc
    }));
    return showPreview({format:"tiandao-plan-b-local-review-v1",total:records.length,publishable:0,records});
   })
-  .catch(()=>{summary.textContent="自動載入不可用，請選擇本機離線預覽 JSON。"});
+  .catch(()=>{summary.textContent="自動載入不可用（部署路徑或草稿狀態檢查未通過），請選擇本機離線預覽 JSON。"});
 }
 
 </script></body></html>
