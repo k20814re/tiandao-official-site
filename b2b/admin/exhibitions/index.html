@@ -49,6 +49,17 @@
         </form>
         <p id="login-message" class="message" aria-live="polite"></p>
       </section>
+      <section id="recovery-view" class="auth-card" hidden>
+        <p class="eyebrow">PASSWORD RECOVERY</p>
+        <h1>設定新密碼</h1>
+        <p>請輸入兩次新密碼。完成後即可用新密碼登入展覽後台。</p>
+        <form id="recovery-form">
+          <label>新密碼<input name="password" type="password" autocomplete="new-password" minlength="8" required /></label>
+          <label>再次輸入新密碼<input name="password_confirm" type="password" autocomplete="new-password" minlength="8" required /></label>
+          <button class="primary" type="submit">儲存新密碼</button>
+        </form>
+        <p id="recovery-message" class="message" aria-live="polite"></p>
+      </section>
       <section id="app-view" hidden>
         <div class="page-head">
           <div>
@@ -240,4 +251,3 @@
     <script src="admin.js" defer></script>
   </body>
 </html>
-

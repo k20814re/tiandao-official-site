@@ -22,6 +22,17 @@
     profile = null,
     events = [],
     sources = [];
+  function recoverySessionFromUrl() {
+    const p = new URLSearchParams(location.hash.slice(1));
+    if (p.get("type") !== "recovery" || !p.get("access_token")) return null;
+    return {
+      access_token: p.get("access_token"),
+      refresh_token: p.get("refresh_token"),
+      token_type: p.get("token_type") || "bearer",
+      expires_in: Number(p.get("expires_in") || 0),
+      type: "recovery",
+    };
+  }
   const msg = (id, text, type = "") => {
     const el = $(id);
     el.textContent = text;
@@ -90,6 +101,24 @@
     }
     session = await r.json();
     sessionStorage.setItem(STORE, JSON.stringify(session));
+    await boot();
+  }
+  async function updatePassword(password) {
+    const r = await fetch(API + "/auth/v1/user", {
+      method: "PUT",
+      headers: headers(),
+      body: JSON.stringify({ password }),
+    });
+    if (!r.ok) {
+      const b = await r.json().catch(() => ({}));
+      throw new Error(
+        b.msg || b.message || b.error_description || "密碼更新失敗",
+      );
+    }
+    session.user = await r.json();
+    history.replaceState(null, "", location.pathname + location.search);
+    sessionStorage.setItem(STORE, JSON.stringify(session));
+    $("recovery-view").hidden = true;
     await boot();
   }
   function logout() {
@@ -381,6 +410,21 @@
       msg("login-message", err.message, "error");
     }
   });
+  $("recovery-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const d = new FormData(e.currentTarget),
+      password = String(d.get("password") || ""),
+      confirmation = String(d.get("password_confirm") || "");
+    if (password !== confirmation)
+      return msg("recovery-message", "兩次輸入的密碼不一致", "error");
+    msg("recovery-message", "正在儲存新密碼…");
+    try {
+      await updatePassword(password);
+      msg("app-message", "密碼已更新並完成登入", "ok");
+    } catch (err) {
+      msg("recovery-message", err.message, "error");
+    }
+  });
   $("logout").addEventListener("click", logout);
   $("reload").addEventListener("click", () =>
     loadEvents().catch((e) => msg("app-message", e.message, "error")),
@@ -451,6 +495,12 @@
       msg("import-message", x.message, "error");
     }
   });
-  boot();
+  const recoverySession = recoverySessionFromUrl();
+  if (recoverySession) {
+    session = recoverySession;
+    $("login-view").hidden = true;
+    $("recovery-view").hidden = false;
+  } else {
+    boot();
+  }
 })();
-
