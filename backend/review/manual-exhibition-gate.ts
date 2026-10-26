@@ -20,6 +20,8 @@ export function checkManualCandidate(x:ManualCandidate):string[]{
  try{url=new URL(x.official_url)}catch{}
  if(!url||!HTTPS.test(x.official_url)||!url.hostname.includes(".")||url.username||url.password)
   issues.push("E001:official_event_url_invalid");
+ else if(url.pathname==="/" || url.pathname==="" || /^\/(?:index\.(?:html?|php))?\/?$/i.test(url.pathname))
+  issues.push("E001:official_event_specific_url_required");
  if(!x.source_checked_at||!Number.isFinite(Date.parse(x.source_checked_at)))issues.push("E011:source_check_missing");
  if(x.source_license_cleared!==true)issues.push("E005:source_license_not_cleared");
  if(x.facts_verified!==true)issues.push("E010:official_facts_not_verified");
