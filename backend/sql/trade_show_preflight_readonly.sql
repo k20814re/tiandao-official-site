@@ -19,7 +19,5 @@ order by indexname;
 select publication_status, count(*) as rows
 from public.trade_events group by publication_status order by publication_status;
 
-select coalesce(exhibition_category,'(unclassified)') as category,count(*) as rows
-from public.trade_events
-group by coalesce(exhibition_category,'(unclassified)')
-order by rows desc;
+-- Category counts can be queried after the additive category migration has run.
+-- Before that migration, exhibition_category may not exist.
