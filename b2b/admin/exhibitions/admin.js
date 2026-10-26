@@ -1,7 +1,8 @@
 "use strict";
 (() => {
   const cfg =
-    window.SUPABASE_CONFIG || window.supabaseConfig || null;
+    window.SUPABASE_CONFIG || window.supabaseConfig ||
+    (typeof SUPABASE_CONFIG !== "undefined" ? SUPABASE_CONFIG : null);
   if (!cfg?.url || !cfg?.publishableKey) {
     document.body.textContent = "後台設定未載入，請聯絡管理員檢查 Supabase 公開設定。";
     return;
