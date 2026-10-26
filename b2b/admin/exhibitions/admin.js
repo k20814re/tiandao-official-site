@@ -177,7 +177,7 @@
   async function loadEvents() {
     msg("app-message", "正在載入…");
     events = await request(
-      "/rest/v1/trade_events?select=id,title_zh,summary,city,venue_name,address,starts_at,ends_at,organizer_name,official_url,publication_status,source_id,external_id,country_code,timezone,currency_code,translations,updated_at,deleted_at&deleted_at=is.null&order=updated_at.desc&limit=1000",
+      "/rest/v1/trade_events?select=id,title_zh,summary,city,venue_name,address,starts_at,ends_at,organizer_name,official_url,publication_status,source_id,external_id,country_code,timezone,currency_code,translations,updated_at,deleted_at,exhibition_category,source_checked_at&deleted_at=is.null&order=updated_at.desc&limit=1000",
     );
     render();
     msg("app-message", "共載入 " + events.length + " 筆", "ok");
@@ -190,6 +190,7 @@
     const combined = title + " " + sourceName;
     return /商展|國際.*展|產業展|貿易展|專業展|展售|博覽會|旅展|車展|電腦展|食品展|烘焙展|玩具展|寵物展|工具機展|半導體展|電子展|加盟展|建材展|家具展|機械展|自動化展/.test(combined);
   }
+  const categoryName = (s) => ({b2b_trade_show:"B2B 專業商展",b2c_consumer_fair:"B2C 消費展",arts_exhibition:"藝文展",other_event:"一般活動"})[s] || "未分類";
   function render() {
     for (const s of ["draft", "archived", "published"])
       $("count-" + s).textContent = events.filter(
@@ -199,12 +200,14 @@
     const q = $("search").value.trim().toLowerCase(),
       st = $("status-filter").value,
       src = $("source-filter").value,
-      tradeOnly = $("trade-only").checked;
+      tradeOnly = $("trade-only").checked,
+      category = $("category-filter").value;
     const rows = events.filter(
       (x) =>
         (!st || x.publication_status === st) &&
         (!src || x.source_id === src) &&
         (!tradeOnly || isTradeShowCandidate(x)) &&
+        (!category || (category === "unclassified" ? !x.exhibition_category : x.exhibition_category === category)) &&
         (!q ||
           [x.title_zh, x.city, x.venue_name, x.organizer_name]
             .join(" ")
@@ -219,7 +222,7 @@
               "<tr><td><b>" +
               esc(x.title_zh) +
               "</b><small>" +
-              esc(x.external_id || x.id) +
+              esc(x.external_id || x.id) + "</small><small>" + esc(categoryName(x.exhibition_category)) +
               "</small></td><td>" +
               esc(String(x.starts_at || "").slice(0, 10)) +
               "－" +
@@ -272,8 +275,10 @@
       "organizer_name",
       "official_url",
       "summary",
+      "exhibition_category",
     ])
       if (x[k] != null) f.elements[k].value = x[k];
+    f.elements.source_checked_at.value = x.source_checked_at ? String(x.source_checked_at).slice(0, 10) : "";
     f.elements.starts_at.value = localValue(x.starts_at);
     f.elements.ends_at.value = localValue(x.ends_at);
     f.elements.translations.value = x.translations
@@ -304,6 +309,8 @@
     const id = d.id;
     delete d.id;
     d.source_id = d.source_id || null;
+    d.exhibition_category = d.exhibition_category || null;
+    d.source_checked_at = d.source_checked_at ? new Date(d.source_checked_at + "T00:00:00+08:00").toISOString() : null;
     d.external_id = d.external_id || null;
     d.country_code = (d.country_code || "TW").toUpperCase();
     d.currency_code = (d.currency_code || "TWD").toUpperCase();
@@ -390,6 +397,8 @@
         organizer_name: r.organizer_name || null,
         official_url: r.official_url || null,
         summary: r.summary_zh || null,
+        exhibition_category: ["b2b_trade_show","b2c_consumer_fair","arts_exhibition","other_event"].includes(String(r.exhibition_category || "")) ? r.exhibition_category : null,
+        source_checked_at: r.source_checked_at ? new Date(String(r.source_checked_at).slice(0, 10) + "T00:00:00+08:00").toISOString() : null,
         external_id: r.external_id || null,
         source_id: sourceId,
         country_code: String(r.country_code || "TW").toUpperCase(),
@@ -480,7 +489,7 @@
   $("open-import").addEventListener("click", () =>
     $("import-dialog").showModal(),
   );
-  for (const id of ["search", "status-filter", "source-filter", "trade-only"])
+  for (const id of ["search", "status-filter", "source-filter", "trade-only", "category-filter"])
     $(id).addEventListener(id === "search" ? "input" : "change", render);
   document.querySelectorAll("[data-status]").forEach((b) =>
     b.addEventListener("click", () => {
