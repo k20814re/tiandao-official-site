@@ -7,9 +7,9 @@
 </style></head><body>
 <h1>天道商貿｜候選展覽審核預覽</h1>
 <p class="warning"><strong>僅限開發測試：未經審核的草稿，不是正式展覽公告。</strong> 本頁不連接 Supabase，不具備審核核准、匯入或發布功能。不要把本頁當作存取權限控管；部署時應限制開發環境存取。</p>
-<label for="file">選擇本機離線預覽 JSON（不會上傳）</label>
+<label for="file">選擇本機離線預覽 JSON（不會上傳、不會連接資料庫）</label>
 <input id="file" type="file" accept=".json,application/json">
-<p id="summary" role="status">尚未載入資料。開發預覽網域將嘗試自動載入；也可選擇本機 JSON。</p>
+<p id="summary" role="status">尚未載入資料。請選擇本機離線審核 JSON；檔案不會上傳。</p>
 <div id="results"></div>
 <script>
 "use strict";
@@ -42,28 +42,5 @@ file.addEventListener("change",async()=>{
  if(selected.size>2_000_000){summary.textContent="檔案過大（上限 2 MB）";return;}
  try{await showPreview(JSON.parse(await selected.text()))}catch{summary.textContent="JSON 格式錯誤"}
 });
-// Only the dedicated preview host can load repository draft data automatically.
-// Production hosts never request the candidate manifest.
-if(location.hostname==="tiandao-b2b-preview.pages.dev"||location.hostname==="localhost"||location.hostname==="127.0.0.1"){
- fetch("../../backend/review/plan-b-first-batch-candidates.json",{cache:"no-store"})
-  .then(r=>{if(!r.ok)throw Error("候選清單不可讀");return r.json()})
-  .then(manifest=>{
-   if(!Array.isArray(manifest.events)||manifest.events.length!==10||manifest.publication_status!=="draft"||manifest.license_status!=="pending")throw Error("候選清單格式或狀態不符");
-   const records=manifest.events.map((e,i)=>({
-    id:"candidate-"+(i+1),title_zh:e.title_zh,starts_at:e.starts_at,ends_at:e.ends_at,
-    city:e.city,venue_name:e.venue_name,address:e.address,official_url:e.official_url,
-    daily_hours_text:e.daily_hours_text,publication_status:"draft",review_only:true,
-    review_blockers:[
-     ...(!e.source_checked_at?["E011:source_check_missing"]:[]),
-     ...(e.source_license_cleared!==true?["E005:source_license_not_cleared"]:[]),
-     ...(e.facts_verified!==true?["E010:official_facts_not_verified"]:[]),
-     ...(typeof e.official_url==="string" && e.official_url.startsWith("https://www.tainex.com.tw/event?")?["E001:generic_event_calendar"]:[]),
-     ...(e.official_url==="https://www.chanchao.com.tw/"?["E001:official_event_specific_url_required"]:[])
-    ]
-   }));
-   return showPreview({format:"tiandao-plan-b-local-review-v1",total:records.length,publishable:0,records});
-  })
-  .catch(()=>{summary.textContent="自動載入不可用（部署路徑或草稿狀態檢查未通過），請選擇本機離線預覽 JSON。"});
-}
-
+// Candidate source files are never fetched from public hosting.\n// Use the local file picker with the offline review JSON generator.\n
 </script></body></html>
