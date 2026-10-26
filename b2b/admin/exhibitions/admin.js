@@ -297,7 +297,7 @@
     const f = $("event-form");
     if (!f.reportValidity()) return;
     const d = Object.fromEntries(new FormData(f));
-    if (new Date(d.ends_at) < new Date(d.starts_at))
+    if (Number.isNaN(Date.parse(d.starts_at)) || Number.isNaN(Date.parse(d.ends_at)) || new Date(d.ends_at) < new Date(d.starts_at))
       return msg("app-message", "結束時間不得早於開始時間", "error");
     let translations = {};
     if (d.translations.trim())
@@ -356,7 +356,8 @@
   async function importRows(rows, sourceId) {
     const required = ["title_zh", "starts_at", "ends_at"];
     const valid = [],
-      errors = [];
+      errors = [],
+      seenKeys = new Set();
     for (let i = 0; i < rows.length; i++) {
       const r = rows[i];
       const missing = required.filter((k) => !String(r[k] || "").trim());
@@ -386,8 +387,21 @@
           r.organizer_name || "",
         ].join("|"),
       );
+      const canonicalKey = "curated:" + sourceId + ":" + fingerprint;
+      if (seenKeys.has(canonicalKey)) continue;
+      seenKeys.add(canonicalKey);
+      const allowedCategories = ["b2b_trade_show","b2c_consumer_fair","arts_exhibition","other_event"];
+      if (r.exhibition_category && !allowedCategories.includes(String(r.exhibition_category).trim())) {
+        errors.push("第 " + (i + 2) + " 列分類代碼不正確");
+        continue;
+      }
+      const checkedAt = String(r.source_checked_at || "").trim();
+      if (checkedAt && (!/^\d{4}-\d{2}-\d{2}$/.test(checkedAt) || Number.isNaN(Date.parse(checkedAt + "T00:00:00+08:00")))) {
+        errors.push("第 " + (i + 2) + " 列官方來源查核日期格式不正確（YYYY-MM-DD）");
+        continue;
+      }
       valid.push({
-        canonical_key: "curated:" + sourceId + ":" + fingerprint,
+        canonical_key: canonicalKey,
         title_zh: String(r.title_zh).trim(),
         starts_at: start.toISOString(),
         ends_at: end.toISOString(),
@@ -398,7 +412,7 @@
         official_url: r.official_url || null,
         summary: r.summary_zh || null,
         exhibition_category: ["b2b_trade_show","b2c_consumer_fair","arts_exhibition","other_event"].includes(String(r.exhibition_category || "")) ? r.exhibition_category : null,
-        source_checked_at: r.source_checked_at ? new Date(String(r.source_checked_at).slice(0, 10) + "T00:00:00+08:00").toISOString() : null,
+        source_checked_at: checkedAt ? new Date(checkedAt + "T00:00:00+08:00").toISOString() : null,
         external_id: r.external_id || null,
         source_id: sourceId,
         country_code: String(r.country_code || "TW").toUpperCase(),
