@@ -6,4 +6,5 @@ node --experimental-strip-types backend/review/anomaly-email-template.test.ts
 node --experimental-strip-types backend/review/resend-notifier.test.ts
 node --experimental-strip-types backend/review/publication-preflight.test.ts
 node --experimental-strip-types backend/review/outbox-worker.test.ts
+node --experimental-strip-types backend/review/manual-exhibition-gate.test.ts
 echo "All exhibition review mock/policy test scripts completed."
