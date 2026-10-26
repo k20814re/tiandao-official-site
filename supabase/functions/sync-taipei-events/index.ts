@@ -194,7 +194,7 @@ Deno.serve(async (req) => {
           ticket_info: String(row.ticket || "").trim() || null,
           status: "scheduled",
           verification_status: "single_official_source",
-          publication_status: statuses.get(canonicalKey) ?? "review",
+          publication_status: statuses.get(canonicalKey) === "published" ? "published" : "draft",
           source_id: source.id,
           external_id: String(row.id),
           timezone: "Asia/Taipei",
