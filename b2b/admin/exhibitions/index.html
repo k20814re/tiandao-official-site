@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="theme-color" content="#080b18" />
+    <title>展覽資料後台｜天道商貿</title>
+    <link rel="icon" href="../../../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主要內容</a>
+    <header class="topbar">
+      <a class="brand" href="../../index.html"
+        ><span>道</span>天道商貿展覽後台</a
+      >
+      <nav>
+        <a href="../../explore/">查看探索頁</a
+        ><button id="logout" type="button" hidden>登出</button>
+      </nav>
+    </header>
+    <main id="main" class="shell">
+      <section id="setup-notice" class="notice" hidden>
+        <b>後台尚未完成資料庫設定</b>
+        <p>請先依照 migration 說明建立角色、欄位與 RLS，完成後重新整理。</p>
+      </section>
+      <section id="login-view" class="auth-card">
+        <p class="eyebrow">AUTHORIZED STAFF ONLY</p>
+        <h1>展覽資料管理</h1>
+        <p>
+          使用 Supabase 帳號登入。只有已指派為 editor 或 publisher
+          的人員可讀寫。
+        </p>
+        <form id="login-form">
+          <label
+            >電子郵件<input
+              name="email"
+              type="email"
+              autocomplete="username"
+              required /></label
+          ><label
+            >密碼<input
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required /></label
+          ><button class="primary" type="submit">安全登入</button>
+        </form>
+        <p id="login-message" class="message" aria-live="polite"></p>
+      </section>
+      <section id="recovery-view" class="auth-card" hidden>
+        <p class="eyebrow">PASSWORD RECOVERY</p>
+        <h1>設定新密碼</h1>
+        <p>請輸入兩次新密碼。完成後即可用新密碼登入展覽後台。</p>
+        <form id="recovery-form">
+          <label>新密碼<input name="password" type="password" autocomplete="new-password" minlength="8" required /></label>
+          <label>再次輸入新密碼<input name="password_confirm" type="password" autocomplete="new-password" minlength="8" required /></label>
+          <button class="primary" type="submit">儲存新密碼</button>
+        </form>
+        <p id="recovery-message" class="message" aria-live="polite"></p>
+      </section>
+      <section id="app-view" hidden>
+        <div class="page-head">
+          <div>
+            <p class="eyebrow">EXHIBITION OPERATIONS V1</p>
+            <h1>展覽資料管理</h1>
+            <p id="identity"></p>
+          </div>
+          <button class="primary" id="new-event" type="button">
+            ＋ 新增展覽
+          </button>
+        </div>
+        <div class="stats">
+          <button data-status="">
+            <b id="count-all">—</b><span>全部</span></button
+          ><button data-status="draft">
+            <b id="count-draft">—</b><span>草稿</span></button
+          ><button data-status="review">
+            <b id="count-review">—</b><span>待審核</span></button
+          ><button data-status="published">
+            <b id="count-published">—</b><span>已發布</span>
+          </button>
+        </div>
+        <section class="panel toolbar">
+          <label
+            >搜尋<input
+              id="search"
+              type="search"
+              placeholder="標題、城市、場館或主辦單位" /></label
+          ><label
+            >狀態<select id="status-filter">
+              <option value="">全部</option>
+              <option value="draft">草稿</option>
+              <option value="review">待審核</option>
+              <option value="published">已發布</option>
+            </select></label
+          ><label
+            >來源<select id="source-filter">
+              <option value="">全部來源</option>
+            </select></label
+          ><button id="reload" type="button">重新載入</button
+          ><button id="sync-taipei" type="button">同步臺北旅遊網</button
+          ><button id="open-import" type="button">批次匯入</button>
+        </section>
+        <p id="app-message" class="message" aria-live="polite"></p>
+        <section class="panel table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>展覽</th>
+                <th>日期／地點</th>
+                <th>來源</th>
+                <th>狀態</th>
+                <th>更新</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="event-list">
+              <tr>
+                <td colspan="6">正在載入…</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </main>
+    <dialog id="event-dialog">
+      <form id="event-form" method="dialog">
+        <div class="dialog-head">
+          <div>
+            <p class="eyebrow">EVENT RECORD</p>
+            <h2 id="event-dialog-title">新增展覽</h2>
+          </div>
+          <button class="icon" value="cancel" aria-label="關閉">×</button>
+        </div>
+        <input name="id" type="hidden" />
+        <div class="form-grid">
+          <label class="wide"
+            >繁中標題＊<input name="title_zh" required maxlength="240" /></label
+          ><label
+            >狀態<select name="publication_status" required>
+              <option value="draft">草稿</option>
+              <option value="review">待審核</option>
+              <option value="published">已發布</option>
+            </select></label
+          ><label
+            >來源<select name="source_id" id="form-source">
+              <option value="">人工建立</option>
+            </select></label
+          ><label>外部來源 ID<input name="external_id" maxlength="240" /></label
+          ><label
+            >國家（ISO alpha-2）<input
+              name="country_code"
+              value="TW"
+              pattern="[A-Za-z]{2}"
+              maxlength="2" /></label
+          ><label
+            >時區<input
+              name="timezone"
+              value="Asia/Taipei"
+              maxlength="64" /></label
+          ><label
+            >幣別（ISO 4217）<input
+              name="currency_code"
+              value="TWD"
+              pattern="[A-Za-z]{3}"
+              maxlength="3" /></label
+          ><label>城市<input name="city" maxlength="120" /></label
+          ><label>場館<input name="venue_name" maxlength="240" /></label
+          ><label class="wide"
+            >地址<input name="address" maxlength="500" /></label
+          ><label
+            >開始日期＊<input
+              name="starts_at"
+              type="datetime-local"
+              required /></label
+          ><label
+            >結束日期＊<input
+              name="ends_at"
+              type="datetime-local"
+              required /></label
+          ><label>主辦單位<input name="organizer_name" maxlength="240" /></label
+          ><label
+            >官方網址<input
+              name="official_url"
+              type="url"
+              maxlength="1000" /></label
+          ><label class="wide"
+            >摘要<textarea name="summary" rows="4"></textarea></label
+          ><label class="wide"
+            >多語翻譯（JSON）<textarea
+              name="translations"
+              rows="5"
+              placeholder='{"en":{"title":"Example","summary":"..."}}'
+            ></textarea>
+          </label>
+        </div>
+        <p class="fineprint">
+          publisher 才能直接發布；editor 儲存為「已發布」時，資料庫會拒絕。
+        </p>
+        <div class="dialog-actions">
+          <button value="cancel">取消</button
+          ><button class="primary" id="save-event" value="default">儲存</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="import-dialog">
+      <form id="import-form" method="dialog">
+        <div class="dialog-head">
+          <div>
+            <p class="eyebrow">BATCH IMPORT</p>
+            <h2>批次匯入 CSV / XLSX</h2>
+          </div>
+          <button class="icon" value="cancel" aria-label="關閉">×</button>
+        </div>
+        <p>
+          至少需要
+          <code>title_zh</code
+          >、<code>starts_at</code>、<code>ends_at</code>。匯入一律先存為草稿，以來源＋外部
+          ID 或資料指紋去重。
+        </p>
+        <label
+          >資料來源<select
+            name="source_id"
+            id="import-source"
+            required
+          ></select></label
+        ><label
+          >選擇檔案<input
+            name="file"
+            type="file"
+            accept=".csv,.xlsx,.xls"
+            required /></label
+        ><a href="exhibition-import-template.csv" download>下載 CSV 範本</a>
+        <div id="import-preview" class="preview" hidden></div>
+        <p id="import-message" class="message" aria-live="polite"></p>
+        <div class="dialog-actions">
+          <button value="cancel">取消</button
+          ><button class="primary" id="run-import" value="default">
+            檢查並匯入
+          </button>
+        </div>
+      </form>
+    </dialog>
+    <script src="../../js/supabase-config.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"
+      defer
+    ></script>
+    <script src="admin.js" defer></script>
+  </body>
+</html>

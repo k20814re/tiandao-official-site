@@ -1,0 +1,3 @@
+[functions.sync-taipei-events]
+verify_jwt = false
+
