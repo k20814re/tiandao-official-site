@@ -11,6 +11,7 @@ const assert=(ok:boolean,msg:string)=>{if(!ok)throw Error(msg)};
 assert(checkManualCandidate(base).length===0,"valid draft should pass preliminary gate");
 const checks=[
  [{...base,official_url:"http://example.org/event"}, "E001"],
+ [{...base,official_url:"https://example.org/"}, "E001"],
  [{...base,ends_at:"2026-10-01"}, "E002"],
  [{...base,venue_name:""}, "E003"],
  [{...base,source_license_cleared:false}, "E005"],
@@ -22,4 +23,4 @@ const checks=[
 for(const [item,code] of checks){
  assert(checkManualCandidate(item).some(x=>x.startsWith(code+":")),code+" must block");
 }
-console.log("9 manual candidate gate scenarios passed");
+console.log("10 manual candidate gate scenarios passed");
