@@ -11,4 +11,8 @@ assert.match(js,/\/rest\/v1\/exhibition_admin_profiles\?/);
 assert.match(js,/profile\.user_id!==auth\.user\.id/);
 assert.match(js,/\["editor","publisher"\]\.includes\(profile\.role\)/);
 assert.doesNotMatch(js,/localStorage|sessionStorage|service_role|\.update\(|\.insert\(/);
+assert.match(html,/id="load-events"/);
+assert.match(js,/publication_status=in\.\(draft,review\)/);
+assert.match(js,/currentToken!==token/);
+assert.match(js,/list\.replaceChildren\(\)/);
 console.log("Admin login static guards PASS (no network or database)");
