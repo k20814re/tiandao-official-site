@@ -43,10 +43,17 @@ export async function processOneNotification(config: WorkerConfig, fetcher: type
    payload && typeof payload.subject==="string" && typeof payload.text==="string";
  let delivery:{ok:true;providerMessageId:string}|{ok:false;retryable:boolean;reason:string};
  if (!valid) delivery={ok:false,retryable:false,reason:"invalid_outbox_payload"};
- else delivery=await deliverReviewNotice({
-   id:row.id,idempotencyKey:row.idempotency_key,recipient:row.recipient,
-   subject:payload.subject as string,text:payload.text as string,
- },{apiKey:resendApiKey,verifiedFromAddress},fetcher);
+ else {
+   try {
+     delivery=await deliverReviewNotice({
+       id:row.id,idempotencyKey:row.idempotency_key,recipient:row.recipient,
+       subject:payload.subject as string,text:payload.text as string,
+     },{apiKey:resendApiKey,verifiedFromAddress},fetcher);
+   } catch {
+     // Unexpected adapter failures must still release the lease for retry.
+     delivery={ok:false,retryable:true,reason:"unexpected_delivery_exception"};
+   }
+ }
  try {
    const done=await rpc("finish_exhibition_notification",{
      p_id:row.id,p_claimed_at:row.claimed_at,p_success:delivery.ok,
