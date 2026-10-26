@@ -8,6 +8,8 @@
 -- A Gmail reply or checked box is NOT an authorization to publish.
 -- PostgreSQL RLS policies are additive; this BEFORE trigger blocks direct
 -- publication regardless of any permissive pre-existing RLS policy.
+-- UPDATE to an already-published record is also blocked to prevent bypass
+-- via changing event facts without a new approved review.
 begin;
 create or replace function public.block_unreviewed_exhibition_publication()
 returns trigger
@@ -20,8 +22,10 @@ begin
     raise exception 'publication_locked_pending_mfa_and_evidence_review'
       using errcode='42501';
   end if;
-  if tg_op='UPDATE' and new.publication_status='published'
-    and old.publication_status is distinct from 'published' then
+  -- Block every UPDATE whose resulting row remains published, including
+  -- edits to already-published records. Otherwise a publisher could change
+  -- title, dates, links or venue without re-running the evidence review.
+  if tg_op='UPDATE' and new.publication_status='published' then
     raise exception 'publication_locked_pending_mfa_and_evidence_review'
       using errcode='42501';
   end if;
