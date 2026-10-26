@@ -56,4 +56,11 @@ assert(claimFailure.status==="error","claim 403 must fail closed");
 
 const invalid=await processOneNotification({...config,serviceRoleKey:""},successful);
 assert(invalid.status==="error","missing key must fail closed");
-console.log("5 outbox worker scenarios passed");
+let malformedCalls=0;
+const malformed=await processOneNotification(config,async()=>{
+ malformedCalls++;
+ return json([{...row,id:null}]);
+});
+assert(malformed.status==="error" && malformedCalls===1,
+ "malformed claim identity must not trigger email or acknowledgement");
+console.log("6 outbox worker scenarios passed");
