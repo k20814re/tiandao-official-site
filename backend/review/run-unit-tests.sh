@@ -13,4 +13,5 @@ node --experimental-strip-types backend/review/plan-b-ten-candidate.integration.
 node --experimental-strip-types backend/review/review-preview-syntax.test.ts
 node --experimental-strip-types backend/review/publication-freeze-sql.test.ts
 node --experimental-strip-types backend/review/admin-identity-sql.test.ts
+node --experimental-strip-types backend/review/admin-login-static.test.ts
 echo "All exhibition review mock/policy test scripts completed."
