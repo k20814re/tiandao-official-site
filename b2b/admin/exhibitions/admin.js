@@ -316,10 +316,12 @@
       f.elements.publication_status.value = "draft";
     }
     const statusSelect = f.elements.publication_status;
-    const canPublish = profile?.role === "publisher";
+    // SECURITY: direct publishing is disabled until the server-side
+    // Gmail intent + fresh MFA + evidence authorization transaction exists.
+    // This UI guard is defense-in-depth; database publication freeze is also required.
     for (const option of statusSelect.options)
-      if (option.value === "published") option.disabled = !canPublish;
-    if (!canPublish && x.publication_status === "published") {
+      if (option.value === "published") option.disabled = true;
+    if (x.publication_status === "published") {
       statusSelect.value = "published";
       statusSelect.disabled = true;
     } else {
@@ -332,8 +334,11 @@
     const f = $("event-form");
     if (!f.reportValidity()) return;
     const d = Object.fromEntries(new FormData(f));
-    if (profile?.role !== "publisher" && (d.publication_status === "published" || f.elements.publication_status.disabled))
-      return msg("app-message", "只有 publisher 可以發布或修改已發布展覽，請聯絡發布管理員", "error");
+    // Fail closed: never send publication_status=published from this form.
+    // Also prevent accidental edits of already published rows via this draft editor.
+    const existing = events.find((x) => String(x.id) === String(d.id));
+    if (d.publication_status === "published" || existing?.publication_status === "published" || f.elements.publication_status.disabled)
+      return msg("app-message", "E013：直接發布及編輯已發布展覽暫停。必須完成官方證據、授權、Gmail 回信與 MFA 二次驗證；請先使用草稿／審核流程。", "error");
     if (Number.isNaN(Date.parse(d.starts_at)) || Number.isNaN(Date.parse(d.ends_at)) || new Date(d.ends_at) < new Date(d.starts_at))
       return msg("app-message", "結束時間不得早於開始時間", "error");
     let translations = {};
