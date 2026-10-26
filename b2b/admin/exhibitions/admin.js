@@ -149,7 +149,9 @@
       $("login-view").hidden = true;
       $("app-view").hidden = false;
       $("logout").hidden = false;
-      await Promise.all([loadSources(), loadEvents()]);
+      // Load source names before rendering rows and trade-show candidate filters.
+      await loadSources();
+      await loadEvents();
     } catch (e) {
       if (e.status === 404) $("setup-notice").hidden = false;
       msg("login-message", e.message, "error");
@@ -343,15 +345,13 @@
     msg("app-message", id ? "展覽已更新" : "展覽已建立", "ok");
   }
   async function archive(id) {
-    if (!confirm("確定封存這筆展覽？公開頁將不再顯示。")) return;
+    if (!confirm("確定封存這筆展覽？公開頁將不再顯示，後台仍可查詢及恢復。")) return;
     await request("/rest/v1/trade_events?id=eq." + encodeURIComponent(id), {
       method: "PATCH",
-      body: JSON.stringify({
-        deleted_at: new Date().toISOString(),
-        publication_status: "draft",
-      }),
+      body: JSON.stringify({ publication_status: "archived" }),
     });
     await loadEvents();
+    msg("app-message", "展覽已封存，可在「已封存」篩選中重新編輯", "ok");
   }
   async function parseFile(file) {
     const data = await file.arrayBuffer();
