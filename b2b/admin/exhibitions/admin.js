@@ -306,6 +306,16 @@
       f.elements.currency_code.value = "TWD";
       f.elements.publication_status.value = "draft";
     }
+    const statusSelect = f.elements.publication_status;
+    const canPublish = profile?.role === "publisher";
+    for (const option of statusSelect.options)
+      if (option.value === "published") option.disabled = !canPublish;
+    if (!canPublish && x.publication_status === "published") {
+      statusSelect.value = "published";
+      statusSelect.disabled = true;
+    } else {
+      statusSelect.disabled = false;
+    }
     $("event-dialog-title").textContent = x.id ? "編輯展覽" : "新增展覽";
     $("event-dialog").showModal();
   }
@@ -313,6 +323,8 @@
     const f = $("event-form");
     if (!f.reportValidity()) return;
     const d = Object.fromEntries(new FormData(f));
+    if (profile?.role !== "publisher" && (d.publication_status === "published" || f.elements.publication_status.disabled))
+      return msg("app-message", "只有 publisher 可以發布或修改已發布展覽，請聯絡發布管理員", "error");
     if (Number.isNaN(Date.parse(d.starts_at)) || Number.isNaN(Date.parse(d.ends_at)) || new Date(d.ends_at) < new Date(d.starts_at))
       return msg("app-message", "結束時間不得早於開始時間", "error");
     let translations = {};
@@ -345,6 +357,9 @@
     msg("app-message", id ? "展覽已更新" : "展覽已建立", "ok");
   }
   async function archive(id) {
+    const target = events.find((x) => String(x.id) === String(id));
+    if (target?.publication_status === "published" && profile?.role !== "publisher")
+      return msg("app-message", "只有 publisher 可以封存已發布展覽", "error");
     if (!confirm("確定封存這筆展覽？公開頁將不再顯示，後台仍可查詢及恢復。")) return;
     await request("/rest/v1/trade_events?id=eq." + encodeURIComponent(id), {
       method: "PATCH",
