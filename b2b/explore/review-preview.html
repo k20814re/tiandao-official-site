@@ -35,12 +35,14 @@ async function showPreview(data){
    if(typeof row.official_url==="string"){try{const url=new URL(row.official_url);if(url.protocol==="https:"){const link=make("a","官方來源（另開視窗）");link.href=url.href;link.target="_blank";link.rel="noopener noreferrer";card.append(make("p",""));card.append(link)}}catch{}}
    results.append(card);
   }
- }catch(err){summary.textContent="讀取失敗："+(err instanceof Error?err.message:"未知錯誤")}
+ }catch(err){results.replaceChildren();summary.textContent="讀取失敗："+(err instanceof Error?err.message:"未知錯誤")}
 }
 file.addEventListener("change",async()=>{
  const selected=file.files?.[0];if(!selected)return;
  if(selected.size>2_000_000){summary.textContent="檔案過大（上限 2 MB）";return;}
  try{await showPreview(JSON.parse(await selected.text()))}catch{summary.textContent="JSON 格式錯誤"}
 });
-// Candidate source files are never fetched from public hosting.\n// Use the local file picker with the offline review JSON generator.\n
+// Candidate source files are never fetched from public hosting.
+// Use the local file picker with the offline review JSON generator.
+
 </script></body></html>
