@@ -13,7 +13,7 @@
       "address": "台北市南港區經貿二路1號",
       "daily_hours_text": "11/6 12:00–18:00；11/7–11/9 10:00–18:00",
       "official_url": "https://www.taiwanitf.org.tw/Information3",
-      "corroboration_url": "https://www.tainex.com.tw/event/709",
+      "corroboration_url": "https://www.twtc.com.tw/exhibition_more.aspx?id=29751&p=home",
       "evidence_fields": [
         "title_zh",
         "starts_at",
@@ -21,11 +21,15 @@
         "city",
         "venue_name",
         "address",
-        "daily_hours_text"
+        "daily_hours_text",
+        "ticket_info",
+        "organizer_name"
       ],
       "source_license_cleared": false,
       "facts_verified": false,
-      "reviewer_notes": "Organizer visitor page and venue calendar agree on dates and hall. Manual final check and licensing pending."
+      "reviewer_notes": "2026-10-27: Official organizer visitor information confirms 11/6 12:00–18:00, 11/7–9 10:00–18:00, ticket prices NT$200/NT$180. TWTC event-specific record confirms organizer, dates, hall. Source reuse/license and final human review pending; do not publish.",
+      "ticket_info": "一般展期票 NT$200；預售票 NT$180（10/15–11/5）；實際票種以官方公告為準",
+      "organizer_name": "財團法人台灣觀光協會"
     },
     {
       "title_zh": "2026 臺灣國際咖啡展",
