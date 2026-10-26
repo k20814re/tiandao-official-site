@@ -33,6 +33,19 @@ const nearbyTypes={
 function selectedSummary(x){
  return ['【天道商貿｜參展資訊】','展覽：'+clean(x.title_zh),'類型：'+eventType(x),'展期：'+date(x.starts_at)+'－'+date(x.ends_at),'每日時段：'+hours(x.daily_hours),'城市：'+clean(x.city||'尚待確認'),'場館：'+clean(x.venue_name||'尚待確認'),'地址：'+clean(x.address||'尚待確認'),'主辦：'+clean(x.organizer_name||'尚待確認'),'入場資訊：'+clean(x.ticket_info||'尚待確認'),'資料查核：'+verified(x.source_checked_at||x.last_verified_at),'活動來源：'+(safeOfficialUrl(x.official_url)||'未提供'),'※ 僅供資訊整理，請向主辦單位確認；不提供代訂、行程安排或收款。'].join('\\n');
 }
+function saveTextFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function eventCalendar(x){
+ const iso=d=>{const v=day(d);return /^\\d{4}-\\d{2}-\\d{2}$/.test(v)?v.replaceAll('-',''):null};
+ const start=iso(x.starts_at),end=iso(x.ends_at)||start;if(!start)return null;
+ const d=new Date((day(x.ends_at)||day(x.starts_at))+'T12:00:00Z');if(Number.isNaN(d.getTime()))return null;d.setUTCDate(d.getUTCDate()+1);
+ const exclusive=d.toISOString().slice(0,10).replaceAll('-','');
+ const escapeIcs=v=>clean(v).replace(/\\\\/g,'\\\\\\\\').replace(/,/g,'\\\\,').replace(/;/g,'\\\\;').replace(/\\n/g,'\\\\n');
+ const desc=['主辦：'+clean(x.organizer_name||'待確認'),'每日時段：'+hours(x.daily_hours),'入場資訊：'+clean(x.ticket_info||'待確認'),'來源：'+(safeOfficialUrl(x.official_url)||'未提供'),'請以主辦單位公告為準；本站不代訂。'].join('；');
+ return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TianDao Commerce//Exhibition Reference//ZH','BEGIN:VEVENT','UID:tiandao-'+String(x.id).replace(/[^a-zA-Z0-9_-]/g,'')+'@tiandaoonline.com','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\\.\\d{3}/,''),'DTSTART;VALUE=DATE:'+start,'DTEND;VALUE=DATE:'+exclusive,'SUMMARY:'+escapeIcs(x.title_zh),'LOCATION:'+escapeIcs([x.venue_name,x.address].filter(Boolean).join('，')),'DESCRIPTION:'+escapeIcs(desc),'END:VEVENT','END:VCALENDAR'].join('\\r\\n')+'\\r\\n';
+}
 function renderNearby(type='food'){
  const panel=$('journey-panel');if(!panel)return;
  if(!selectedEvent){panel.innerHTML='<div><h3>請先選擇展覽</h3><p>參展資訊將依所選展覽顯示。</p></div>';return}
@@ -40,7 +53,13 @@ function renderNearby(type='food'){
  const facts=[['展覽',x.title_zh],['展覽類型',eventType(x)],['城市',clean(x.city)||'尚待確認'],['場館',clean(x.venue_name)||'尚待確認'],['地址',clean(x.address)||'尚待確認'],['展期',date(x.starts_at)+'－'+date(x.ends_at)],['每日時段',hours(x.daily_hours)],['主辦單位',clean(x.organizer_name)||'尚待確認'],['入場資訊',clean(x.ticket_info)||'尚待確認'],['來源查核時間',verified(x.source_checked_at||x.last_verified_at)]];
  const source=safeOfficialUrl(x.official_url);
  const sourceHtml=source?'<a href="'+esc(source)+'" target="_blank" rel="noopener noreferrer">展覽主辦／來源頁面 ↗</a>':'<span>此展覽未提供有效來源網址</span>';
- panel.innerHTML='<div class="attendee-info"><span class="status-chip">已選展覽 · 站內資訊整理</span><h3>'+esc(t.title)+'｜'+esc(x.title_zh)+'</h3><p>'+esc(t.description)+'</p><div class="attendee-facts">'+facts.map(([label,value])=>'<div><b>'+esc(label)+'</b><span>'+esc(value)+'</span></div>').join('')+'</div><div class="hero-actions"><button type="button" class="button" id="copy-event-summary">複製這場展覽資訊</button></div><p class="coverage-note">資料來源：'+sourceHtml+'。展覽資料請以主辦單位最新公告為準。</p><h4>本分類資訊核對</h4><ul class="attendee-checks">'+t.checks.map(item=>'<li>'+esc(item)+'</li>').join('')+'</ul><div class="attendee-source"><b>'+esc(t.title)+'周邊資料：尚未接入</b><p>已保留您選擇的展覽資訊，但目前沒有經授權核對的實際商家、班次、房價或營業時間，不會顯示虛構結果。</p><p>本站僅供查詢與整理，不代訂、不安排旅遊行程、不收款。</p></div></div>';
+ panel.innerHTML='<div class="attendee-info"><span class="status-chip">已選展覽 · 站內資訊整理</span><h3>'+esc(t.title)+'｜'+esc(x.title_zh)+'</h3><p>'+esc(t.description)+'</p><div class="attendee-facts">'+facts.map(([label,value])=>'<div><b>'+esc(label)+'</b><span>'+esc(value)+'</span></div>').join('')+'</div><div class="hero-actions"><button type="button" class="button" id="copy-event-summary">複製這場展覽資訊</button><button type="button" class="button ghost" id="download-event-calendar">加入個人行事曆（.ics）</button><button type="button" class="button ghost" id="download-event-csv">下載展覽資料（CSV）</button></div><p class="coverage-note">資料來源：'+sourceHtml+'。展覽資料請以主辦單位最新公告為準。</p><h4>本分類資訊核對</h4><ul class="attendee-checks">'+t.checks.map(item=>'<li>'+esc(item)+'</li>').join('')+'</ul><div class="attendee-source"><b>'+esc(t.title)+'周邊資料：尚未接入</b><p>已保留您選擇的展覽資訊，但目前沒有經授權核對的實際商家、班次、房價或營業時間，不會顯示虛構結果。</p><p>本站僅供查詢與整理，不代訂、不安排旅遊行程、不收款。</p></div></div>';
+ panel.querySelector('#download-event-calendar')?.addEventListener('click',()=>{const ics=eventCalendar(x);if(!ics){alert('此展覽缺少有效開始日期，無法建立行事曆檔案。');return}saveTextFile('tiandao-exhibition-'+String(x.id).replace(/[^a-zA-Z0-9_-]/g,'')+'.ics',ics,'text/calendar;charset=utf-8')});
+ panel.querySelector('#download-event-csv')?.addEventListener('click',()=>{
+  const csv=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const fields=[['展覽',x.title_zh],['展覽類型',eventType(x)],['開始日期',day(x.starts_at)],['結束日期',day(x.ends_at)],['每日時段',hours(x.daily_hours)],['城市',x.city],['場館',x.venue_name],['地址',x.address],['主辦單位',x.organizer_name],['入場資訊',x.ticket_info],['來源查核',verified(x.source_checked_at||x.last_verified_at)],['來源網址',safeOfficialUrl(x.official_url)||'']];
+  saveTextFile('tiandao-exhibition-'+String(x.id).replace(/[^a-zA-Z0-9_-]/g,'')+'.csv','\\uFEFF'+fields.map(([k,v])=>csv(k)+','+csv(v)).join('\\r\\n'),'text/csv;charset=utf-8');
+ });
  panel.querySelector('#copy-event-summary')?.addEventListener('click',async e=>{
  const button=e.currentTarget;
  try{await navigator.clipboard.writeText(selectedSummary(x));button.textContent='已複製參展資訊';}
