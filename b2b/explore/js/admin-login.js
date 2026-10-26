@@ -12,9 +12,9 @@ async function request(path,options={}){
  return response.json();
 }
 form.addEventListener("submit",async event=>{
- event.preventDefault();clear();submit.disabled=true;status.textContent="正在驗證帳號與管理員角色…";
+ event.preventDefault();const email=$("email").value.trim(),password=$("password").value;clear();submit.disabled=true;status.textContent="正在驗證帳號與管理員角色…";
  try{
-  const auth=await request("/auth/v1/token?grant_type=password",{method:"POST",body:JSON.stringify({email:$("email").value.trim(),password:$("password").value})});
+  const auth=await request("/auth/v1/token?grant_type=password",{method:"POST",body:JSON.stringify({email,password})});
   if(!auth.access_token||!auth.user?.id)throw Error("登入回應不完整");
   token=auth.access_token;
   const profiles=await request("/rest/v1/exhibition_admin_profiles?select=user_id,role&user_id=eq."+encodeURIComponent(auth.user.id)+"&limit=1");
