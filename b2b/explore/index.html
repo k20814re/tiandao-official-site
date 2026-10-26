@@ -23,6 +23,17 @@
 .module-pending{opacity:.67;cursor:default}
 @media(max-width:1050px){.module-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:600px){.module-preview{padding:46px 0 24px}.module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.module-tile{min-height:125px}}
+
+/* Exhibition results pagination */
+.event-pagination{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;padding:20px 0 6px}
+.page-summary{font-size:12px;color:#c8c0b7}
+.page-controls{display:flex;align-items:center;flex-wrap:wrap;gap:7px}
+.page-controls button{min-width:38px;min-height:38px;padding:7px 11px;border:1px solid #e8b85e66;border-radius:9px;background:#12192a;color:#f8eed8;cursor:pointer}
+.page-controls button[aria-current="page"]{background:#e8b85e;color:#11131b;font-weight:800}
+.page-controls button:disabled{opacity:.35;cursor:not-allowed}
+.page-controls button:not(:disabled):hover,.page-controls button:focus-visible{border-color:#ffe2a0;outline:2px solid #e8b85e55}
+.page-ellipsis{padding:0 4px;color:#c8c0b7}
+@media(max-width:600px){.event-pagination{justify-content:center;text-align:center}.page-controls{justify-content:center}}
 </style>
 </head>
 <body>
@@ -208,7 +219,7 @@
 
   <footer class="footer"><div class="wrap"><p class="service-disclaimer">天道商貿提供台灣商展、商務旅程、交通、住宿、美食與觀光等資訊整理及智慧行程建議。本平台不提供車票、飯店或展覽門票之代訂及代收款服務。各項價格、開放時間、班次與活動資訊可能異動，請以官方公告為準。</p><div class="footer-inner"><span>© 2026 TianDao B2B · 台灣商務探索</span><span><a href="index.html">台灣探索</a></span></div></div></footer>
   <script src="js/explore.js"></script>
-  <script src="js/explore-events.js?v=13137be"></script>
+  <script src="js/explore-events.js?v=3e577eb"></script>
 <script>
 (() => {
   const byId = id => document.getElementById(id);
