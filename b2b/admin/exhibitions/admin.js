@@ -381,7 +381,7 @@
       }
       const start = new Date(r.starts_at),
         end = new Date(r.ends_at);
-      if (Number.isNaN(start) || Number.isNaN(end) || end < start) {
+      if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end < start) {
         errors.push("第 " + (i + 2) + " 列日期無效");
         continue;
       }
@@ -403,7 +403,6 @@
       );
       const canonicalKey = "curated:" + sourceId + ":" + fingerprint;
       if (seenKeys.has(canonicalKey)) continue;
-      seenKeys.add(canonicalKey);
       const allowedCategories = ["b2b_trade_show","b2c_consumer_fair","arts_exhibition","other_event"];
       if (r.exhibition_category && !allowedCategories.includes(String(r.exhibition_category).trim())) {
         errors.push("第 " + (i + 2) + " 列分類代碼不正確");
@@ -414,6 +413,7 @@
         errors.push("第 " + (i + 2) + " 列官方來源查核日期格式不正確（YYYY-MM-DD）");
         continue;
       }
+      seenKeys.add(canonicalKey);
       valid.push({
         canonical_key: canonicalKey,
         title_zh: String(r.title_zh).trim(),
