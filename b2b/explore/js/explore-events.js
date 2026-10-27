@@ -48,7 +48,7 @@ function eventCalendar(x){
  const start=iso(x.starts_at),end=iso(x.ends_at)||start;if(!start)return null;
  const d=new Date((day(x.ends_at)||day(x.starts_at))+'T12:00:00Z');if(Number.isNaN(d.getTime()))return null;d.setUTCDate(d.getUTCDate()+1);
  const exclusive=d.toISOString().slice(0,10).replaceAll('-','');
- const escapeIcs=v=>clean(v).replace(/\\\\/g,'\\\\\\\\').replace(/,/g,'\\\\,').replace(/;/g,'\\\\;').replace(/\n/g,'\\\\n');
+ const escapeIcs=v=>clean(v).replace(/\\/g,'\\').replace(/,/g,'\,').replace(/;/g,'\;').replace(/\n/g,'\n');
  const desc=['主辦：'+clean(x.organizer_name||'待確認'),'每日時段：'+(x.daily_hours_text||hours(x.daily_hours)),'入場資訊：'+clean(x.ticket_info||'待確認'),'來源：'+(safeOfficialUrl(x.official_url)||'未提供'),'請以主辦單位公告為準；本站不代訂。'].join('；');
  return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TianDao Commerce//Exhibition Reference//ZH','BEGIN:VEVENT','UID:tiandao-'+String(x.id).replace(/[^a-zA-Z0-9_-]/g,'')+'@tiandaoonline.com','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''),'DTSTART;VALUE=DATE:'+start,'DTEND;VALUE=DATE:'+exclusive,'SUMMARY:'+escapeIcs(x.title_zh),'LOCATION:'+escapeIcs([x.venue_name,x.address].filter(Boolean).join('，')),'DESCRIPTION:'+escapeIcs(desc),'END:VEVENT','END:VCALENDAR'].join('\r\n')+'\r\n';
 }
