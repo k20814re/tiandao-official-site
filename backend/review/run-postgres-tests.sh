@@ -33,3 +33,5 @@ SQL
 psql -X -v ON_ERROR_STOP=1 -f backend/review/sql/automation-fixture.sql
 psql -X -v ON_ERROR_STOP=1 -f supabase/migrations/20261027071034_exhibition_automation_v1.sql
 psql -X -v ON_ERROR_STOP=1 -f backend/review/sql/automation-transactions.test.sql
+psql -X -v ON_ERROR_STOP=1 -f supabase/migrations/20261027080418_exhibition_automation_publish_guards.sql
+psql -X -v ON_ERROR_STOP=1 -f backend/review/sql/automation-publish-guards.test.sql
