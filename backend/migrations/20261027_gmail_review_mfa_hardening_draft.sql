@@ -27,7 +27,7 @@ as $$
 declare v_authorization_id uuid;v_review_id text;
 begin
  if p_review_id is null or length(p_review_id)>128
- or p_message_id is null or p_message_id !~ '^[A-Za-z0-9_-]{1,256}$'
+ or p_message_id is null or length(p_message_id) not between 1 and 256 or p_message_id !~ '^[A-Za-z0-9_-]+$'
  or p_admin_id is null or p_authorization_id is null
  or p_decision is null or p_decision not in ('approve','reject')
  or p_challenge_sha256 is null or p_challenge_sha256 !~ '^[a-f0-9]{64}$'

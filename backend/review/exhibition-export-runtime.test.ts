@@ -22,3 +22,14 @@ assert.ok(summary&&summary[1].includes(".join('\\n')"),"summary uses real line s
 assert.ok(src.includes("parsed.toISOString().slice(0,10)===v"),"calendar must reject impossible dates");
 assert.ok(src.includes("if(!end||end<start)return null"),"calendar must reject reversed ranges");
 console.log("Exhibition CSV and ICS runtime encoding checks PASS");
+
+const dayLine=src.split("\n").find(line=>line.startsWith("const day="));
+const tzLine=src.split("\n").find(line=>line.startsWith("const TAIPEI_DAY="));
+assert.ok(dayLine&&tzLine,"Taipei calendar conversion exists");
+const day=vm.runInNewContext(tzLine+"\n"+dayLine+"\nday");
+assert.equal(day("2026-10-27T16:00:00+00:00"),"2026-10-28");
+assert.equal(day("2026-10-28T00:00:00+08:00"),"2026-10-28");
+assert.equal(day("2026-10-28"),"2026-10-28");
+assert.equal(day("2026-02-30"),"");
+assert.equal(day("bad-date"),"");
+console.log("Taipei event day rollover checks PASS");

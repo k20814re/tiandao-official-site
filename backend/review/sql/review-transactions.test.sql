@@ -19,6 +19,11 @@ begin
   raise exception 'published update was not blocked';
  exception when insufficient_privilege then null;end;
 end $$;
+set role anon;
+do $$ begin
+ begin perform 1 from public.exhibition_gmail_review_challenges;raise exception 'anonymous challenge read allowed';exception when insufficient_privilege then null;end;
+end $$;
+reset role;
 insert into public.exhibition_gmail_review_challenges(review_id,challenge_sha256,expected_admin_id,evidence_sha256,expires_at)
 select 'review-'||i,repeat('a',64),'00000000-0000-4000-8000-000000000001'::uuid,repeat('b',64),now()+interval '1 hour' from generate_series(1,3)i;
 insert into public.exhibition_review_authorizations(authorization_id,review_id,admin_id,mfa_verified_at,authenticated_at,expires_at)
@@ -27,10 +32,12 @@ set role service_role;
 select set_config('request.jwt.claim.role','service_role',false);
 do $$
 begin
- if not public.record_gmail_review_decision('review-1','message-1','00000000-0000-4000-8000-000000000001',repeat('a',64),repeat('b',64),'approve','00000000-0000-4000-8000-000000000002') then raise exception 'valid decision failed';end if;
+ if public.record_gmail_review_decision('review-1',repeat('x',257),'00000000-0000-4000-8000-000000000001',repeat('a',64),repeat('b',64),'approve','00000000-0000-4000-8000-000000000002') then raise exception 'oversized message accepted';end if;
+ if public.record_gmail_review_decision('review-1','bad!id','00000000-0000-4000-8000-000000000001',repeat('a',64),repeat('b',64),'approve','00000000-0000-4000-8000-000000000002') then raise exception 'invalid message accepted';end if;
+ if not public.record_gmail_review_decision('review-1',repeat('x',256),'00000000-0000-4000-8000-000000000001',repeat('a',64),repeat('b',64),'approve','00000000-0000-4000-8000-000000000002') then raise exception 'valid decision failed';end if;
  if public.record_gmail_review_decision('review-1','message-replay','00000000-0000-4000-8000-000000000001',repeat('a',64),repeat('b',64),'approve','00000000-0000-4000-8000-000000000002') then raise exception 'replay accepted';end if;
  -- Duplicate Gmail ID must roll back authorization AND challenge consumption.
- if public.record_gmail_review_decision('review-2','message-1','00000000-0000-4000-8000-000000000001',repeat('a',64),repeat('b',64),'approve','00000000-0000-4000-8000-000000000003') then raise exception 'duplicate message accepted';end if;
+ if public.record_gmail_review_decision('review-2',repeat('x',256),'00000000-0000-4000-8000-000000000001',repeat('a',64),repeat('b',64),'approve','00000000-0000-4000-8000-000000000003') then raise exception 'duplicate message accepted';end if;
  if not public.record_gmail_review_decision('review-2','message-2','00000000-0000-4000-8000-000000000001',repeat('a',64),repeat('b',64),'reject','00000000-0000-4000-8000-000000000003') then raise exception 'duplicate rollback lost authorization';end if;
  -- Evidence mismatch must also preserve the authorization for a correct retry.
  if public.record_gmail_review_decision('review-3','message-3','00000000-0000-4000-8000-000000000001',repeat('a',64),repeat('c',64),'approve','00000000-0000-4000-8000-000000000004') then raise exception 'wrong evidence accepted';end if;
