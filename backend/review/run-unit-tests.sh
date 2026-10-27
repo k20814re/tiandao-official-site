@@ -41,4 +41,5 @@ EXHIBITION_TEST_ROWS=10000 node --experimental-strip-types backend/review/exhibi
 EXHIBITION_TEST_ROWS=10001 node --experimental-strip-types backend/review/exhibition-paginated-load.test.ts
 node --experimental-strip-types backend/review/exhibition-export-runtime.test.ts
 node --experimental-strip-types backend/review/taipei-sync-runtime.test.ts
+node --experimental-strip-types backend/review/analytics-host.test.ts
 echo "All exhibition review mock/policy test scripts completed."
