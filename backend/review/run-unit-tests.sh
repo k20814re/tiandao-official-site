@@ -13,6 +13,7 @@ node --experimental-strip-types backend/review/gmail-mime.test.ts
 node --experimental-strip-types backend/review/gmail-review-reply.test.ts
 node --experimental-strip-types backend/review/gmail-review-gate.test.ts
 node --experimental-strip-types backend/review/gmail-review-pipeline.test.ts
+node --experimental-strip-types backend/review/gmail-review-promotion.test.ts
 node --experimental-strip-types backend/review/gmail-inbox-dry-run.test.ts
 node --experimental-strip-types backend/review/gmail-review-atomic-sql.test.ts
 node --experimental-strip-types backend/review/gmail-review-recorder.test.ts
