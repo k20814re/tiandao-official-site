@@ -44,9 +44,18 @@ function saveTextFile(filename,content,mime){
  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>window.URL.revokeObjectURL(url),1000);
 }
 function eventCalendar(x){
- const iso=d=>{const v=day(d);return /^\d{4}-\d{2}-\d{2}$/.test(v)?v.replaceAll('-',''):null};
- const start=iso(x.starts_at),end=iso(x.ends_at)||start;if(!start)return null;
- const d=new Date((day(x.ends_at)||day(x.starts_at))+'T12:00:00Z');if(Number.isNaN(d.getTime()))return null;d.setUTCDate(d.getUTCDate()+1);
+ const iso=d=>{
+  const v=day(d);
+  if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(v))return null;
+  const parsed=new Date(v+'T12:00:00Z');
+  return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===v?v.replaceAll('-',''):null;
+ };
+ const start=iso(x.starts_at);
+ if(!start)return null;
+ const end=x.ends_at?iso(x.ends_at):start;
+ if(!end||end<start)return null;
+ const d=new Date((x.ends_at?day(x.ends_at):day(x.starts_at))+'T12:00:00Z');
+ d.setUTCDate(d.getUTCDate()+1);
  const exclusive=d.toISOString().slice(0,10).replaceAll('-','');
  const escapeIcs=v=>String(v??'').replace(/\\/g,'\\\\').replace(/\r?\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');
  const desc=['主辦：'+clean(x.organizer_name||'待確認'),'每日時段：'+(x.daily_hours_text||hours(x.daily_hours)),'入場資訊：'+clean(x.ticket_info||'待確認'),'來源：'+(safeOfficialUrl(x.official_url)||'未提供'),'請以主辦單位公告為準；本站不代訂。'].join('；');
