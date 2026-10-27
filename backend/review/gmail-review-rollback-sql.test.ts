@@ -1,0 +1,13 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const sql=readFileSync("backend/migrations/20261027_gmail_review_mfa_hardening_draft.sql","utf8");
+const consumeAuth=sql.indexOf("update public.exhibition_review_authorizations");
+const consumeChallenge=sql.indexOf("update public.exhibition_gmail_review_challenges");
+const rollback=sql.indexOf("raise exception using errcode='P0001'");
+const catchRollback=sql.indexOf("when unique_violation or raise_exception");
+assert.ok(consumeAuth>=0&&consumeChallenge>consumeAuth);
+assert.ok(rollback>consumeChallenge,"failed challenge must raise to undo authorization consume");
+assert.ok(catchRollback>rollback,"raised failure must be handled by subtransaction rollback");
+assert.ok(!/if v_review_id is null then return false/i.test(sql));
+assert.ok(!/update\s+public\.trade_events/i.test(sql));
+console.log("MFA authorization rollback regression static test PASS");
