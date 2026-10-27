@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import vm from "node:vm";
 const script=readFileSync("b2b/explore/js/explore-events.js","utf8");
-const rows=Array.from({length:501},(_,i)=>({id:String(i+1),title_zh:"測試展覽"+i,city:"臺中市",starts_at:"2027-01-01",ends_at:"2027-01-03",exhibition_category:"b2b_trade_show"}));
+const total=Number(process.env.EXHIBITION_TEST_ROWS||501);
+const rows=Array.from({length:total},(_,i)=>({id:String(i+1),title_zh:"測試展覽"+i,city:"臺中市",starts_at:"2027-01-01",ends_at:"2027-01-03",exhibition_category:"b2b_trade_show"}));
 const nodes=new Map();
 function node(id){if(!nodes.has(id))nodes.set(id,{id,innerHTML:"",textContent:"",addEventListener(){},querySelectorAll(){return[]},querySelector(){return null},scrollIntoView(){}});return nodes.get(id)}
 const calls=[];
@@ -15,11 +16,11 @@ const context={window:{URL,location:{href:"https://example.test/b2b/explore/"}},
  return {ok:true,json:async()=>rows.slice(offset,offset+Number(u.searchParams.get("limit")))};
 }};
 vm.runInNewContext(script,context);
-for(let i=0;i<20&&!node("event-results").innerHTML.includes("載入資料共 501 筆");i++)await new Promise(resolve=>setImmediate(resolve));
-assert.equal(calls.length,2,"501 rows must require two requests");
+for(let i=0;i<100&&!node("event-results").innerHTML.includes("載入資料共 "+total+" 筆");i++)await new Promise(resolve=>setImmediate(resolve));
+assert.equal(calls.length,Math.floor(total/500)+1,"page count including exact-cap probe");
 assert.equal(calls[0].searchParams.get("offset"),"0");
 assert.equal(calls[1].searchParams.get("offset"),"500");
-assert.match(node("event-results").innerHTML,/載入資料共 501 筆/);
-assert.match(node("event-results").innerHTML,/第 1 \/ 51 頁/);
+assert.ok(node("event-results").innerHTML.includes("載入資料共 "+total+" 筆"));
+assert.ok(node("event-results").innerHTML.includes("第 1 / "+Math.ceil(total/10)+" 頁"));
 assert.ok(!node("event-results").innerHTML.includes("目前無法載入"));
-console.log("Exhibition mocked 501-row paginated load PASS");
+console.log("Exhibition mocked "+total+"-row paginated load PASS");
