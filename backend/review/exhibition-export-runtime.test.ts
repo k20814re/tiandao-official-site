@@ -1,0 +1,21 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import vm from "node:vm";
+const src=readFileSync("b2b/explore/js/explore-events.js","utf8");
+const csvSource=src.match(/const csv=v=>(\{let s=String\(v\?\?''\);[^\n]+\});/);
+assert.ok(csvSource,"CSV encoder found");
+const csv=vm.runInNewContext("(v)=>"+csvSource[1]);
+for(const value of ["=1+1","+SUM(1,2)","-3+4","@cmd","\t=1+1","\r\n=1+1"]){
+ const result=csv(value);
+ assert.ok(result.startsWith('"'),"CSV cell quoted");
+ assert.ok(result.includes("'"),"formula-like input neutralized: "+JSON.stringify(value));
+}
+assert.equal(csv('a"b'),'"a""b"');
+const icsSource=src.match(/const escapeIcs=v=>([^\n]+);/);
+assert.ok(icsSource,"ICS escaping function found");
+const ics=vm.runInNewContext("(v)=>"+icsSource[1]);
+assert.equal(ics("a,b;c\\d\nnext"),String.raw`a\,b\;c\\d\nnext`);
+const summary=src.match(/function selectedSummary\(x\)\{([\s\S]*?)\n\}/);
+assert.ok(summary&&summary[1].includes(".join('\\n')"),"summary uses real line separators");
+assert.match(src,/const iso=d=>\{const v=day\(d\);return \/\^\\d\{4\}-\\d\{2\}-\\d\{2\}\$\//,"calendar date validator must recognize YYYY-MM-DD");
+console.log("Exhibition CSV and ICS runtime encoding checks PASS");
