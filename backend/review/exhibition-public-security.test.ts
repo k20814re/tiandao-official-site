@@ -9,6 +9,6 @@ assert.match(source,/!u\.username&&!u\.password/,"official links must reject emb
 assert.ok(!source.includes("const csv=v=>'\"'+String(v??'')"),"unsafe CSV implementation must be removed");
 assert.match(source,/FETCH_PAGE_SIZE=500/,"fetch must use bounded pages");
 assert.match(source,/offset',String\(page\*FETCH_PAGE_SIZE\)/,"fetch must advance offset");
-assert.match(source,/if\(!complete\)throw new Error/,"cap must not silently truncate");
+assert.ok(source.includes('if(overflow.length)throw new Error'), 'overflow must be rejected');
 assert.match(source,/starts_at\.asc,id\.asc/,"pagination must use stable ordering");
 console.log("Exhibition export, pagination and public visibility static checks PASS");
