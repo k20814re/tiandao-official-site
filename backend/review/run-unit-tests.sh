@@ -37,5 +37,6 @@ node --experimental-strip-types backend/review/admin-login-static.test.ts
 node --experimental-strip-types backend/review/affiliate-static.test.ts
 node --experimental-strip-types backend/review/exhibition-public-security.test.ts
 node --experimental-strip-types backend/review/exhibition-paginated-load.test.ts
+EXHIBITION_TEST_ROWS=10000 node --experimental-strip-types backend/review/exhibition-paginated-load.test.ts
 node --experimental-strip-types backend/review/exhibition-export-runtime.test.ts
 echo "All exhibition review mock/policy test scripts completed."
