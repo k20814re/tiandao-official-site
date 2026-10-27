@@ -33,7 +33,7 @@ assert.equal(run([{...base,url:"https://www.anrdoezrs.net/click",approved:false}
 assert.equal(run([{...base,url:"https://www.anrdoezrs.net/click",category:"food"}]).root.hidden,true);
 const valid=run([{...base,url:"https://www.anrdoezrs.net/click"}]);
 assert.equal(valid.root.hidden,false);
-assert.equal(valid.nodes[2].children[0].rel,"sponsored nofollow noopener noreferrer");
-assert.equal(valid.nodes[2].children[0].target,"_blank");
+assert.equal(valid.nodes[2].children[0].children[0].rel,"sponsored nofollow noopener noreferrer");
+assert.equal(valid.nodes[2].children[0].children[0].target,"_blank");
 assert.ok(valid.nodes[1].textContent.includes("聯盟行銷揭露"));
 console.log("Booking CJ affiliate URL and disclosure checks PASS");
