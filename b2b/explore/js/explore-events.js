@@ -7,7 +7,8 @@ const $=id=>document.getElementById(id),form=$('event-filters'),results=$('event
 let events=[];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
-const day=v=>v?String(v).slice(0,10):'';
+const TAIPEI_DAY=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei'});
+const day=v=>{if(!v)return '';const raw=String(v);if(/^\d{4}-\d{2}-\d{2}$/.test(raw)){const d=new Date(raw+'T00:00:00Z');return Number.isFinite(d.getTime())&&d.toISOString().slice(0,10)===raw?raw:''}const d=new Date(raw);return Number.isFinite(d.getTime())?TAIPEI_DAY.format(d):''};
 const TODAY=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei'}).format(new Date());
 const eventType=x=>clean(x.industry)||({activity:'活動展演',exhibition:'展覽'}[x.event_type])||'展覽活動';
 const dateState=x=>{const s=day(x.starts_at),e=day(x.ends_at)||s;if(!s&&!e)return'日期待確認';if(e<TODAY)return'已結束';if(s&&s>TODAY)return'即將開始';return'展出中'};
