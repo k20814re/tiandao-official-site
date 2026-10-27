@@ -13,7 +13,7 @@ const PAGE_SIZE=10;
 let currentPage=1;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
-const safeOfficialUrl=v=>{try{const u=new window.URL(String(v||''));return ['https:','http:'].includes(u.protocol)?u.href:null}catch{return null}};
+const safeOfficialUrl=v=>{try{const u=new window.URL(String(v||''));return ['https:','http:'].includes(u.protocol)&&!u.username&&!u.password?u.href:null}catch{return null}};
 const day=v=>v?String(v).slice(0,10):'';
 const TODAY=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei'}).format(new Date());
 const eventType=x=>({b2b_trade_show:'B2B 專業商展',b2c_consumer_fair:'B2C 消費展',arts_exhibition:'藝文展',other_event:'其他活動'})[x.exhibition_category]||'尚未分類';
@@ -73,7 +73,7 @@ function renderNearby(type='food'){
  });
  panel.querySelector('#download-event-calendar')?.addEventListener('click',()=>{const ics=eventCalendar(x);if(!ics){alert('此展覽缺少有效開始日期，無法建立行事曆檔案。');return}saveTextFile('tiandao-exhibition-'+String(x.id).replace(/[^a-zA-Z0-9_-]/g,'')+'.ics',ics,'text/calendar;charset=utf-8')});
  panel.querySelector('#download-event-csv')?.addEventListener('click',()=>{
-  const csv=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const csv=v=>{let s=String(v??'');if(/^[\\s\\u0000-\\u001f]*[=+@-]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'};
   const fields=[['展覽',x.title_zh],['展覽類型',eventType(x)],['開始日期',day(x.starts_at)],['結束日期',day(x.ends_at)],['每日時段',hours(x.daily_hours)],['城市',x.city],['場館',x.venue_name],['地址',x.address],['主辦單位',x.organizer_name],['入場資訊',x.ticket_info],['來源查核',verified(x.source_checked_at||x.last_verified_at)],['來源網址',safeOfficialUrl(x.official_url)||'']];
   saveTextFile('tiandao-exhibition-'+String(x.id).replace(/[^a-zA-Z0-9_-]/g,'')+'.csv','\uFEFF'+fields.map(([k,v])=>csv(k)+','+csv(v)).join('\r\n'),'text/csv;charset=utf-8');
  });
