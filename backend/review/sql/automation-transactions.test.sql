@@ -39,6 +39,8 @@ declare runid uuid;live_run uuid;r jsonb;p jsonb;ev jsonb;before_count int;rid u
  r:=public.exhibition_automation_start('ci-only-token');live_run:=(r->>'run_id')::uuid;perform public.exhibition_automation_feed(live_run,'moc-exhibitions',10,true);
  r:=public.exhibition_automation_missing(live_run,'moc:ci-one',true,'https://cloud.culture.tw/detail',200);
  if (r->>'confirmations')::int<>1 or r->>'action'='archived' then raise exception 'first miss removed event';end if;
+ perform public.exhibition_automation_feed(live_run,'moc-exhibitions',10,true,array['moc:ci-one']);
+ if (select absent_checks from exhibition_automation.state where canonical_key='moc:ci-one')<>0 then raise exception 'reappeared record kept stale missing count';end if;
  update exhibition_automation.state set absent_checks=2,missing_since=now()-interval '25 hours',last_missing_at=now()-interval '7 hours' where canonical_key='moc:ci-one';
  perform public.exhibition_automation_finish(live_run,'{}',true);
  r:=public.exhibition_automation_start('ci-only-token');live_run:=(r->>'run_id')::uuid;perform public.exhibition_automation_feed(live_run,'moc-exhibitions',10,true);

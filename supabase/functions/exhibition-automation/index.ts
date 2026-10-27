@@ -34,7 +34,7 @@ Deno.serve(async(req:Request)=>{
   const sources=scope.sources??[];const perSource=Math.max(1,Math.floor(cfg.max_items/Math.max(1,sources.length)));
   for(const src of sources){
    if(!src.is_active||!src.is_authorized||!src.license_url)continue;
-   const f=await feed(src.code);const ok=await rpc('exhibition_automation_feed',{p_run:run,p_code:src.code,p_count:f.rows.length,p_complete:f.complete});if(!ok){errors.push(src.code+':feed_unverified');continue;}
+   const f=await feed(src.code);const ok=await rpc('exhibition_automation_feed',{p_run:run,p_code:src.code,p_count:f.rows.length,p_complete:f.complete,p_seen_keys:f.rows.map((r:any)=>src.code==='moc-exhibitions'?'moc:'+String(r.UID??''):'taipei-travel:'+String(r.id??''))});if(!ok){errors.push(src.code+':feed_unverified');continue;}
    const normal=src.code==='moc-exhibitions'?moc:taipei;
    const candidates=await Promise.all(f.rows.map(async(row:any)=>{const p=normal(row);return {p,h:await hash(p),old:state.get(p.canonical_key) as any}}));
    const keys=new Set(candidates.map(x=>x.p.canonical_key));
@@ -50,7 +50,7 @@ Deno.serve(async(req:Request)=>{
      }
     }));
    }
-   const missing=(scope.state??[]).filter((s:any)=>s.source_code===src.code&&!keys.has(s.canonical_key)&&s.publication_status!=='archived'&&s.ends_at&&Date.parse(s.ends_at)>Date.now()).slice(0,5);
+   const missing=(scope.state??[]).filter((s:any)=>s.source_code===src.code&&!keys.has(s.canonical_key)&&s.publication_status!=='archived'&&s.ends_at&&Date.parse(s.ends_at)>Date.now()).sort((a:any,b:any)=>Date.parse(a.last_checked_at??'1970-01-01')-Date.parse(b.last_checked_at??'1970-01-01')).slice(0,5);
    for(const s of missing){if(Date.now()-began>110000)break;const id=s.canonical_key.split(':').slice(1).join(':');const p=src.code==='moc-exhibitions'?moc({UID:id}):{external_id:id,detail_url:'https://www.travel.taipei/zh-tw/activity/details/'+encodeURIComponent(id)};const d=await detail(src.code,p);const r=await rpc('exhibition_automation_missing',{p_run:run,p_key:s.canonical_key,p_detail_absent:d.absent,p_detail_url:p.detail_url,p_http:d.status});counts[r.action]=(counts[r.action]??0)+1;}
   }
   const result={counts,errors,apply_changes:cfg.apply_changes,policy_version:POLICY_VERSION,mail_delivery:'connected_gmail_hourly_queue'};

@@ -70,14 +70,16 @@ returns jsonb language sql security definer set search_path=pg_catalog,public,ex
  select jsonb_build_object('sources',(select jsonb_agg(to_jsonb(s)) from public.trade_event_sources s where code in('moc-exhibitions','taipei-travel-activity')),
  'state',coalesce((select jsonb_agg(jsonb_build_object('canonical_key',s.canonical_key,'source_code',s.source_code,'input_hash',s.input_hash,'last_checked_at',s.last_checked_at,'ends_at',e.ends_at,'updated_at',e.updated_at,'publication_status',e.publication_status)) from exhibition_automation.state s left join public.trade_events e on e.id=s.event_id),'[]'::jsonb))
 $$;
-create function public.exhibition_automation_feed(p_run uuid,p_code text,p_count integer,p_complete boolean)
+create function public.exhibition_automation_feed(p_run uuid,p_code text,p_count integer,p_complete boolean,p_seen_keys text[] default '{}')
 returns boolean language plpgsql security definer set search_path=pg_catalog,public,exhibition_automation as $$
 declare previous integer;ok boolean;begin
  if not exists(select 1 from exhibition_automation.runs where id=p_run and status='running' and lease_until>now()) then raise exception 'inactive_run';end if;
  select last_count into previous from exhibition_automation.source_health where code=p_code;
  ok:=p_complete and p_count>0 and (previous is null or p_count>=previous*0.5);
  update exhibition_automation.runs set source_ok=source_ok||jsonb_build_object(p_code,ok) where id=p_run;
- if ok then insert into exhibition_automation.source_health values(p_code,p_count,now()) on conflict(code) do update set last_count=excluded.last_count,last_success_at=excluded.last_success_at;
+ if ok then
+ update exhibition_automation.state set absent_checks=0,missing_since=null,last_missing_at=null where source_code=p_code and canonical_key=any(p_seen_keys);
+ insert into exhibition_automation.source_health values(p_code,p_count,now()) on conflict(code) do update set last_count=excluded.last_count,last_success_at=excluded.last_success_at;
  else perform exhibition_automation.queue('source:'||p_code||':'||current_date,null,'來源查核失敗：'||p_code,0,'來源失敗、空清單、分頁未完成或筆數驟減；禁止判定資料移除',jsonb_build_object('source',p_code,'count',p_count,'previous_count',previous,'complete',p_complete));end if;
  return ok;
 end $$;
@@ -147,6 +149,7 @@ declare s exhibition_automation.state;cfg exhibition_automation.settings;e publi
  end if;
  perform exhibition_automation.queue('missing:'||p_key||':'||coalesce(first_missing::date::text,current_date::text),p_key,e.title_zh,sc,'來源清單未見：需完整清單及單筆官方API跨次確認；未確認前保留資料',jsonb_build_object('detail_url',p_detail_url,'detail_http',p_http,'confirmed_absent',confirmed,'confirmations',n,'first_missing_at',first_missing,'action',act));
  insert into exhibition_automation.evidence(run_id,canonical_key,kind,score,decision,details,before_event,after_event) values(p_run,p_key,'missing',sc,act,jsonb_build_object('detail_url',p_detail_url,'detail_http',p_http,'confirmed_absent',confirmed,'confirmations',n,'first_missing_at',first_missing),to_jsonb(e),case when act='archived' then (select to_jsonb(t) from public.trade_events t where id=e.id) else null end);
+ update exhibition_automation.state set last_checked_at=now(),latest_score=sc,latest_action=act where canonical_key=p_key;
  return jsonb_build_object('action',act,'score',sc,'confirmations',n);
 end $$;
 create function public.exhibition_automation_finish(p_run uuid,p_results jsonb,p_success boolean)
@@ -159,5 +162,5 @@ insert into exhibition_automation.state(canonical_key,source_code,event_id)
 select e.canonical_key,s.code,e.id from public.trade_events e join public.trade_event_sources s on s.id=e.source_id where (s.code='moc-exhibitions' and e.canonical_key like 'moc:%') or (s.code='taipei-travel-activity' and e.canonical_key like 'taipei-travel:%');
 revoke all on all functions in schema exhibition_automation from public,anon,authenticated;
 grant execute on all functions in schema exhibition_automation to service_role;
-revoke all on function public.exhibition_automation_start(text),public.exhibition_automation_scope(),public.exhibition_automation_feed(uuid,text,integer,boolean),public.exhibition_automation_submit(uuid,text,jsonb,jsonb,text),public.exhibition_automation_missing(uuid,text,boolean,text,integer),public.exhibition_automation_finish(uuid,jsonb,boolean) from public,anon,authenticated;
-grant execute on function public.exhibition_automation_start(text),public.exhibition_automation_scope(),public.exhibition_automation_feed(uuid,text,integer,boolean),public.exhibition_automation_submit(uuid,text,jsonb,jsonb,text),public.exhibition_automation_missing(uuid,text,boolean,text,integer),public.exhibition_automation_finish(uuid,jsonb,boolean) to service_role;
+revoke all on function public.exhibition_automation_start(text),public.exhibition_automation_scope(),public.exhibition_automation_feed(uuid,text,integer,boolean,text[]),public.exhibition_automation_submit(uuid,text,jsonb,jsonb,text),public.exhibition_automation_missing(uuid,text,boolean,text,integer),public.exhibition_automation_finish(uuid,jsonb,boolean) from public,anon,authenticated;
+grant execute on function public.exhibition_automation_start(text),public.exhibition_automation_scope(),public.exhibition_automation_feed(uuid,text,integer,boolean,text[]),public.exhibition_automation_submit(uuid,text,jsonb,jsonb,text),public.exhibition_automation_missing(uuid,text,boolean,text,integer),public.exhibition_automation_finish(uuid,jsonb,boolean) to service_role;
