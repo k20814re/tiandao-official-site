@@ -5,6 +5,9 @@ on:
       - codex/exhibition-admin-v1
     paths:
       - "backend/review/**"
+      - "b2b/explore/js/explore-events.js"
+      - "b2b/explore/js/affiliate-*.js"
+      - "b2b/explore/index.html"
       - "b2b/explore/review-preview.html"
       - "b2b/explore/admin-login.html"
       - "b2b/explore/js/admin-login.js"
