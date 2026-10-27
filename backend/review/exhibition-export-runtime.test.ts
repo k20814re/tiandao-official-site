@@ -19,5 +19,6 @@ const ics=vm.runInNewContext("(v)=>"+icsSource[1]);
 assert.equal(ics("a,b;c\\d\nnext"),String.raw`a\,b\;c\\d\nnext`);
 const summary=src.match(/function selectedSummary\(x\)\{([\s\S]*?)\n\}/);
 assert.ok(summary&&summary[1].includes(".join('\\n')"),"summary uses real line separators");
-assert.match(src,/const iso=d=>\{const v=day\(d\);return \/\^\\d\{4\}-\\d\{2\}-\\d\{2\}\$\//,"calendar date validator must recognize YYYY-MM-DD");
+assert.ok(src.includes("parsed.toISOString().slice(0,10)===v"),"calendar must reject impossible dates");
+assert.ok(src.includes("if(!end||end<start)return null"),"calendar must reject reversed ranges");
 console.log("Exhibition CSV and ICS runtime encoding checks PASS");
