@@ -19,6 +19,7 @@ node --experimental-strip-types backend/review/gmail-inbox-dry-run.test.ts
 node --experimental-strip-types backend/review/gmail-review-atomic-sql.test.ts
 node --experimental-strip-types backend/review/gmail-review-mfa-hardening-sql.test.ts
 node --experimental-strip-types backend/review/gmail-review-recorder.test.ts
+node --experimental-strip-types backend/review/gmail-review-rpc.test.ts
 node --experimental-strip-types backend/review/gmail-review-concurrency.test.ts
 node --experimental-strip-types backend/review/source-ingestion-policy.test.ts
 node --experimental-strip-types backend/review/publication-preflight.test.ts
