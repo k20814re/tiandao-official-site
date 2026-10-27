@@ -5,6 +5,7 @@ on:
       - codex/exhibition-admin-v1
     paths:
       - "backend/review/**"
+      - "supabase/functions/sync-taipei-events/**"
       - "b2b/explore/js/explore-events.js"
       - "b2b/explore/js/affiliate-*.js"
       - "b2b/explore/index.html"

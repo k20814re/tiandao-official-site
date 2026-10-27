@@ -15,3 +15,18 @@ for migration in \
   psql -X -v ON_ERROR_STOP=1 -f "backend/migrations/$migration"
 done
 psql -X -v ON_ERROR_STOP=1 -f backend/review/sql/review-transactions.test.sql
+psql -X -v ON_ERROR_STOP=1 -f backend/review/sql/review-concurrency-fixture.sql
+# Separate PostgreSQL sessions compete for the same one-time authorization.
+psql -X -v ON_ERROR_STOP=1 -f backend/review/sql/review-concurrent-call.sql &
+first_worker=$!
+psql -X -v ON_ERROR_STOP=1 -f backend/review/sql/review-concurrent-call.sql &
+second_worker=$!
+wait "$first_worker"
+wait "$second_worker"
+psql -X -v ON_ERROR_STOP=1 <<'SQL'
+do $$ begin
+ if (select count(*) from public.exhibition_gmail_review_decisions where review_id='concurrent-review')<>1 then raise exception 'concurrent review did not produce exactly one decision';end if;
+ if (select count(*) from public.exhibition_review_authorizations where review_id='concurrent-review' and consumed_at is not null)<>1 then raise exception 'concurrent authorization consumed incorrectly';end if;
+end $$;
+select 'PostgreSQL two-session one-time authorization checks PASS' as result;
+SQL
