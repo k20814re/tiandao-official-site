@@ -44,13 +44,13 @@ function saveTextFile(filename,content,mime){
  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>window.URL.revokeObjectURL(url),1000);
 }
 function eventCalendar(x){
- const iso=d=>{const v=day(d);return /^\\d{4}-\\d{2}-\\d{2}$/.test(v)?v.replaceAll('-',''):null};
+ const iso=d=>{const v=day(d);return /^\d{4}-\d{2}-\d{2}$/.test(v)?v.replaceAll('-',''):null};
  const start=iso(x.starts_at),end=iso(x.ends_at)||start;if(!start)return null;
  const d=new Date((day(x.ends_at)||day(x.starts_at))+'T12:00:00Z');if(Number.isNaN(d.getTime()))return null;d.setUTCDate(d.getUTCDate()+1);
  const exclusive=d.toISOString().slice(0,10).replaceAll('-','');
- const escapeIcs=v=>clean(v).replace(/\\\\/g,'\\\\\\\\').replace(/,/g,'\\\\,').replace(/;/g,'\\\\;').replace(/\\n/g,'\\\\n');
+ const escapeIcs=v=>clean(v).replace(/\\\\/g,'\\\\\\\\').replace(/,/g,'\\\\,').replace(/;/g,'\\\\;').replace(/\n/g,'\\\\n');
  const desc=['主辦：'+clean(x.organizer_name||'待確認'),'每日時段：'+(x.daily_hours_text||hours(x.daily_hours)),'入場資訊：'+clean(x.ticket_info||'待確認'),'來源：'+(safeOfficialUrl(x.official_url)||'未提供'),'請以主辦單位公告為準；本站不代訂。'].join('；');
- return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TianDao Commerce//Exhibition Reference//ZH','BEGIN:VEVENT','UID:tiandao-'+String(x.id).replace(/[^a-zA-Z0-9_-]/g,'')+'@tiandaoonline.com','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\\.\\d{3}/,''),'DTSTART;VALUE=DATE:'+start,'DTEND;VALUE=DATE:'+exclusive,'SUMMARY:'+escapeIcs(x.title_zh),'LOCATION:'+escapeIcs([x.venue_name,x.address].filter(Boolean).join('，')),'DESCRIPTION:'+escapeIcs(desc),'END:VEVENT','END:VCALENDAR'].join('\\r\\n')+'\\r\\n';
+ return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TianDao Commerce//Exhibition Reference//ZH','BEGIN:VEVENT','UID:tiandao-'+String(x.id).replace(/[^a-zA-Z0-9_-]/g,'')+'@tiandaoonline.com','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''),'DTSTART;VALUE=DATE:'+start,'DTEND;VALUE=DATE:'+exclusive,'SUMMARY:'+escapeIcs(x.title_zh),'LOCATION:'+escapeIcs([x.venue_name,x.address].filter(Boolean).join('，')),'DESCRIPTION:'+escapeIcs(desc),'END:VEVENT','END:VCALENDAR'].join('\r\n')+'\r\n';
 }
 function relatedExhibitions(x){
  const venue=clean(x.venue_name).toLowerCase(),city=clean(x.city).replace(/^臺/,'台').toLowerCase();
@@ -75,7 +75,7 @@ function renderNearby(type='food'){
  });
  panel.querySelector('#download-event-calendar')?.addEventListener('click',()=>{const ics=eventCalendar(x);if(!ics){alert('此展覽缺少有效開始日期，無法建立行事曆檔案。');return}saveTextFile('tiandao-exhibition-'+String(x.id).replace(/[^a-zA-Z0-9_-]/g,'')+'.ics',ics,'text/calendar;charset=utf-8')});
  panel.querySelector('#download-event-csv')?.addEventListener('click',()=>{
-  const csv=v=>{let s=String(v??'');if(/^[\\s\\u0000-\\u001f]*[=+@-]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'};
+  const csv=v=>{let s=String(v??'');if(/^[\s\u0000-\u001f]*[=+@-]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'};
   const fields=[['展覽',x.title_zh],['展覽類型',eventType(x)],['開始日期',day(x.starts_at)],['結束日期',day(x.ends_at)],['每日時段',hours(x.daily_hours)],['城市',x.city],['場館',x.venue_name],['地址',x.address],['主辦單位',x.organizer_name],['入場資訊',x.ticket_info],['來源查核',verified(x.source_checked_at||x.last_verified_at)],['來源網址',safeOfficialUrl(x.official_url)||'']];
   saveTextFile('tiandao-exhibition-'+String(x.id).replace(/[^a-zA-Z0-9_-]/g,'')+'.csv','\uFEFF'+fields.map(([k,v])=>csv(k)+','+csv(v)).join('\r\n'),'text/csv;charset=utf-8');
  });
