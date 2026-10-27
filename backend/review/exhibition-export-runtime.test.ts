@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import vm from "node:vm";
 const src=readFileSync("b2b/explore/js/explore-events.js","utf8");
-const csvSource=src.match(/const csv=v=>(\{let s=String\(v\?\?''\);[^\n]+\});/);
+const csvLine=src.split("\n").find(line=>line.includes("const csv=v=>"));
+const csvSource=csvLine?.match(/const csv=v=>(\{.*\});/);
 assert.ok(csvSource,"CSV encoder found");
 const csv=vm.runInNewContext("(v)=>"+csvSource[1]);
 for(const value of ["=1+1","+SUM(1,2)","-3+4","@cmd","\t=1+1","\r\n=1+1"]){
@@ -11,7 +12,8 @@ for(const value of ["=1+1","+SUM(1,2)","-3+4","@cmd","\t=1+1","\r\n=1+1"]){
  assert.ok(result.includes("'"),"formula-like input neutralized: "+JSON.stringify(value));
 }
 assert.equal(csv('a"b'),'"a""b"');
-const icsSource=src.match(/const escapeIcs=v=>([^\n]+);/);
+const icsLine=src.split("\n").find(line=>line.includes("const escapeIcs=v=>"));
+const icsSource=icsLine?.match(/const escapeIcs=v=>(.*);$/);
 assert.ok(icsSource,"ICS escaping function found");
 const ics=vm.runInNewContext("(v)=>"+icsSource[1]);
 assert.equal(ics("a,b;c\\d\nnext"),String.raw`a\,b\;c\\d\nnext`);
