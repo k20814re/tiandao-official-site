@@ -4,12 +4,14 @@
  * No booking, payment, user profiling, or third-party scripts.
  */
 (()=>{
- const allowed=new Set(['food','wear','stay','move','play','leisure']);
+ const allowed=new Set(['stay']); // Booking APAC launch scope: accommodation only.
  const httpsUrl=value=>{try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&!u.port&&!u.hostname.endsWith('.local')&&!['localhost','127.0.0.1','0.0.0.0'].includes(u.hostname)?u.href:null}catch{return null}};
  // Only a verified Booking.com/CJ partner link may appear in this first release.
  // This checks destination host, NOT commission eligibility or account approval.
- const partnerHostAllowed=(item,url)=>{if(item.partner!=='booking_apac')return false;try{const host=new URL(url).hostname.toLowerCase();return host==='booking.com'||host.endsWith('.booking.com')||host==='cj.com'||host.endsWith('.cj.com')||host==='anrdoezrs.net'||host.endsWith('.anrdoezrs.net')||host==='tkqlhce.com'||host.endsWith('.tkqlhce.com')||host==='jdoqocy.com'||host.endsWith('.jdoqocy.com')||host==='kqzyfj.com'||host.endsWith('.kqzyfj.com')||host==='dpbolvw.net'||host.endsWith('.dpbolvw.net')}catch{return false}};
+ const partnerHostAllowed=(item,url)=>{if(item.partner!=='booking_apac')return false;try{const host=new URL(url).hostname.toLowerCase();return host==='anrdoezrs.net'||host.endsWith('.anrdoezrs.net')||host==='tkqlhce.com'||host.endsWith('.tkqlhce.com')||host==='jdoqocy.com'||host.endsWith('.jdoqocy.com')||host==='kqzyfj.com'||host.endsWith('.kqzyfj.com')||host==='dpbolvw.net'||host.endsWith('.dpbolvw.net')}catch{return false}};
  const items=Array.isArray(window.TIANDAO_AFFILIATE_LINKS)?window.TIANDAO_AFFILIATE_LINKS:[];
+ // Generic Booking.com pages are not proof of an affiliate relationship.
+ // Require the publisher to enter a genuine, CJ-issued tracking URL.
  const root=document.getElementById('affiliate-recommendations');
  if(!root)return;
  const valid=items.filter(x=>x&&allowed.has(x.category)&&typeof x.title==='string'&&x.title.trim().length>1&&x.title.length<=100&&x.approved===true&&httpsUrl(x.url)&&partnerHostAllowed(x,httpsUrl(x.url)));
