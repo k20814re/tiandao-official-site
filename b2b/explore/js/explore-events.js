@@ -20,7 +20,7 @@ const day=v=>v?String(v).slice(0,10):'';
 const TODAY=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei'}).format(new Date());
 const eventType=x=>({b2b_trade_show:'B2B 專業商展',b2c_consumer_fair:'B2C 消費展',arts_exhibition:'藝文展',other_event:'其他活動'})[x.exhibition_category]||'尚未分類';
 const dateState=x=>{const s=day(x.starts_at),e=day(x.ends_at)||s;if(!s&&!e)return'日期待確認';if(e<TODAY)return'已結束';if(s&&s>TODAY)return'即將開始';return'展出中'};
-const longRange=x=>{const s=new Date(day(x.starts_at)),e=new Date(day(x.ends_at));return !Number.isNaN(s)&&!Number.isNaN(e)&&(e-s)>1000*60*60*24*730};
+const longRange=x=>{const s=new Date(day(x.starts_at)),e=new Date(day(x.ends_at));return Number.isFinite(s.getTime())&&Number.isFinite(e.getTime())&&(e-s)>1000*60*60*24*730};
 const date=v=>{const d=day(v);return d?d.replaceAll('-','/'):'尚待確認'};
 const verified=v=>{if(!v)return'尚待確認';const d=new Date(v);return Number.isNaN(d.getTime())?'尚待確認':new Intl.DateTimeFormat('zh-TW',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Taipei'}).format(d)};
 function status(title,message,error=false,retry=false){results.innerHTML=`<div class="event-status${error?' is-error':''}"><p><b>${esc(title)}</b><br>${esc(message)}</p>${retry?'<button class="retry-button" type="button">重新載入</button>':''}</div>`;results.querySelector('.retry-button')?.addEventListener('click',load)}
