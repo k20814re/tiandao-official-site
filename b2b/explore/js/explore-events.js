@@ -46,7 +46,7 @@ function saveTextFile(filename,content,mime){
 function eventCalendar(x){
  const iso=d=>{
   const v=day(d);
-  if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(v))return null;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(v))return null;
   const parsed=new Date(v+'T12:00:00Z');
   return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===v?v.replaceAll('-',''):null;
  };
