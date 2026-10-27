@@ -19,6 +19,8 @@ const context={window:{URL,location:{href:"https://example.test/b2b/explore/"}},
 vm.runInNewContext(script,context);
 for(let i=0;i<100&&!(overflowExpected?node("event-results").innerHTML.includes("目前無法載入"):node("event-results").innerHTML.includes("載入資料共 "+total+" 筆"));i++)await new Promise(resolve=>setImmediate(resolve));
 assert.equal(calls.length,Math.floor(Math.min(total,10000)/500)+1,"expected bounded page count");
+assert.ok(calls.every(u=>u.searchParams.get("publication_status")==="eq.published"&&u.searchParams.get("deleted_at")==="is.null"),"all requests must be publication-scoped");
+assert.equal(calls.at(-1).searchParams.get("offset"),String(total>=10000?10000:Math.floor(total/500)*500),"last request must probe correct offset");
 assert.equal(calls[0].searchParams.get("offset"),"0");
 assert.equal(calls[1].searchParams.get("offset"),"500");
 if(overflowExpected){
