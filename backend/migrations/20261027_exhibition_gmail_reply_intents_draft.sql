@@ -22,4 +22,7 @@ create unique index if not exists exhibition_gmail_one_verified_reply_per_batch
 alter table public.exhibition_gmail_reply_intents enable row level security;
 -- Backend-only: do not grant access to anon or authenticated clients.
 -- Confirming a reply must not update trade_events/publication_status.
+
+-- Supabase default table grants include TRUNCATE, which RLS does not govern.
+revoke all on public.exhibition_gmail_reply_intents from public,anon,authenticated;
 commit;

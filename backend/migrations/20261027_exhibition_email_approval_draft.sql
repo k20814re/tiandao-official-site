@@ -69,4 +69,11 @@ alter table public.exhibition_review_audit enable row level security;
 -- SECURITY: do not add direct client UPDATE/INSERT grants.
 -- Backend must authenticate publisher role and verify digest, expiry, token replay,
 -- all legal/fact gates, and event version before publishing transactionally.
+
+-- Supabase default table grants include TRUNCATE, which RLS does not govern.
+revoke all on public.exhibition_review_batches from public,anon,authenticated;
+revoke all on public.exhibition_review_items from public,anon,authenticated;
+revoke all on public.exhibition_review_challenges from public,anon,authenticated;
+revoke all on public.exhibition_notification_outbox from public,anon,authenticated;
+revoke all on public.exhibition_review_audit from public,anon,authenticated;
 commit;
