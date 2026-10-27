@@ -21,7 +21,7 @@ flowchart TD
 
 | 層 | 正式／已確認現況 | 尚缺 |
 |---|---|---|
-| 前台 | 正式頁成功載入 293 筆已發布資料，畫面依有效日期顯示 286 筆 | 商展覆蓋率、手機驗收、周邊真實資料 |
+| 前台 | 正式頁成功載入 293 筆已發布資料，畫面依有效日期顯示 286 筆；選取後可在站內看詳情，周邊面板仍顯示尚未接通 | 商展覆蓋率、手機驗收、周邊真實資料 |
 | 管理後台 | 1 位 publisher；已有管理介面 | 真實使用者登入及 MFA 流程驗收 |
 | 資料庫 | TianDao-Global-B2B；PostgreSQL 17.11；313 筆：293 published、20 draft | 受控發布與審核資料表部署 |
 | 資料來源 | 4 筆來源設定；6 筆來源待辦 | 設定存在不等於同步排程啟用 |
@@ -57,7 +57,7 @@ flowchart TD
 - commit 12d2805：原有離線 CI 通過。
 - commit 5a6a4ee：隔離 PostgreSQL 交易測試及離線測試兩個 jobs 都通過（run 40463091665）。
 - 實際 SQL 涵蓋一次性授權、重複 Gmail ID 回滾、錯誤 evidence 回滾、非法／過長 ID、舊 Boolean MFA RPC 移除、客戶端權限、禁止直接發布及 outbox 租約。
-- 最新追加雙 PostgreSQL session 競爭同一授權與臺北同步模擬測試，須以最新 CI 結果為準。
+- 最新 commit 0ef4caee：雙 PostgreSQL session 競爭同一授權及臺北同步模擬測試全部通過（run 40463418128，兩個 jobs 成功）。
 - 沒有真正寄信、沒有完成 Google OAuth、沒有在正式環境部署草稿 SQL 或同步新版，沒有合併 main。
 
 ## 接續順序
