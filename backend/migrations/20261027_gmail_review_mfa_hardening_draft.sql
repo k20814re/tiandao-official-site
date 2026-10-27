@@ -52,12 +52,12 @@ begin
  and evidence_sha256=p_evidence_sha256
  and consumed_at is null and expires_at>clock_timestamp()
  returning review_id into v_review_id;
- if v_review_id is null then return false;end if;
+ if v_review_id is null then\n  raise exception using errcode='P0001', message='review_challenge_not_consumable';\n end if;
  insert into public.exhibition_gmail_review_decisions
  (gmail_message_id,review_id,admin_id,decision,evidence_sha256)
  values(p_message_id,p_review_id,p_admin_id,p_decision,p_evidence_sha256);
  return true;
-exception when unique_violation then return false;
+exception\n when unique_violation or raise_exception then\n  -- Exception block rolls back BOTH prior UPDATEs as one subtransaction.\n  return false;
 end;
 $$;
 revoke all on function public.record_gmail_review_decision(text,text,uuid,text,text,text,uuid) from public,anon,authenticated;
