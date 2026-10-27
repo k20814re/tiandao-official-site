@@ -140,6 +140,7 @@
       </div>
     </section>
 
+    <section class="wrap" id="affiliate-recommendations" aria-label="聯盟行銷合作推薦" hidden></section>
     <section class="planner-section" id="planner" aria-labelledby="planner-title">
       <div class="wrap planner-layout">
         <div class="planner-copy"><p class="eyebrow">SPIKY DUCK EXHIBITION REFERENCE</p><h2 id="planner-title">刺鴨參展資訊整理</h2><img src="assets/guide-black-gold.png" alt="黑金刺鴨參展資訊整理" width="1280" height="1280"></div>
@@ -247,5 +248,6 @@
   byId('event-filters').addEventListener('reset', () => requestAnimationFrame(() => { document.querySelectorAll('.choice-chips button').forEach(item => item.classList.remove('is-selected')); document.querySelector('.choice-chips[data-target="event-query"] button[data-value=""]').classList.add('is-selected'); }));
 })();
 </script>
+<script src="js/affiliate-recommendations.js" defer></script>
 </body>
 </html>
