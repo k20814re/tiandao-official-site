@@ -7,4 +7,8 @@ assert.match(source,/const csv=v=>\{let s=String\(v\?\?''\)/,"CSV must sanitize 
 assert.match(source,/if\(\/\^\[.*?\]\*\[=\+@-\]\//,"CSV must block formula injection prefixes");
 assert.match(source,/!u\.username&&!u\.password/,"official links must reject embedded credentials");
 assert.ok(!source.includes("const csv=v=>'\"'+String(v??'')"),"unsafe CSV implementation must be removed");
-console.log("Exhibition export and public visibility static checks PASS");
+assert.match(source,/FETCH_PAGE_SIZE=500/,"fetch must use bounded pages");
+assert.match(source,/offset',String\(page\*FETCH_PAGE_SIZE\)/,"fetch must advance offset");
+assert.match(source,/if\(!complete\)throw new Error/,"cap must not silently truncate");
+assert.match(source,/starts_at\.asc,id\.asc/,"pagination must use stable ordering");
+console.log("Exhibition export, pagination and public visibility static checks PASS");
