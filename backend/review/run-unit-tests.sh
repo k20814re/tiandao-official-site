@@ -14,6 +14,7 @@ node --experimental-strip-types backend/review/gmail-review-reply.test.ts
 node --experimental-strip-types backend/review/gmail-review-gate.test.ts
 node --experimental-strip-types backend/review/gmail-review-pipeline.test.ts
 node --experimental-strip-types backend/review/gmail-review-atomic-sql.test.ts
+node --experimental-strip-types backend/review/gmail-review-recorder.test.ts
 node --experimental-strip-types backend/review/source-ingestion-policy.test.ts
 node --experimental-strip-types backend/review/publication-preflight.test.ts
 node --experimental-strip-types backend/review/outbox-worker.test.ts
