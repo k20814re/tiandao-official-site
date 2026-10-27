@@ -1,0 +1,21 @@
+import assert from "node:assert/strict";
+import {exchangeGmailCode,type TokenExchangeInput,type HttpFetch} from "./gmail-token-exchange.ts";
+const base:TokenExchangeInput={clientId:"client",clientSecret:"secret",redirectUri:"https://example.org/oauth/callback",code:"auth-code",codeVerifier:"v".repeat(43)};
+let calls=0;
+const http:HttpFetch=async(url,init)=>{
+ calls++;
+ assert.equal(url,"https://oauth2.googleapis.com/token");
+ assert.equal(init.method,"POST");
+ assert.equal(init.redirect,"error");
+ const params=new URLSearchParams(init.body);
+ assert.equal(params.get("code_verifier"),base.codeVerifier);
+ assert.equal(params.get("grant_type"),"authorization_code");
+ return {ok:true,status:200,json:async()=>({access_token:"access",refresh_token:"refresh",expires_in:3600,scope:"https://www.googleapis.com/auth/gmail.readonly"})};
+};
+assert.deepEqual(await exchangeGmailCode(base,http),{ok:true,accessToken:"access",refreshToken:"refresh",expiresIn:3600,scope:"https://www.googleapis.com/auth/gmail.readonly"});
+assert.equal(calls,1);
+assert.deepEqual(await exchangeGmailCode({...base,codeVerifier:"bad"},http),{ok:false,reason:"invalid_exchange_input"});
+assert.equal(calls,1);
+assert.deepEqual(await exchangeGmailCode(base,async()=>({ok:false,status:400,json:async()=>({error:"invalid_grant"})})),{ok:false,reason:"provider_rejected"});
+assert.deepEqual(await exchangeGmailCode(base,async()=>({ok:true,status:200,json:async()=>({access_token:"access",expires_in:3600,scope:"profile"})})),{ok:false,reason:"invalid_provider_response"});
+console.log("Gmail token exchange tests PASS");
