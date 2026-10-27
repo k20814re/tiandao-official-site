@@ -1,0 +1,17 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import vm from "node:vm";
+const config=readFileSync("b2b/explore/js/affiliate-config.js","utf8");
+const script=readFileSync("b2b/explore/js/affiliate-recommendations.js","utf8");
+const html=readFileSync("b2b/explore/index.html","utf8");
+assert.ok(html.indexOf('js/affiliate-config.js')<html.indexOf('js/affiliate-recommendations.js'));
+assert.ok(html.includes('id="affiliate-recommendations"'));
+const root={hidden:false,append(){throw Error("Unapproved links must not render");}};
+const sandbox={window:{},document:{getElementById:()=>root}};
+vm.runInNewContext(config,sandbox);
+vm.runInNewContext(script,sandbox);
+assert.equal(root.hidden,true);
+assert.equal(sandbox.window.TIANDAO_AFFILIATE_LINKS.length,0);
+assert.ok(script.includes("sponsored nofollow noopener noreferrer"));
+assert.ok(script.includes("partnerHostAllowed"));
+console.log("Affiliate launch-safe empty config PASS");
