@@ -1,0 +1,11 @@
+import assert from "node:assert/strict";
+import {checkTrustedAdminSession} from "./trusted-admin-session.ts";
+const now=1800000000000;
+const good={source:"verified_server_session" as const,adminId:"admin1",role:"publisher" as const,aal:"aal2" as const,mfaAt:now-1000,loginAt:now-2000};
+assert.equal(checkTrustedAdminSession(good,now),true);
+assert.equal(checkTrustedAdminSession(null,now),false);
+assert.equal(checkTrustedAdminSession({...good,aal:"aal1"},now),false);
+assert.equal(checkTrustedAdminSession({...good,role:"none"},now),false);
+assert.equal(checkTrustedAdminSession({...good,mfaAt:now-300001},now),false);
+assert.equal(checkTrustedAdminSession({...good,loginAt:now-1800001},now),false);
+console.log("Trusted admin session boundary tests PASS");
