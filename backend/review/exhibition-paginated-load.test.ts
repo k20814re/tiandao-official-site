@@ -15,7 +15,7 @@ const context={window:{URL,location:{href:"https://example.test/b2b/explore/"}},
  return {ok:true,json:async()=>rows.slice(offset,offset+Number(u.searchParams.get("limit")))};
 }};
 vm.runInNewContext(script,context);
-for(let i=0;i<20&&calls.length<2;i++)await new Promise(resolve=>setImmediate(resolve));
+for(let i=0;i<20&&!node("event-results").innerHTML.includes("載入資料共 501 筆");i++)await new Promise(resolve=>setImmediate(resolve));
 assert.equal(calls.length,2,"501 rows must require two requests");
 assert.equal(calls[0].searchParams.get("offset"),"0");
 assert.equal(calls[1].searchParams.get("offset"),"500");
