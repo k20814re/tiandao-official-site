@@ -8,6 +8,7 @@ node --experimental-strip-types backend/review/gmail-oauth.test.ts
 node --experimental-strip-types backend/review/gmail-oauth-state.test.ts
 node --experimental-strip-types backend/review/gmail-token-exchange.test.ts
 node --experimental-strip-types backend/review/gmail-token-vault.test.ts
+node --experimental-strip-types backend/review/gmail-readonly.test.ts
 node --experimental-strip-types backend/review/gmail-review-reply.test.ts
 node --experimental-strip-types backend/review/gmail-review-gate.test.ts
 node --experimental-strip-types backend/review/source-ingestion-policy.test.ts
