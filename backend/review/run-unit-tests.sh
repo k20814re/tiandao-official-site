@@ -45,3 +45,5 @@ node --experimental-strip-types backend/review/analytics-host.test.ts
 echo "All exhibition review mock/policy test scripts completed."
 node --experimental-strip-types backend/review/automation-policy.test.ts
 node --experimental-strip-types backend/review/automation-runtime.test.ts
+
+node --experimental-strip-types backend/review/gmail-batch-hold.test.ts

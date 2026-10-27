@@ -35,3 +35,22 @@ psql -X -v ON_ERROR_STOP=1 -f supabase/migrations/20261027071034_exhibition_auto
 psql -X -v ON_ERROR_STOP=1 -f backend/review/sql/automation-transactions.test.sql
 psql -X -v ON_ERROR_STOP=1 -f supabase/migrations/20261027080418_exhibition_automation_publish_guards.sql
 psql -X -v ON_ERROR_STOP=1 -f backend/review/sql/automation-publish-guards.test.sql
+
+psql -X -v ON_ERROR_STOP=1 -f supabase/migrations/20261027110250_exhibition_mail_hold_receipts.sql
+psql -X -v ON_ERROR_STOP=1 -f backend/review/sql/automation-reply-holds.test.sql
+psql -X -v ON_ERROR_STOP=1 -f backend/review/sql/automation-reply-concurrency-fixture.sql
+psql -X -v ON_ERROR_STOP=1 -f backend/review/sql/automation-reply-concurrent-call.sql &
+reply_worker_one=$!
+psql -X -v ON_ERROR_STOP=1 -f backend/review/sql/automation-reply-concurrent-call.sql &
+reply_worker_two=$!
+wait "$reply_worker_one"
+wait "$reply_worker_two"
+psql -X -v ON_ERROR_STOP=1 <<'SQL'
+do $$ begin
+ if (select count(*) from exhibition_automation.reply_receipts where reply_message_id='bb90')<>1
+ or (select applied_items from exhibition_automation.reply_receipts where reply_message_id='bb90')<>1
+ or not exists(select 1 from exhibition_automation.review_holds where canonical_key='moc:receipt-concurrent' and reply_message_id='bb90' and released_at is null)
+ then raise exception 'concurrent reply was not recorded exactly once';end if;
+end $$;
+select 'PostgreSQL concurrent Gmail reply receipt checks PASS' as result;
+SQL
