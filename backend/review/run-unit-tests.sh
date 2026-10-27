@@ -6,6 +6,7 @@ node --experimental-strip-types backend/review/anomaly-email-template.test.ts
 node --experimental-strip-types backend/review/resend-notifier.test.ts
 node --experimental-strip-types backend/review/gmail-review-reply.test.ts
 node --experimental-strip-types backend/review/gmail-review-gate.test.ts
+node --experimental-strip-types backend/review/source-ingestion-policy.test.ts
 node --experimental-strip-types backend/review/publication-preflight.test.ts
 node --experimental-strip-types backend/review/outbox-worker.test.ts
 node --experimental-strip-types backend/review/manual-exhibition-gate.test.ts
