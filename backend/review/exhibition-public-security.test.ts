@@ -1,0 +1,10 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const source=readFileSync("b2b/explore/js/explore-events.js","utf8");
+assert.match(source,/publication_status','eq\.published'/,"public search must query published rows only");
+assert.match(source,/deleted_at','is\.null'/,"deleted records must not appear");
+assert.match(source,/const csv=v=>\{let s=String\(v\?\?''\)/,"CSV must sanitize cells before quoting");
+assert.match(source,/if\(\/\^\[.*?\]\*\[=\+@-\]\//,"CSV must block formula injection prefixes");
+assert.match(source,/!u\.username&&!u\.password/,"official links must reject embedded credentials");
+assert.ok(!source.includes("const csv=v=>'\"'+String(v??'')"),"unsafe CSV implementation must be removed");
+console.log("Exhibition export and public visibility static checks PASS");
