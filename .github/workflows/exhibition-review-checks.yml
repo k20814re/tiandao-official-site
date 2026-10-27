@@ -16,6 +16,9 @@ on:
   pull_request:
     paths:
       - "backend/review/**"
+      - "b2b/explore/js/explore-events.js"
+      - "b2b/explore/js/affiliate-*.js"
+      - "b2b/explore/index.html"
       - "b2b/explore/review-preview.html"
       - ".github/workflows/exhibition-review-checks.yml"
 permissions:
