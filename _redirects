@@ -1,0 +1,8 @@
+# Unfinished B2B prototype pages are retained in Git but not publicly exposed on this preview deployment.
+# 302 is intentional: remove these rules after the pages pass release review.
+/b2b /b2b/explore/ 302
+/b2b/ /b2b/explore/ 302
+/b2b/index.html /b2b/explore/ 302
+/b2b/products.html /b2b/explore/ 302
+/b2b/suppliers.html /b2b/explore/ 302
+/b2b/inquiry.html /b2b/explore/ 302

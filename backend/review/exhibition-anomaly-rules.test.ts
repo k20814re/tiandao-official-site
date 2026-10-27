@@ -1,0 +1,20 @@
+import { evaluateExhibition, type Candidate, type Evidence } from "./exhibition-anomaly-rules.ts";
+function assert(condition: boolean, message: string) { if (!condition) throw new Error(message); }
+const candidate: Candidate = {title:"測試展覽",startsAt:"2026-11-13",endsAt:"2026-11-16",city:"臺北",venue:"南港展覽館",admissionHours:"10:00–18:00",ticketPrice:"依公告"};
+const evidence: Evidence = {officialEventUrl:"https://example.org/events/test-2026",officialTitle:"測試展覽",officialStartsAt:"2026-11-13",officialEndsAt:"2026-11-16",officialCity:"臺北",officialVenue:"南港展覽館",officialStatus:"scheduled",checkedAt:"2026-10-27T00:00:00+08:00",sourceTermsApproved:true,linkReachable:true};
+const base = evaluateExhibition(candidate,evidence);
+assert(base.status==="eligible_for_human_review","verified facts should be eligible for human review");
+assert(base.publishAllowed===false,"human approval is always required");
+const mismatch=evaluateExhibition({...candidate,startsAt:"2026-11-20"},{...evidence});
+assert(mismatch.anomalies.some(x=>x.code==="E002"&&x.severity==="blocker"),"date conflict must block");
+const license=evaluateExhibition(candidate,{...evidence,sourceTermsApproved:false});
+assert(license.anomalies.some(x=>x.code==="E005"&&x.severity==="blocker"),"missing source permission must block");
+const asset=evaluateExhibition(candidate,{...evidence,hasThirdPartyAssets:true});
+assert(asset.anomalies.some(x=>x.code==="E006"),"unlicensed asset must block");
+const home=evaluateExhibition(candidate,{...evidence,officialEventUrl:"https://example.org/"});
+assert(home.anomalies.some(x=>x.code==="E001"),"homepage is not an event page");
+const review=evaluateExhibition({...candidate,ticketPrice:undefined},evidence);
+assert(review.status==="review_required"&&review.anomalies.some(x=>x.code==="E008"),"missing price requires review");
+const cancelled=evaluateExhibition(candidate,{...evidence,officialStatus:"cancelled"});
+assert(cancelled.anomalies.some(x=>x.code==="E004"),"cancelled event must block");
+console.log("7 anomaly rule assertions passed");

@@ -1,0 +1,14 @@
+import assert from "node:assert/strict";
+import {submitTrustedReview} from "./gmail-review-orchestrator.ts";
+const now=1800000000000;
+const session={source:"verified_server_session" as const,adminId:"550e8400-e29b-41d4-a716-446655440000",role:"publisher" as const,aal:"aal2" as const,mfaAt:now-1000,loginAt:now-1000};
+const pending={reviewId:"REVIEW_1",messageId:"gmail_1",adminId:session.adminId,authorizationId:"550e8400-e29b-41d4-a716-446655440001",challengeSha256:"a".repeat(64),evidenceSha256:"b".repeat(64),decision:"approve" as const};
+let writes=0;
+const deps={loadSession:async()=>session,loadPendingDecision:async()=>pending,rpc:async()=>{writes++;return {data:true,error:null};}};
+assert.deepEqual(await submitTrustedReview("REVIEW_1",true,deps,now),{ok:true});
+assert.equal(writes,1);
+assert.equal((await submitTrustedReview("REVIEW_1",false,deps,now)).ok,false);
+assert.equal((await submitTrustedReview("REVIEW_1",true,{...deps,loadSession:async()=>({...session,aal:"aal1" as const})},now)).ok,false);
+assert.equal((await submitTrustedReview("REVIEW_1",true,{...deps,loadPendingDecision:async()=>({...pending,adminId:"forged"})},now)).ok,false);
+assert.equal(writes,1);
+console.log("Trusted Gmail review orchestration mock integration PASS");

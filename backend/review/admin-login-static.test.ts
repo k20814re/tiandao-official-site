@@ -1,0 +1,18 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import {Script} from "node:vm";
+const html=readFileSync("b2b/explore/admin-login.html","utf8");
+const js=readFileSync("b2b/explore/js/admin-login.js","utf8");
+new Script(js,{filename:"admin-login.js"});
+assert.match(html,/id="login"/);
+assert.match(html,/id="panel" hidden/);
+assert.match(js,/\/auth\/v1\/token\?grant_type=password/);
+assert.match(js,/\/rest\/v1\/exhibition_admin_profiles\?/);
+assert.match(js,/profile\.user_id!==auth\.user\.id/);
+assert.match(js,/\["editor","publisher"\]\.includes\(profile\.role\)/);
+assert.doesNotMatch(js,/localStorage|sessionStorage|service_role|\.update\(|\.insert\(/);
+assert.match(html,/id="load-events"/);
+assert.match(js,/publication_status=in\.\(draft,review\)/);
+assert.match(js,/currentToken!==token/);
+assert.match(js,/list\.replaceChildren\(\)/);
+console.log("Admin login static guards PASS (no network or database)");

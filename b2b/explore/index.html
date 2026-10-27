@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#080b18">
+  <!-- Cloudflare Web Analytics: existing public token; enabled on the production host only. -->
+  <meta name="tiandao-cloudflare-analytics-token" content="1bc011f45a4b4e9ab0f36963e4c43844">
   <meta name="description" content="天道商貿台灣商務探索：聚焦台灣商展、產業、城市與商務旅程資訊。">
   <title>台灣商務探索｜天道商貿 B2B</title>
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
@@ -12,9 +14,65 @@
 /* Click-first controls */
 .easy-search{grid-template-columns:2fr 1fr 1fr 1fr auto}.full-row{grid-column:1/-1}.quick-row{display:grid;grid-template-columns:125px 1fr;align-items:center;gap:12px}.quick-label{color:var(--cream);font-size:12px;font-weight:800}.choice-chips{display:flex;flex-wrap:wrap;gap:8px}.choice-chips button{min-height:36px;padding:7px 14px;border:1px solid #ffffff24;border-radius:999px;background:#12192a;color:#d5d1d4;cursor:pointer}.choice-chips button:hover,.choice-chips button:focus-visible,.choice-chips button.is-selected{border-color:var(--gold);background:#2b241d;color:var(--gold-light);box-shadow:0 0 0 2px #e8b85e15}.tap-hint{margin:0 0 18px;padding:12px 14px;border-left:3px solid var(--gold);background:#e8b85e0d;color:#cbc6ca;font-size:12px}@media(max-width:1020px){.easy-search{grid-template-columns:2fr 1fr 1fr}.easy-search .search-actions{grid-column:1/-1}}@media(max-width:680px){.easy-search{grid-template-columns:1fr 1fr}.quick-row{grid-template-columns:1fr;gap:7px}.choice-chips{display:grid;grid-template-columns:repeat(3,1fr)}.choice-chips button{padding-inline:8px}.easy-search .search-field,.easy-search .search-actions{grid-column:1/-1}}@media(max-width:420px){.choice-chips{grid-template-columns:repeat(2,1fr)}.easy-search{grid-template-columns:1fr}.easy-search .search-field,.easy-search .search-actions{grid-column:auto}}
 
+
+/* Discovery modules: preview-only; no external data access. */
+.module-preview{padding:72px 0 48px;background:#0b1020}
+.module-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:12px}
+.module-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;min-height:152px;padding:18px 9px;text-align:center;border:1px solid #ffffff22;border-radius:18px;background:#12192a;color:#f8f1e3;text-decoration:none}
+.module-symbol{display:grid;place-items:center;width:43px;height:43px;border:1px solid #e7b65b66;border-radius:50%;color:#e7b65b;font-size:22px}
+.module-tile strong{font-size:19px}.module-tile small{font-size:11px;color:#c5bdaf;line-height:1.5}
+.module-live{border-color:#d9a851;background:#2b241d}.module-live:hover,.module-live:focus-visible{outline:2px solid #e7b65b;outline-offset:3px}
+.module-pending{opacity:.67;cursor:default}
+@media(max-width:1050px){.module-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:600px){.module-preview{padding:46px 0 24px}.module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.module-tile{min-height:125px}}
+
+/* Affiliate disclosure: first-party presentation, no third-party embeds. */
+#affiliate-recommendations:not([hidden]){display:block;margin:32px auto 56px;padding:24px;border:1px solid #e8b85e66;border-radius:16px;background:#12192a}
+#affiliate-recommendations h3{margin:0 0 12px;color:#f8eed8}
+#affiliate-recommendations p{max-width:78ch;color:#d6cec3;font-size:14px;line-height:1.75}
+#affiliate-recommendations ul{display:flex;flex-wrap:wrap;gap:12px;list-style:none;margin:18px 0 0;padding:0}
+#affiliate-recommendations a{display:inline-block;padding:12px 18px;border:1px solid #e8b85e;border-radius:10px;color:#ffe0a0;text-decoration:none;font-weight:700}
+#affiliate-recommendations a:hover,#affiliate-recommendations a:focus-visible{background:#2b241d;outline:2px solid #e8b85e55}
+@media(max-width:600px){#affiliate-recommendations:not([hidden]){margin:20px auto 36px;padding:18px}#affiliate-recommendations a{width:100%;text-align:center}}
+
+/* Exhibition results pagination */
+.event-pagination{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;padding:20px 0 6px}
+.page-summary{font-size:12px;color:#c8c0b7}
+.page-controls{display:flex;align-items:center;flex-wrap:wrap;gap:7px}
+.page-controls button{min-width:38px;min-height:38px;padding:7px 11px;border:1px solid #e8b85e66;border-radius:9px;background:#12192a;color:#f8eed8;cursor:pointer}
+.page-controls button[aria-current="page"]{background:#e8b85e;color:#11131b;font-weight:800}
+.page-controls button:disabled{opacity:.35;cursor:not-allowed}
+.page-controls button:not(:disabled):hover,.page-controls button:focus-visible{border-color:#ffe2a0;outline:2px solid #e8b85e55}
+.page-ellipsis{padding:0 4px;color:#c8c0b7}
+@media(max-width:600px){.event-pagination{justify-content:center;text-align:center}.page-controls{justify-content:center}}
+
+/* Exhibition-specific, first-party attendee information panel */
+.attendee-info{width:100%;min-width:0}
+.attendee-info h3{margin:12px 0 6px}
+.attendee-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:22px 0}
+.attendee-facts>div{padding:12px 15px;border:1px solid #ffffff25;border-radius:10px;background:#0b1020;overflow-wrap:anywhere}
+.attendee-facts b,.attendee-facts span{display:block}.attendee-facts b{font-size:11px;color:#e8b85e}.attendee-facts span{font-size:13px;color:#f8eed8}
+.attendee-checks{margin:8px 0 20px;padding-left:23px}.attendee-checks li{padding:4px 0}
+.attendee-source{padding:16px;border:1px solid #e8b85e4d;border-radius:12px;background:#e8b85e0b}
+.attendee-source p{margin:8px 0 0;font-size:12px;color:#c8c0b7}
+@media(max-width:600px){.attendee-facts{grid-template-columns:1fr}}
 </style>
+<script>
+/* Optional Cloudflare Web Analytics. Empty token = disabled. Do not place API secrets here. */
+(function(){
+  if(!['tiandaoonline.com','www.tiandaoonline.com'].includes(window.location.hostname))return;
+  var token=document.querySelector('meta[name="tiandao-cloudflare-analytics-token"]')?.content.trim();
+  if(!token||!/^[a-f0-9]{32}$/i.test(token))return;
+  var script=document.createElement('script');
+  script.defer=true;
+  script.src='https://static.cloudflareinsights.com/beacon.min.js';
+  script.setAttribute('data-cf-beacon',JSON.stringify({token:token}));
+  document.head.appendChild(script);
+})();
+</script>
 </head>
 <body>
+  
   <a class="skip-link" href="#main">跳到主要內容</a>
   <header class="site-header">
     <div class="wrap nav">
@@ -24,10 +82,6 @@
       </a>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">選單</button>
       <nav class="links" id="primary-nav" aria-label="主要導覽">
-
-
-
-
         <a class="nav-current" href="index.html" aria-current="page">台灣探索</a>
       </nav>
     </div>
@@ -43,7 +97,6 @@
           <p class="hero-lead">先聚焦台灣各地商展、產業與城市資訊，跟著黑金刺鴨一步步整理商務探索路徑；資料不足時不猜測，也不假裝有即時答案。</p>
           <div class="hero-actions">
             <a class="button" href="#route">開始探索 <span aria-hidden="true">↘</span></a>
-            
           </div>
         </div>
         <div class="guide-stage">
@@ -68,7 +121,8 @@
           <div class="quick-row full-row"><span class="quick-label">② 想去哪裡？</span><div class="choice-chips" data-target="event-country"><button type="button" data-value="">全台灣</button><button type="button" data-value="台北">台北</button><button type="button" data-value="桃園">桃園</button><button type="button" data-value="台中">台中</button><button type="button" data-value="台南">台南</button><button type="button" data-value="高雄">高雄</button></div></div>
           <div class="quick-row full-row"><span class="quick-label">③ 什麼時候？</span><div class="choice-chips date-chips"><button type="button" data-date-range="30">未來 30 天</button><button type="button" data-date-range="90">未來 3 個月</button><button type="button" data-date-range="365">今年內</button></div></div>
           <label class="search-field"><span>也可以直接說想找什麼</span><input id="event-query" name="query" type="search" placeholder="全部展覽（不限制產業）" autocomplete="off"></label>
-          <label><span>城市</span><select id="event-country" name="city"><option value="">全台灣</option><option>台北</option><option>桃園</option><option>台中</option><option>台南</option><option>高雄</option><option>其他地區</option></select></label>
+          <label><span>展覽性質</span><select id="event-category" name="category"><option value="">全部性質</option><option value="b2b_trade_show">B2B 專業商展</option><option value="b2c_consumer_fair">B2C 消費展</option><option value="arts_exhibition">藝文展</option><option value="other_event">其他活動</option><option value="unclassified">尚未分類</option></select></label>
+          <label><span>城市</span><select id="event-country" name="city"><option value="">全台灣（22縣市）</option><option value="基隆">基隆</option><option value="台北">台北</option><option value="新北">新北</option><option value="桃園">桃園</option><option value="新竹市">新竹市</option><option value="新竹縣">新竹縣</option><option value="苗栗">苗栗</option><option value="台中">台中</option><option value="彰化">彰化</option><option value="南投">南投</option><option value="雲林">雲林</option><option value="嘉義市">嘉義市</option><option value="嘉義縣">嘉義縣</option><option value="台南">台南</option><option value="高雄">高雄</option><option value="屏東">屏東</option><option value="宜蘭">宜蘭</option><option value="花蓮">花蓮</option><option value="台東">台東</option><option value="澎湖">澎湖</option><option value="金門">金門</option><option value="連江">連江</option></select></label>
           <label><span>開始日期</span><input id="event-from" name="from" type="date"></label>
           <label><span>結束日期</span><input id="event-to" name="to" type="date"></label>
           <div class="search-actions"><button class="web-search-button" type="submit">幫我找商展</button><button class="filter-reset" id="filter-reset" type="reset">重選</button></div>
@@ -87,33 +141,31 @@
 
     <section class="journey-section" id="journey" aria-labelledby="journey-title">
       <div class="wrap">
-        <div class="section-intro"><p class="eyebrow">FOOD · WEATHER · STAY · MOVE · PLAY</p><h2 id="journey-title">食衣住行玩樂情報</h2></div>
-        <div class="journey-tabs" role="tablist" aria-label="旅程情報分類">
+        <div class="section-intro"><p class="eyebrow">FOOD · WEATHER · STAY · MOVE · PLAY</p><h2 id="journey-title">參展周邊資訊</h2><p>先選擇商展，在本站查看展覽場館、日期與餐飲、商務穿搭、住宿、交通及會後休閒的規劃提醒；有合法授權的周邊資料後再逐步顯示。不提供訂票、訂房、付款或代訂服務。</p></div>
+        <p class="event-status" id="journey-context" role="status">請先從上方選擇展覽，才會顯示對應地區的參展配套資訊。</p>
+        <div class="journey-tabs" role="tablist" aria-label="參展周邊資訊分類">
           <button class="journey-tab is-active" type="button" data-journey="food">食<small>美食</small></button><button class="journey-tab" type="button" data-journey="wear">衣<small>天氣穿搭</small></button><button class="journey-tab" type="button" data-journey="stay">住<small>住宿</small></button><button class="journey-tab" type="button" data-journey="move">行<small>交通</small></button><button class="journey-tab" type="button" data-journey="play">玩<small>觀光</small></button><button class="journey-tab" type="button" data-journey="leisure">樂<small>休閒</small></button>
         </div>
-        <div class="journey-panel" id="journey-panel"><div><span class="status-chip">P1 · 尚未接通</span><h3>食類資料尚未接通</h3><p>選定有可靠來源的商展並接入相應資料服務後，才會顯示內容。</p></div><div class="pending-card"><b>目前沒有資料</b><span>不使用固定推薦或虛構即時資訊。</span></div></div>
+        <div class="journey-panel" id="journey-panel"><div><span class="status-chip">P1 · 尚未接通</span><h3>請先選擇商展</h3><p>選定有可靠來源的商展並接入相應資料服務後，才會顯示內容。</p></div><div class="pending-card"><b>目前沒有資料</b><span>不使用固定推薦或虛構即時資訊。</span></div></div>
       </div>
     </section>
 
+    <section class="wrap" id="affiliate-recommendations" aria-label="聯盟行銷合作推薦" hidden></section>
     <section class="planner-section" id="planner" aria-labelledby="planner-title">
       <div class="wrap planner-layout">
-        <div class="planner-copy"><p class="eyebrow">SPIKY DUCK TAIWAN BUSINESS ASSISTANT</p><h2 id="planner-title">刺鴨台灣商務旅程助手</h2><img src="assets/guide-black-gold.png" alt="黑金刺鴨旅程助手" width="1280" height="1280"></div>
-        <form class="planner-form" id="planner-form">
-          <p class="tap-hint">大多數條件用選的就好；商展接通後，選中的展覽會自動帶入。</p>
-          <div class="planner-grid">
-            <label><span>從哪裡出發</span><select name="origin" required><option value="">請選擇</option><option>基隆</option><option>台北</option><option>新北</option><option>桃園</option><option>新竹</option><option>台中</option><option>彰化</option><option>嘉義</option><option>台南</option><option>高雄</option><option>屏東</option><option>宜蘭</option><option>花蓮</option><option>台東</option></select></label><label><span>要去哪裡</span><select name="destination" required><option value="">請選擇</option><option>台北</option><option>南港</option><option>桃園</option><option>台中</option><option>台南</option><option>高雄</option><option>其他地區</option></select></label>
-            <label class="full"><span>展覽名稱</span><select name="event" required><option value="">請先從上方搜尋並選擇商展</option></select></label>
-            <label><span>出發日期</span><input name="depart" type="date" required></label><label><span>返回日期</span><input name="return" type="date" required></label>
-            <label><span>每日活動時段</span><select name="hours"><option value="09:00–18:00">白天 09:00–18:00</option><option value="08:00–20:00">整天 08:00–20:00</option><option value="13:00–21:00">午後 13:00–21:00</option></select></label><label><span>每人預算</span><select name="budget"><option value="">不限定</option><option value="5000">5,000 元內</option><option value="10000">10,000 元內</option><option value="20000">20,000 元內</option><option value="30000">30,000 元內</option></select></label>
-            <input type="hidden" name="currency" value="TWD"><label><span>交通偏好</span><select name="transport"><option>大眾運輸優先</option><option>高鐵優先</option><option>台鐵優先</option><option>自行開車</option><option>無偏好</option></select></label>
-            <label><span>飲食需求</span><select name="diet"><option>無特殊需求</option><option>素食</option><option>全素</option><option>清真</option><option>不吃牛</option></select></label><label><span>住宿需求</span><select name="stay"><option>展館附近</option><option>車站附近</option><option>價格優先</option><option>交通便利優先</option><option>不需要住宿</option></select></label>
-            <label class="full"><span>旅程重點</span><select name="preferences"><option>商展優先</option><option>商展＋商務洽談</option><option>商展＋附近觀光</option><option>輕鬆不趕行程</option></select></label>
-          </div>
-          <button class="button planner-submit" type="submit">建立智慧行程</button>
-          <p class="form-fineprint">目前不會傳送或儲存表單內容。AI 排程、即時交通、房價與餐廳資料尚未接通。</p>
-        </form>
+        <div class="planner-copy"><p class="eyebrow">SPIKY DUCK EXHIBITION REFERENCE</p><h2 id="planner-title">刺鴨參展資訊整理</h2><img src="assets/guide-black-gold.png" alt="黑金刺鴨參展資訊整理" width="1280" height="1280"></div>
+        <div class="planner-form">
+          <p class="tap-hint">本平台只提供商展與周邊公開資訊查詢，協助您快速整理參展前需要核對的資料；不提供旅遊行程安排、訂票、訂房、代訂或代收款服務。</p>
+          <h3>參展前資訊核對</h3>
+          <ul class="attendee-checks">
+            <li>核對展覽名稱、主辦單位、展期與入場規則</li>
+            <li>核對展館地址、入口位置與公開交通資訊</li>
+            <li>自行查詢合法旅宿、餐飲及其他周邊服務</li>
+            <li>確認資料來源、最後更新時間與第三方公告</li>
+          </ul>
+          <p class="form-fineprint">本站不接受行程委託、不安排食宿交通、不提供付款或訂購功能。各項資訊請以來源單位最新公告為準。</p>
+        </div>
       </div>
-      <div class="wrap"><div class="timeline-output" id="timeline-output" hidden></div></div>
     </section>
     <section class="route-section" id="route" aria-labelledby="route-title">
       <div class="wrap">
@@ -167,7 +219,7 @@
       <div class="wrap cta-inner">
         <p class="eyebrow">YOUR NEXT MOVE</p>
         <h2 id="cta-title">方向清楚了，<br>再開始一場有準備的商務對話。</h2>
-        <p>瀏覽既有示範商品與供應商資料，或前往詢價頁整理需求。所有實際交易條件仍需由雙方另行查證與確認。</p>
+        <p>選擇商展後查看官方展期、場館與周邊資訊。所有交通、住宿及餐飲服務由第三方提供，本平台不代訂、不代收款。</p>
         <div class="hero-actions"></div>
       </div>
     </section>
@@ -184,9 +236,9 @@
     </section>
   </main>
 
-  <footer class="footer"><div class="wrap"><p class="service-disclaimer">天道商貿提供台灣商展、商務旅程、交通、住宿、美食與觀光等資訊整理及智慧行程建議。本平台不提供車票、飯店或展覽門票之代訂及代收款服務。各項價格、開放時間、班次與活動資訊可能異動，請以官方公告為準。</p><div class="footer-inner"><span>© 2026 TianDao B2B · 台灣商務探索</span><span><a href="../../index.html">返回天道原網站</a> · <a href="../index.html">B2B 首頁</a></span></div></div></footer>
+  <footer class="footer"><div class="wrap"><p class="service-disclaimer">天道商貿提供國際商展及參展相關公開資訊查詢與整理，協助使用者自行比較展覽、場館、天氣、交通、住宿、餐飲及周邊設施資訊。本平台不提供旅行行程安排、訂票、訂房、代訂、代收款或交易服務。各項價格、開放時間、班次與活動資訊可能異動，請以官方公告為準。</p><div class="footer-inner"><span>© 2026 TianDao B2B · 台灣商務探索</span><span><a href="index.html">台灣探索</a></span></div></div></footer>
   <script src="js/explore.js"></script>
-  <script src="js/explore-events.js?v=95a9d9b"></script>
+  <script src="js/explore-events.js?v=b491c20f"></script>
 <script>
 (() => {
   const byId = id => document.getElementById(id);
@@ -206,6 +258,7 @@
   byId('event-filters').addEventListener('reset', () => requestAnimationFrame(() => { document.querySelectorAll('.choice-chips button').forEach(item => item.classList.remove('is-selected')); document.querySelector('.choice-chips[data-target="event-query"] button[data-value=""]').classList.add('is-selected'); }));
 })();
 </script>
-<!-- Cloudflare Web Analytics --><script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"1bc011f45a4b4e9ab0f36963e4c43844"}'></script><!-- End Cloudflare Web Analytics -->
+<script src="js/affiliate-config.js" defer></script>
+<script src="js/affiliate-recommendations.js" defer></script>
 </body>
 </html>

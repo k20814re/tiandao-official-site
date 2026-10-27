@@ -1,0 +1,60 @@
+name: Exhibition review checks
+on:
+  push:
+    branches:
+      - codex/exhibition-admin-v1
+    paths:
+      - "backend/review/**"
+      - "supabase/migrations/**"
+      - "supabase/functions/exhibition-automation/**"
+      - "supabase/functions/sync-taipei-events/**"
+      - "b2b/explore/js/explore-events.js"
+      - "b2b/explore/js/affiliate-*.js"
+      - "b2b/explore/index.html"
+      - "b2b/explore/review-preview.html"
+      - "b2b/explore/admin-login.html"
+      - "b2b/explore/js/admin-login.js"
+      - "backend/migrations/**"
+      - ".github/workflows/exhibition-review-checks.yml"
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  review-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Run offline exhibition policy and preview tests
+        run: bash backend/review/run-unit-tests.sh
+
+  postgres-transactions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: ci-disposable-only
+          POSTGRES_DB: exhibition_review_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: ci-disposable-only
+      PGDATABASE: exhibition_review_test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test review migrations and real PostgreSQL transactions
+        run: bash backend/review/run-postgres-tests.sh

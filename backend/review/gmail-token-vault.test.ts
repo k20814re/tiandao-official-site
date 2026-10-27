@@ -1,0 +1,15 @@
+import assert from "node:assert/strict";
+import {randomBytes} from "node:crypto";
+import {encryptRefreshToken,decryptRefreshToken} from "./gmail-token-vault.ts";
+const key=randomBytes(32),token="test-refresh-token",admin="admin-001";
+const first=encryptRefreshToken(token,admin,"key-2026-01",key);
+const second=encryptRefreshToken(token,admin,"key-2026-01",key);
+assert.notEqual(first.ciphertext,token);
+assert.notEqual(first.iv,second.iv);
+assert.equal(decryptRefreshToken(first,admin,key),token);
+assert.throws(()=>decryptRefreshToken(first,"other-admin",key));
+assert.throws(()=>decryptRefreshToken(first,admin,randomBytes(32)));
+assert.throws(()=>decryptRefreshToken({...first,ciphertext:"AA"},admin,key));
+assert.throws(()=>encryptRefreshToken(token,admin,"key",randomBytes(16)));
+assert.throws(()=>encryptRefreshToken("",admin,"key",key));
+console.log("Gmail encrypted refresh token vault tests PASS");

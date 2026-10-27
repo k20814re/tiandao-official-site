@@ -2,27 +2,158 @@
 (()=>{
 const URL='https://ibvmfmgikraatiobpmmz.supabase.co/rest/v1/trade_events';
 const KEY='sb_publishable_nJ8cX-FtOkbzfgdz8Z2IJA_tcg58qfE';
-const SOURCE='https://data.gov.tw/dataset/6012';
+const SOURCE='https://data.gov.tw/';
 const $=id=>document.getElementById(id),form=$('event-filters'),results=$('event-results'),detail=$('detail-shell');
 let events=[];
+// Plan B: show only Supabase rows explicitly published by the authorized backend.
+// Previously embedded calendar leads were not verified event-specific records.
+// Do not merge those candidates into the public exhibition results.
+const sourceLabel=()=> '資料庫已發布';
+const PAGE_SIZE=10;
+const FETCH_PAGE_SIZE=500;
+const MAX_FETCH_PAGES=20; // fail visibly rather than silently claim full coverage
+let currentPage=1;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
-const day=v=>v?String(v).slice(0,10):'';
+const safeOfficialUrl=v=>{try{const u=new window.URL(String(v||''));return ['https:','http:'].includes(u.protocol)&&!u.username&&!u.password?u.href:null}catch{return null}};
+const TAIPEI_DAY=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei'});
+const day=v=>{if(!v)return '';const raw=String(v);if(/^\d{4}-\d{2}-\d{2}$/.test(raw)){const d=new Date(raw+'T00:00:00Z');return Number.isFinite(d.getTime())&&d.toISOString().slice(0,10)===raw?raw:''}const d=new Date(raw);return Number.isFinite(d.getTime())?TAIPEI_DAY.format(d):''};
 const TODAY=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei'}).format(new Date());
-const eventType=x=>clean(x.industry)||({activity:'活動展演',exhibition:'展覽'}[x.event_type])||'展覽活動';
+const eventType=x=>({b2b_trade_show:'B2B 專業商展',b2c_consumer_fair:'B2C 消費展',arts_exhibition:'藝文展',other_event:'其他活動'})[x.exhibition_category]||'尚未分類';
 const dateState=x=>{const s=day(x.starts_at),e=day(x.ends_at)||s;if(!s&&!e)return'日期待確認';if(e<TODAY)return'已結束';if(s&&s>TODAY)return'即將開始';return'展出中'};
-const longRange=x=>{const s=new Date(day(x.starts_at)),e=new Date(day(x.ends_at));return !Number.isNaN(s)&&!Number.isNaN(e)&&(e-s)>1000*60*60*24*730};
+const longRange=x=>{const s=new Date(day(x.starts_at)),e=new Date(day(x.ends_at));return Number.isFinite(s.getTime())&&Number.isFinite(e.getTime())&&(e-s)>1000*60*60*24*730};
 const date=v=>{const d=day(v);return d?d.replaceAll('-','/'):'尚待確認'};
 const verified=v=>{if(!v)return'尚待確認';const d=new Date(v);return Number.isNaN(d.getTime())?'尚待確認':new Intl.DateTimeFormat('zh-TW',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Taipei'}).format(d)};
 function status(title,message,error=false,retry=false){results.innerHTML=`<div class="event-status${error?' is-error':''}"><p><b>${esc(title)}</b><br>${esc(message)}</p>${retry?'<button class="retry-button" type="button">重新載入</button>':''}</div>`;results.querySelector('.retry-button')?.addEventListener('click',load)}
-function filters(){const d=new FormData(form);return{q:clean(d.get('query')).toLowerCase(),city:clean(d.get('city')),from:clean(d.get('from')),to:clean(d.get('to'))}}
-function apply(){const f=filters(),major=['臺北','台北','桃園','臺中','台中','臺南','台南','高雄'];const list=events.filter(x=>{const text=clean([x.title_zh,x.summary,x.organizer_name,x.city,x.venue_name,x.address].filter(Boolean).join(' ')).toLowerCase(),c=clean(x.city),s=day(x.starts_at),e=day(x.ends_at)||s;const cityOk=!f.city||(f.city==='其他地區'?!major.includes(c):c.includes(f.city)||c.includes(f.city.replace(/^台/,'臺'))),active=Boolean(e)&&e>=TODAY;return active&&(!f.q||text.includes(f.q))&&cityOk&&(!f.from||e>=f.from)&&(!f.to||s<=f.to)}).sort((a,b)=>{const aStart=day(a.starts_at),bStart=day(b.starts_at),aKey=aStart>=TODAY?aStart:day(a.ends_at),bKey=bStart>=TODAY?bStart:day(b.ends_at);return aKey.localeCompare(bKey)||clean(a.title_zh).localeCompare(clean(b.title_zh),'zh-Hant')});render(list)}
-function render(list){if(!list.length){status('找不到目前有效的展覽','請放寬關鍵字、城市或日期；已結束的活動不會顯示。');return}results.innerHTML=`<div class="data-bar is-live full-row"><div><span class="data-dot"></span><b>經審核的多來源展覽資料</b><small>目前有效 ${list.length} 筆／官方來源共 ${events.length} 筆</small></div><a class="official-link" href="${SOURCE}" target="_blank" rel="noopener">資料來源與授權 ↗</a></div><p class="coverage-note full-row">目前包含文化部既有資料；其他官方來源經後台審核後陸續發布，尚未等同全台所有商業展覽。</p>`+list.map(x=>{const s=day(x.starts_at),md=s?s.slice(5).replace('-','/'):'待定',state=dateState(x),loc=[x.city,x.venue_name].filter(Boolean).join(' · ')||'地點尚待確認',desc=clean(x.summary)||'官方來源未提供簡介。',rangeNote=longRange(x)?'<span class="event-tag is-warning">日期跨度較長｜請核對官方</span>':'';return`<article class="event-card"><div class="event-top"><div><span class="eyebrow">${esc(x.city||'台灣')}</span><h3>${esc(x.title_zh)}</h3><p class="event-location">${esc(loc)}</p></div><div class="event-date"><b>${esc(state==='展出中'?'展出中':md)}</b><span>${esc(state==='展出中'?'仍可參觀':s?s.slice(0,4):'日期')}</span></div></div><div class="event-tags"><span class="event-tag is-type">${esc(eventType(x))}｜官方未提供細分類</span><span class="event-tag is-state">${esc(state)}</span><span class="event-tag">${esc(date(x.starts_at))}－${esc(date(x.ends_at))}</span>${rangeNote}<span class="event-tag">官方來源</span></div><p>${esc(desc.slice(0,150))}${desc.length>150?'…':''}</p><div class="event-footer"><span class="source-meta">查核：${esc(verified(x.last_verified_at))}</span><button class="official-link detail-button" type="button" data-pick="${esc(x.id)}">查看詳情</button></div></article>`}).join('');results.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>pick(b.dataset.pick)))}function hours(value){if(!Array.isArray(value)||!value.length)return'尚待確認';return value.slice(0,8).map(v=>[clean(v.time||v.raw),clean(v.endTime),clean(v.locationName)].filter(Boolean).join('－')).join('； ')||'尚待確認'}
-function pick(id){const x=events.find(v=>String(v.id)===String(id));if(!x)return;const link=x.official_url||SOURCE;detail.innerHTML=`<article class="event-card"><p class="eyebrow">OFFICIAL SOURCE · 官方來源</p><h3>${esc(x.title_zh)}</h3><p>${esc(clean(x.summary)||'官方來源未提供簡介。')}</p><ul class="source-list"><li><b>展覽類型</b><span>${esc(eventType(x))}｜官方未提供細分類</span></li><li><b>展期狀態</b><span>${esc(dateState(x))}${longRange(x)?'｜日期跨度較長，請核對官方頁面':''}</span></li><li><b>日期</b><span>${esc(date(x.starts_at))}－${esc(date(x.ends_at))}</span></li><li><b>每日時段</b><span>${esc(hours(x.daily_hours))}</span></li><li><b>場館</b><span>${esc(x.venue_name||'尚待確認')}</span></li><li><b>地址</b><span>${esc(x.address||'尚待確認')}</span></li><li><b>主辦單位</b><span>${esc(x.organizer_name||'尚待確認')}</span></li><li><b>票價／報名</b><span>${esc(x.ticket_info||'尚待確認')}</span></li><li><b>資料查核</b><span>${esc(verified(x.last_verified_at))}</span></li></ul><div class="hero-actions"><a class="button" href="${esc(link)}" target="_blank" rel="noopener">前往官方頁面 ↗</a><a class="button ghost" href="${SOURCE}" target="_blank" rel="noopener">資料集與授權</a></div></article>`;const p=document.querySelector('#planner-form select[name="event"]');if(p){p.innerHTML=`<option value="${esc(x.id)}">${esc(x.title_zh)}</option>`;p.value=String(x.id)}$('event-detail')?.scrollIntoView({behavior:'smooth',block:'start'})}
-async function load(){results.innerHTML='<div class="event-status"><span class="spinner"></span><p><b>正在載入已審核展覽資料</b><br>資料來自多個經授權或人工查核的官方來源。</p></div>';try{const u=new window.URL(URL);u.searchParams.set('select','id,title_zh,summary,industry,event_type,city,venue_name,address,starts_at,ends_at,organizer_name,official_url,ticket_info,daily_hours,last_verified_at');u.searchParams.set('publication_status','eq.published');u.searchParams.set('deleted_at','is.null');u.searchParams.set('order','starts_at.asc,title_zh.asc');u.searchParams.set('limit','1000');const r=await fetch(u,{headers:{apikey:KEY,Accept:'application/json'}});if(!r.ok)throw new Error('HTTP '+r.status);const data=await r.json();if(!Array.isArray(data))throw new Error('資料格式錯誤');events=data;apply()}catch(e){console.error('Trade event load failed',e);status('官方展覽資料暫時無法載入','請稍後重試；本頁不會改用寫死資料或虛構結果。',true,true)}}
-form.addEventListener('submit',e=>{e.preventDefault();if(form.reportValidity())apply()});form.addEventListener('reset',()=>requestAnimationFrame(apply));
-document.querySelectorAll('.journey-tab').forEach(tab=>tab.addEventListener('click',()=>{document.querySelectorAll('.journey-tab').forEach(x=>x.classList.toggle('is-active',x===tab));const label=tab.childNodes[0].textContent.trim();$('journey-panel').innerHTML=`<div><span class="status-chip">P1 · 尚未接通</span><h3>${esc(label)}類資料尚未接通</h3><p>目前不顯示固定推薦；後續只接入有合法來源的資料。</p></div>`}));
-$('planner-form').addEventListener('submit',e=>{e.preventDefault();if(!e.currentTarget.reportValidity())return;const d=Object.fromEntries(new FormData(e.currentTarget));if(new Date(d.return)<new Date(d.depart)){alert('返回日期不能早於出發日期。');return}const o=$('timeline-output');o.hidden=false;o.innerHTML='<div class="timeline-head"><div><span class="status-chip">P1 · 尚未接通</span><h3>目前無法建立智慧行程</h3><p>AI、交通、住宿與餐廳資料尚未接通；表單沒有送出或儲存。</p></div></div>'});
+function filters(){const d=new FormData(form);return{q:clean(d.get('query')).toLowerCase(),city:clean(d.get('city')),from:clean(d.get('from')),to:clean(d.get('to')),category:clean(d.get('category'))}}
+function apply(resetPage=true){if(resetPage)currentPage=1;const f=filters(),normalizeCity=v=>clean(v).replaceAll('臺','台').replace(/(縣|市)$/,'');const list=events.filter(x=>{const text=clean([x.title_zh,x.summary,x.organizer_name,x.city,x.venue_name,x.address].filter(Boolean).join(' ')).toLowerCase(),c=clean(x.city),s=day(x.starts_at),e=day(x.ends_at)||s;const cityOk=!f.city||normalizeCity(c).includes(normalizeCity(f.city)),active=Boolean(e)&&e>=TODAY;return active&&(!f.category||(f.category==='unclassified'?!x.exhibition_category:x.exhibition_category===f.category))&&(!f.q||text.includes(f.q))&&cityOk&&(!f.from||e>=f.from)&&(!f.to||s<=f.to)}).sort((a,b)=>{const aStart=day(a.starts_at),bStart=day(b.starts_at),aKey=aStart>=TODAY?aStart:day(a.ends_at),bKey=bStart>=TODAY?bStart:day(b.ends_at);return aKey.localeCompare(bKey)||clean(a.title_zh).localeCompare(clean(b.title_zh),'zh-Hant')});render(list)}
+function render(list){if(!list.length){status('找不到目前有效的展覽','請放寬關鍵字、城市或日期；已結束的活動不會顯示。');return}const pageCount=Math.ceil(list.length/PAGE_SIZE);currentPage=Math.min(Math.max(1,currentPage),pageCount);const pageItems=list.slice((currentPage-1)*PAGE_SIZE,currentPage*PAGE_SIZE);results.innerHTML=`<div class="data-bar is-live full-row"><div><span class="data-dot"></span><b>展覽搜尋結果（資料庫＋人工查核）</b><small>目前符合 ${list.length} 筆／載入資料共 ${events.length} 筆</small></div><a class="official-link" href="${SOURCE}" target="_blank" rel="noopener">公開資料入口 ↗</a></div><p class="coverage-note full-row">目前整合資料庫與首批人工查核的各地展覽；尚未涵蓋全台所有縣市與展覽，展期與入場資訊請以來源網站為準。</p>`+pageItems.map(x=>{const s=day(x.starts_at),md=s?s.slice(5).replace('-','/'):'待定',state=dateState(x),loc=[x.city,x.venue_name].filter(Boolean).join(' · ')||'地點尚待確認',desc=clean(x.summary)||(x.source_kind?'人工整理檔期；入場時間與票務請再向主辦單位確認。':'官方來源未提供簡介。'),rangeNote=longRange(x)?'<span class="event-tag is-warning">日期跨度較長｜請核對官方</span>':'';return`<article class="event-card"><div class="event-top"><div><span class="eyebrow">${esc(x.city||'台灣')}</span><h3>${esc(x.title_zh)}</h3><p class="event-location">${esc(loc)}</p></div><div class="event-date"><b>${esc(state==='展出中'?'展出中':md)}</b><span>${esc(state==='展出中'?'仍可參觀':s?s.slice(0,4):'日期')}</span></div></div><div class="event-tags"><span class="event-tag is-type">${esc(eventType(x))}</span><span class="event-tag is-state">${esc(state)}</span><span class="event-tag">${esc(date(x.starts_at))}－${esc(date(x.ends_at))}</span>${rangeNote}<span class="event-tag">${esc(sourceLabel(x))}</span></div><p>${esc(desc.slice(0,150))}${desc.length>150?'…':''}</p><div class="event-footer"><span class="source-meta">${x.source_kind?'人工整理・入場資訊待核對':'查核：'+esc(verified(x.source_checked_at||x.last_verified_at))}</span><button class="official-link detail-button" type="button" data-pick="${esc(x.id)}">查看詳情</button></div></article>`}).join('')+`<nav class="event-pagination full-row" aria-label="展覽結果分頁"><span class="page-summary">第 ${currentPage} / ${pageCount} 頁 · 顯示 ${(currentPage-1)*PAGE_SIZE+1}–${Math.min(currentPage*PAGE_SIZE,list.length)} 筆，共 ${list.length} 筆</span><div class="page-controls"><button type="button" data-page="prev" ${currentPage===1?'disabled':''}>上一頁</button>${Array.from({length:pageCount},(_,i)=>i+1).filter(n=>n===1||n===pageCount||Math.abs(n-currentPage)<=2).reduce((a,n)=>{if(a.length&&n-a[a.length-1]>1)a.push(0);a.push(n);return a},[]).map(n=>n?`<button type="button" data-page="${n}" ${n===currentPage?'aria-current="page"':''}>${n}</button>`:'<span class="page-ellipsis" aria-hidden="true">…</span>').join('')}<button type="button" data-page="next" ${currentPage===pageCount?'disabled':''}>下一頁</button></div></nav>`;results.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>{const p=b.dataset.page;currentPage=p==='prev'?currentPage-1:p==='next'?currentPage+1:Number(p);render(list);$('events')?.scrollIntoView({behavior:'smooth',block:'start'})}));results.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>pick(b.dataset.pick)))}function hours(value){if(!Array.isArray(value)||!value.length)return'尚待確認';return value.slice(0,8).map(v=>[clean(v.time||v.raw),clean(v.endTime),clean(v.locationName)].filter(Boolean).join('－')).join('； ')||'尚待確認'}
+let selectedEvent=null;
+const nearbyTypes={
+ food:{title:'餐飲參考',description:'安排展前早餐、午餐及展後商務聚餐。',checks:['確認場館周邊用餐地點與營業時段','預留展覽尖峰時段的用餐時間','商務聚餐請自行向餐廳確認座位與費用']},
+ wear:{title:'商務穿搭',description:'依參展形式與季節準備服裝。',checks:['依展期自行確認當地天氣','攜帶適合長時間步行的鞋子','正式商務會談可準備名片與商務服裝']},
+ stay:{title:'住宿參考',description:'優先考慮前往展館的交通便利性。',checks:['確認飯店至場館的實際交通路線','核對入住及退房日期與展期','價格、空房與取消政策須向住宿業者確認']},
+ move:{title:'交通參考',description:'規劃出發地至展館的往返交通。',checks:['確認場館完整地址及入口位置','自行核對大眾運輸班次與末班車','預留展期尖峰時段的移動時間']},
+ play:{title:'會後觀光',description:'可在參展空檔安排城市探索。',checks:['依展覽結束時間安排景點','確認景點開放時間與交通','勿將未確認景點列為既定行程']},
+ leisure:{title:'會後休閒',description:'規劃商務會議後的休息與交流。',checks:['先確認當天展覽與會議結束時間','安排適當休息及移動時間','任何活動費用與入場規則應向業者核對']}
+};
+function selectedSummary(x){
+ return ['【天道商貿｜參展資訊】','展覽：'+clean(x.title_zh),'類型：'+eventType(x),'展期：'+date(x.starts_at)+'－'+date(x.ends_at),'每日時段：'+(x.daily_hours_text||hours(x.daily_hours)),'城市：'+clean(x.city||'尚待確認'),'場館：'+clean(x.venue_name||'尚待確認'),'地址：'+clean(x.address||'尚待確認'),'主辦：'+clean(x.organizer_name||'尚待確認'),'入場資訊：'+clean(x.ticket_info||'尚待確認'),'資料來源：'+sourceLabel(x),'資料查核：'+(x.source_kind?'人工整理，入場資訊待核對':verified(x.source_checked_at||x.last_verified_at)),'活動來源：'+(safeOfficialUrl(x.official_url)||'未提供'),'※ 僅供資訊整理，請向主辦單位確認；不提供代訂、行程安排或收款。'].join('\n');
+}
+function saveTextFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime}),url=window.URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>window.URL.revokeObjectURL(url),1000);
+}
+function eventCalendar(x){
+ const iso=d=>{
+  const v=day(d);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(v))return null;
+  const parsed=new Date(v+'T12:00:00Z');
+  return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===v?v.replaceAll('-',''):null;
+ };
+ const start=iso(x.starts_at);
+ if(!start)return null;
+ const end=x.ends_at?iso(x.ends_at):start;
+ if(!end||end<start)return null;
+ const d=new Date((x.ends_at?day(x.ends_at):day(x.starts_at))+'T12:00:00Z');
+ d.setUTCDate(d.getUTCDate()+1);
+ const exclusive=d.toISOString().slice(0,10).replaceAll('-','');
+ const escapeIcs=v=>String(v??'').replace(/\\/g,'\\\\').replace(/\r?\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');
+ const desc=['主辦：'+clean(x.organizer_name||'待確認'),'每日時段：'+(x.daily_hours_text||hours(x.daily_hours)),'入場資訊：'+clean(x.ticket_info||'待確認'),'來源：'+(safeOfficialUrl(x.official_url)||'未提供'),'請以主辦單位公告為準；本站不代訂。'].join('；');
+ return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TianDao Commerce//Exhibition Reference//ZH','BEGIN:VEVENT','UID:tiandao-'+String(x.id).replace(/[^a-zA-Z0-9_-]/g,'')+'@tiandaoonline.com','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''),'DTSTART;VALUE=DATE:'+start,'DTEND;VALUE=DATE:'+exclusive,'SUMMARY:'+escapeIcs(x.title_zh),'LOCATION:'+escapeIcs([x.venue_name,x.address].filter(Boolean).join('，')),'DESCRIPTION:'+escapeIcs(desc),'END:VEVENT','END:VCALENDAR'].join('\r\n')+'\r\n';
+}
+function relatedExhibitions(x){
+ const venue=clean(x.venue_name).toLowerCase(),city=clean(x.city).replace(/^臺/,'台').toLowerCase();
+ if(!venue||venue.length<3)return[];
+ return events.filter(e=>String(e.id)!==String(x.id)&&clean(e.venue_name).toLowerCase()===venue&&clean(e.city).replace(/^臺/,'台').toLowerCase()===city&&day(e.ends_at)>=TODAY).sort((a,b)=>day(a.starts_at).localeCompare(day(b.starts_at))).slice(0,5);
+}
+function renderNearby(type='food'){
+ const panel=$('journey-panel');if(!panel)return;
+ if(!selectedEvent){panel.innerHTML='<div><h3>請先選擇展覽</h3><p>參展資訊將依所選展覽顯示。</p></div>';return}
+ const x=selectedEvent,t=nearbyTypes[type]||nearbyTypes.food;
+ const facts=[['展覽',x.title_zh],['展覽類型',eventType(x)],['城市',clean(x.city)||'尚待確認'],['場館',clean(x.venue_name)||'尚待確認'],['地址',clean(x.address)||'尚待確認'],['展期',date(x.starts_at)+'－'+date(x.ends_at)],['每日時段',hours(x.daily_hours)],['主辦單位',clean(x.organizer_name)||'尚待確認'],['入場資訊',clean(x.ticket_info)||'尚待確認'],['來源查核時間',verified(x.source_checked_at||x.last_verified_at)]];
+ const related=relatedExhibitions(x);
+ const relatedHtml=related.length?'<h4>同場館其他已發布展覽</h4><p class="coverage-note">依資料庫的相同城市與場館名稱比對，非周邊商家資料；請核對展期。</p><div class="attendee-facts">'+related.map(e=>'<div><b>'+esc(date(e.starts_at)+'－'+date(e.ends_at))+'</b><span>'+esc(e.title_zh)+'｜'+esc(hours(e.daily_hours))+'</span><button type="button" class="button ghost" data-related-event="'+esc(e.id)+'">查看此展覽</button></div>').join('')+'</div>':'<p class="coverage-note">目前沒有同城市、同場館名稱的其他有效展覽紀錄。</p>';
+ const source=safeOfficialUrl(x.official_url);
+ const sourceHtml=source?'<a href="'+esc(source)+'" target="_blank" rel="noopener noreferrer">展覽主辦／來源頁面 ↗</a>':'<span>此展覽未提供有效來源網址</span>';
+ panel.innerHTML='<div class="attendee-info"><span class="status-chip">已選展覽 · 站內資訊整理</span><h3>'+esc(t.title)+'｜'+esc(x.title_zh)+'</h3><p>'+esc(t.description)+'</p><div class="attendee-facts">'+facts.map(([label,value])=>'<div><b>'+esc(label)+'</b><span>'+esc(value)+'</span></div>').join('')+'</div><div class="hero-actions"><button type="button" class="button" id="copy-event-summary">複製這場展覽資訊</button><button type="button" class="button ghost" id="copy-event-link">複製此展覽連結</button><button type="button" class="button ghost" id="download-event-calendar">加入個人行事曆（.ics）</button><button type="button" class="button ghost" id="download-event-csv">下載展覽資料（CSV）</button></div><p class="coverage-note">資料來源：'+sourceHtml+'。展覽資料請以主辦單位最新公告為準。</p><h4>本分類資訊核對</h4><ul class="attendee-checks">'+t.checks.map(item=>'<li>'+esc(item)+'</li>').join('')+'</ul>'+relatedHtml+'<div class="attendee-source"><b>'+esc(t.title)+'周邊資料：尚未接入</b><p>已保留您選擇的展覽資訊，但目前沒有經授權核對的實際商家、班次、房價或營業時間，不會顯示虛構結果。</p><p>本站僅供查詢與整理，不代訂、不安排旅遊行程、不收款。</p></div></div>';
+ panel.querySelectorAll('[data-related-event]').forEach(button=>button.addEventListener('click',()=>pick(button.dataset.relatedEvent)));
+ panel.querySelector('#copy-event-link')?.addEventListener('click',async e=>{
+ const b=e.currentTarget,link=selectedEventLink(x);
+ try{await navigator.clipboard.writeText(link);b.textContent='已複製展覽連結'}
+ catch{const t=document.createElement('textarea');t.value=link;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();const ok=document.execCommand('copy');t.remove();b.textContent=ok?'已複製展覽連結':'複製失敗'}
+ });
+ panel.querySelector('#download-event-calendar')?.addEventListener('click',()=>{const ics=eventCalendar(x);if(!ics){alert('此展覽缺少有效開始日期，無法建立行事曆檔案。');return}saveTextFile('tiandao-exhibition-'+String(x.id).replace(/[^a-zA-Z0-9_-]/g,'')+'.ics',ics,'text/calendar;charset=utf-8')});
+ panel.querySelector('#download-event-csv')?.addEventListener('click',()=>{
+  const csv=v=>{let s=String(v??'');if(/^[\s\u0000-\u001f]*[=+@-]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'};
+  const fields=[['展覽',x.title_zh],['展覽類型',eventType(x)],['開始日期',day(x.starts_at)],['結束日期',day(x.ends_at)],['每日時段',hours(x.daily_hours)],['城市',x.city],['場館',x.venue_name],['地址',x.address],['主辦單位',x.organizer_name],['入場資訊',x.ticket_info],['來源查核',verified(x.source_checked_at||x.last_verified_at)],['來源網址',safeOfficialUrl(x.official_url)||'']];
+  saveTextFile('tiandao-exhibition-'+String(x.id).replace(/[^a-zA-Z0-9_-]/g,'')+'.csv','\uFEFF'+fields.map(([k,v])=>csv(k)+','+csv(v)).join('\r\n'),'text/csv;charset=utf-8');
+ });
+ panel.querySelector('#copy-event-summary')?.addEventListener('click',async e=>{
+ const button=e.currentTarget;
+ try{await navigator.clipboard.writeText(selectedSummary(x));button.textContent='已複製參展資訊';}
+ catch{const ta=document.createElement('textarea');ta.value=selectedSummary(x);ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();button.textContent=ok?'已複製參展資訊':'複製失敗，請改用展覽詳情';}
+ });
+}
+function selectedEventLink(x){
+ const u=new window.URL(window.location.href);u.searchParams.set('event',String(x.id));u.hash='event-detail';return u.href;
+}
+function restoreSelectedEvent(){
+ const id=new window.URL(window.location.href).searchParams.get('event');if(!id)return;
+ const found=events.find(v=>String(v.id)===id);if(!found)return;
+ pick(found.id,false);
+}
+function pick(id,scroll=true){const x=events.find(v=>String(v.id)===String(id));if(!x)return;const link=safeOfficialUrl(x.official_url);detail.innerHTML=`<article class="event-card"><p class="eyebrow">EVENT DETAILS · 展覽資訊</p><h3>${esc(x.title_zh)}</h3><p>${esc(clean(x.summary)||'官方來源未提供簡介。')}</p><ul class="source-list"><li><b>展覽類型</b><span>${esc(eventType(x))}</span></li><li><b>展期狀態</b><span>${esc(dateState(x))}${longRange(x)?'｜日期跨度較長，請核對官方頁面':''}</span></li><li><b>日期</b><span>${esc(date(x.starts_at))}－${esc(date(x.ends_at))}</span></li><li><b>每日時段</b><span>${esc(x.daily_hours_text||hours(x.daily_hours))}</span></li><li><b>場館</b><span>${esc(x.venue_name||'尚待確認')}</span></li><li><b>地址</b><span>${esc(x.address||'尚待確認')}</span></li><li><b>主辦單位</b><span>${esc(x.organizer_name||'尚待確認')}</span></li><li><b>票價／報名</b><span>${esc(x.ticket_info||'尚待確認')}</span></li><li><b>資料查核</b><span>${esc(verified(x.source_checked_at||x.last_verified_at))}</span></li></ul><div class="hero-actions">${link?`<a class="button" href="${esc(link)}" target="_blank" rel="noopener noreferrer">查看活動來源頁面 ↗</a>`:`<span class="status-chip">未提供有效活動網址</span>`}<a class="button ghost" href="${SOURCE}" target="_blank" rel="noopener">公開資料入口</a></div></article>`;selectedEvent=x;const ctx=$('journey-context');if(ctx){ctx.textContent='已選展覽：'+clean(x.title_zh)+'｜地點：'+clean([x.city,x.venue_name].filter(Boolean).join(' · ')||'待確認')+'｜展期：'+date(x.starts_at)+'－'+date(x.ends_at)+'。下方可在站內查看參展資訊。'}renderNearby(document.querySelector('.journey-tab.is-active')?.dataset.journey||'food');if(scroll)$('event-detail')?.scrollIntoView({behavior:'smooth',block:'start'})}
+async function load(){
+ results.innerHTML='<div class="event-status"><span class="spinner"></span><p><b>正在載入已審核展覽資料</b><br>僅載入已發布的資料；展覽細節請再向主辦單位核對。</p></div>';
+ try{
+  const base=new window.URL(URL);
+  base.searchParams.set('publication_status','eq.published');
+  base.searchParams.set('deleted_at','is.null');
+  base.searchParams.set('order','starts_at.asc,id.asc');
+  const full='id,title_zh,summary,industry,event_type,city,venue_name,address,starts_at,ends_at,organizer_name,official_url,ticket_info,daily_hours,last_verified_at,exhibition_category,source_checked_at';
+  const fallback='id,title_zh,summary,industry,event_type,city,venue_name,address,starts_at,ends_at,organizer_name,official_url,ticket_info,daily_hours,last_verified_at';
+  let fields=full,all=[],complete=false;
+  for(let page=0;page<MAX_FETCH_PAGES;page++){
+   const u=new window.URL(base.href);
+   u.searchParams.set('select',fields);
+   u.searchParams.set('limit',String(FETCH_PAGE_SIZE));
+   u.searchParams.set('offset',String(page*FETCH_PAGE_SIZE));
+   let response=await fetch(u,{headers:{apikey:KEY,Accept:'application/json'}});
+   if(!response.ok&&response.status===400&&page===0){
+    const error=await response.json().catch(()=>({}));
+    const missing=String(error.code||'')==='42703'&&/exhibition_category|source_checked_at/.test(String(error.message||''));
+    if(missing){fields=fallback;u.searchParams.set('select',fields);response=await fetch(u,{headers:{apikey:KEY,Accept:'application/json'}});}
+   }
+   if(!response.ok)throw new Error('HTTP '+response.status);
+   const batch=await response.json();
+   if(!Array.isArray(batch))throw new Error('資料格式錯誤');
+   all.push(...batch);
+   if(batch.length<FETCH_PAGE_SIZE){complete=true;break;}
+  }
+  if(!complete){
+   const probe=new window.URL(base.href);
+   probe.searchParams.set('select','id');
+   probe.searchParams.set('limit','1');
+   probe.searchParams.set('offset',String(MAX_FETCH_PAGES*FETCH_PAGE_SIZE));
+   const response=await fetch(probe,{headers:{apikey:KEY,Accept:'application/json'}});
+   if(!response.ok)throw new Error('HTTP '+response.status);
+   const overflow=await response.json();
+   if(!Array.isArray(overflow))throw new Error('資料格式錯誤');
+   if(overflow.length)throw new Error('資料筆數超過目前安全載入上限，請改用伺服器分頁');
+  }
+  events=all;apply();restoreSelectedEvent();
+ }catch(e){
+  console.error('Trade event load failed',e);
+  events=[];selectedEvent=null;
+  const ctx=$('journey-context');if(ctx)ctx.textContent='展覽資料尚未載入，請稍後重試。';
+  detail.innerHTML='<div class="event-status"><p>尚未載入展覽詳情。</p></div>';
+  status('目前無法載入已審核展覽','請稍後重試；未核實的人工候選資料不會自動公開。',true,true);
+ }
+}
+form.addEventListener('submit',e=>{e.preventDefault();if(form.reportValidity())apply()});form.addEventListener('reset',()=>requestAnimationFrame(()=>apply()));
+document.querySelectorAll('.journey-tab').forEach(tab=>tab.addEventListener('click',()=>{document.querySelectorAll('.journey-tab').forEach(x=>x.classList.toggle('is-active',x===tab));renderNearby(tab.dataset.journey)}));
+
 load();
 })();
 

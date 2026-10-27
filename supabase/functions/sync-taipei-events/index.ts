@@ -123,24 +123,13 @@ Deno.serve(async (req) => {
     const body = await response.json();
     totalCount = Math.max(0, Number(body.total || 0));
     const rows = Array.isArray(body.data) ? body.data : [];
+    if (!rows.length) break;
     fetched += rows.length;
-
-    const keys = rows.map((row: any) => "taipei-travel:" + row.id);
-    const { data: existing } = await db
-      .from("trade_events")
-      .select("canonical_key,publication_status")
-      .in("canonical_key", keys);
-    const statuses = new Map(
-      (existing ?? []).map((row: any) => [
-        row.canonical_key,
-        row.publication_status,
-      ]),
-    );
 
     const normalized = rows.flatMap((row: any) => {
       const startsAt = toIso(row.begin);
       const endsAt = toIso(row.end);
-      if (!row.id || !row.title || !startsAt || !endsAt) {
+      if (!row.id || !row.title || !startsAt || !endsAt || endsAt < startsAt || !row.url) {
         failures.push(
           "page " +
             page +
@@ -173,9 +162,7 @@ Deno.serve(async (req) => {
           title_zh: String(row.title).trim(),
           summary: description.slice(0, 12000),
           industry: "觀光活動",
-          // The production schema currently constrains event_type to
-          // "exhibition". Keep the source classification in industry.
-          event_type: "exhibition",
+          event_type: "other",
           country_code: "TW",
           city: "臺北市",
           venue_name: venue || null,
@@ -196,7 +183,7 @@ Deno.serve(async (req) => {
           ticket_info: String(row.ticket || "").trim() || null,
           status: "scheduled",
           verification_status: "single_official_source",
-          publication_status: statuses.get(canonicalKey) ?? "review",
+          publication_status: "draft",
           source_id: source.id,
           external_id: String(row.id),
           timezone: "Asia/Taipei",
@@ -211,11 +198,12 @@ Deno.serve(async (req) => {
     });
 
     if (normalized.length) {
-      const { error } = await db
+      const { data: inserted, error } = await db
         .from("trade_events")
-        .upsert(normalized, { onConflict: "canonical_key" });
+        .upsert(normalized, { onConflict: "canonical_key", ignoreDuplicates: true })
+        .select("id");
       if (error) throw error;
-      createdOrUpdated += normalized.length;
+      createdOrUpdated += inserted?.length ?? 0;
     }
     page += 1;
   } while (fetched < totalCount && page <= 100);
@@ -225,9 +213,11 @@ Deno.serve(async (req) => {
       source: SOURCE_CODE,
       fetched,
       created_or_updated: createdOrUpdated,
+      mode: "insert_new_drafts_only",
       review_required: true,
       failures: failures.slice(0, 25),
     },
     { headers: { ...cors(origin), "Content-Type": "application/json" } },
   );
 });
+

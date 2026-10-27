@@ -1,7 +1,12 @@
 "use strict";
 (() => {
   const cfg =
-    window.SUPABASE_CONFIG || window.supabaseConfig || SUPABASE_CONFIG;
+    window.SUPABASE_CONFIG || window.supabaseConfig ||
+    (typeof SUPABASE_CONFIG !== "undefined" ? SUPABASE_CONFIG : null);
+  if (!cfg?.url || !cfg?.publishableKey) {
+    document.body.textContent = "後台設定未載入，請聯絡管理員檢查 Supabase 公開設定。";
+    return;
+  }
   const API = cfg.url,
     KEY = cfg.publishableKey,
     STORE = "tiandao_admin_session";
@@ -47,17 +52,19 @@
     ...extra,
   });
   async function request(path, options = {}) {
+    const { _retried, ...fetchOptions } = options;
     const r = await fetch(API + path, {
-      ...options,
+      ...fetchOptions,
       headers: headers(options.headers),
     });
     if (
       r.status === 401 &&
       session?.refresh_token &&
-      path != "/auth/v1/token?grant_type=refresh_token"
+      !_retried &&
+      path !== "/auth/v1/token?grant_type=refresh_token"
     ) {
       await refresh();
-      return request(path, options);
+      return request(path, { ...options, _retried: true });
     }
     if (!r.ok) {
       let body = {};
@@ -67,14 +74,17 @@
       const e = new Error(
         body.message ||
           body.error_description ||
+          body.detail ||
+          (typeof body.error === "string" ? body.error : "") ||
           body.hint ||
           "HTTP " + r.status,
       );
       e.status = r.status;
       throw e;
     }
-    if (r.status === 204) return null;
-    return r.json();
+    if (r.status === 204 || r.status === 205 || r.headers.get("content-length") === "0") return null;
+    const bodyText = await r.text();
+    return bodyText ? JSON.parse(bodyText) : null;
   }
   async function refresh() {
     const r = await fetch(API + "/auth/v1/token?grant_type=refresh_token", {
@@ -144,11 +154,17 @@
       $("login-view").hidden = true;
       $("app-view").hidden = false;
       $("logout").hidden = false;
-      await Promise.all([loadSources(), loadEvents()]);
+      // A temporary data-fetch failure must not destroy a valid login session.
+      try {
+        await loadSources();
+        await loadEvents();
+      } catch (dataError) {
+        msg("app-message", "資料載入失敗：" + dataError.message + "。請稍後重新載入。", "error");
+      }
     } catch (e) {
       if (e.status === 404) $("setup-notice").hidden = false;
       msg("login-message", e.message, "error");
-      logout();
+      if (e.status === 401 || e.status === 403 || /尚未指派/.test(e.message)) logout();
     }
   }
   async function loadSources() {
@@ -174,27 +190,49 @@
   }
   async function loadEvents() {
     msg("app-message", "正在載入…");
-    events = await request(
-      "/rest/v1/trade_events?select=id,title_zh,summary,city,venue_name,address,starts_at,ends_at,organizer_name,official_url,publication_status,source_id,external_id,country_code,timezone,currency_code,translations,updated_at,deleted_at&deleted_at=is.null&order=updated_at.desc&limit=1000",
-    );
+    const select = "id,title_zh,summary,city,venue_name,address,starts_at,ends_at,organizer_name,official_url,publication_status,source_id,external_id,country_code,timezone,currency_code,translations,updated_at,deleted_at,exhibition_category,source_checked_at";
+    const pageSize = 500;
+    const maxRows = 10000;
+    const loaded = [];
+    let truncated = false;
+    for (let offset = 0; offset < maxRows; offset += pageSize) {
+      const page = await request("/rest/v1/trade_events?select=" + select +
+        "&deleted_at=is.null&order=updated_at.desc,id.desc&limit=" + pageSize + "&offset=" + offset);
+      if (!Array.isArray(page)) throw new Error("展覽資料回傳格式不正確");
+      loaded.push(...page);
+      if (page.length < pageSize) break;
+      if (offset + pageSize >= maxRows) truncated = true;
+    }
+    events = loaded;
     render();
-    msg("app-message", "共載入 " + events.length + " 筆", "ok");
+    msg("app-message", "共載入 " + events.length + " 筆" + (truncated ? "（已達 10,000 筆上限，請縮小資料範圍）" : ""), truncated ? "error" : "ok");
   }
   const statusName = (s) =>
-    ({ draft: "草稿", review: "待審核", published: "已發布" })[s] || s;
+    ({ draft: "草稿", archived: "已封存", published: "已發布" })[s] || s;
+  function isTradeShowCandidate(x) {
+    const title = String(x.title_zh || "");
+    const sourceName = String(sources.find((s) => s.id === x.source_id)?.name || "");
+    const combined = title + " " + sourceName;
+    return /商展|國際.*展|產業展|貿易展|專業展|展售|博覽會|旅展|車展|電腦展|食品展|烘焙展|玩具展|寵物展|工具機展|半導體展|電子展|加盟展|建材展|家具展|機械展|自動化展/.test(combined);
+  }
+  const categoryName = (s) => ({b2b_trade_show:"B2B 專業商展",b2c_consumer_fair:"B2C 消費展",arts_exhibition:"藝文展",other_event:"一般活動"})[s] || "未分類";
   function render() {
-    for (const s of ["draft", "review", "published"])
+    for (const s of ["draft", "archived", "published"])
       $("count-" + s).textContent = events.filter(
         (x) => x.publication_status === s,
       ).length;
     $("count-all").textContent = events.length;
     const q = $("search").value.trim().toLowerCase(),
       st = $("status-filter").value,
-      src = $("source-filter").value;
+      src = $("source-filter").value,
+      tradeOnly = $("trade-only").checked,
+      category = $("category-filter").value;
     const rows = events.filter(
       (x) =>
         (!st || x.publication_status === st) &&
         (!src || x.source_id === src) &&
+        (!tradeOnly || isTradeShowCandidate(x)) &&
+        (!category || (category === "unclassified" ? !x.exhibition_category : x.exhibition_category === category)) &&
         (!q ||
           [x.title_zh, x.city, x.venue_name, x.organizer_name]
             .join(" ")
@@ -209,7 +247,7 @@
               "<tr><td><b>" +
               esc(x.title_zh) +
               "</b><small>" +
-              esc(x.external_id || x.id) +
+              esc(x.external_id || x.id) + "</small><small>" + esc(categoryName(x.exhibition_category)) +
               "</small></td><td>" +
               esc(String(x.starts_at || "").slice(0, 10)) +
               "－" +
@@ -262,8 +300,10 @@
       "organizer_name",
       "official_url",
       "summary",
+      "exhibition_category",
     ])
       if (x[k] != null) f.elements[k].value = x[k];
+    f.elements.source_checked_at.value = x.source_checked_at ? String(x.source_checked_at).slice(0, 10) : "";
     f.elements.starts_at.value = localValue(x.starts_at);
     f.elements.ends_at.value = localValue(x.ends_at);
     f.elements.translations.value = x.translations
@@ -275,6 +315,18 @@
       f.elements.currency_code.value = "TWD";
       f.elements.publication_status.value = "draft";
     }
+    const statusSelect = f.elements.publication_status;
+    // SECURITY: direct publishing is disabled until the server-side
+    // Gmail intent + fresh MFA + evidence authorization transaction exists.
+    // This UI guard is defense-in-depth; database publication freeze is also required.
+    for (const option of statusSelect.options)
+      if (option.value === "published") option.disabled = true;
+    if (x.publication_status === "published") {
+      statusSelect.value = "published";
+      statusSelect.disabled = true;
+    } else {
+      statusSelect.disabled = false;
+    }
     $("event-dialog-title").textContent = x.id ? "編輯展覽" : "新增展覽";
     $("event-dialog").showModal();
   }
@@ -282,7 +334,12 @@
     const f = $("event-form");
     if (!f.reportValidity()) return;
     const d = Object.fromEntries(new FormData(f));
-    if (new Date(d.ends_at) < new Date(d.starts_at))
+    // Fail closed: never send publication_status=published from this form.
+    // Also prevent accidental edits of already published rows via this draft editor.
+    const existing = events.find((x) => String(x.id) === String(d.id));
+    if (d.publication_status === "published" || existing?.publication_status === "published" || f.elements.publication_status.disabled)
+      return msg("app-message", "E013：直接發布及編輯已發布展覽暫停。必須完成官方證據、授權、Gmail 回信與 MFA 二次驗證；請先使用草稿／審核流程。", "error");
+    if (Number.isNaN(Date.parse(d.starts_at)) || Number.isNaN(Date.parse(d.ends_at)) || new Date(d.ends_at) < new Date(d.starts_at))
       return msg("app-message", "結束時間不得早於開始時間", "error");
     let translations = {};
     if (d.translations.trim())
@@ -294,6 +351,8 @@
     const id = d.id;
     delete d.id;
     d.source_id = d.source_id || null;
+    d.exhibition_category = d.exhibition_category || null;
+    d.source_checked_at = d.source_checked_at ? new Date(d.source_checked_at + "T00:00:00+08:00").toISOString() : null;
     d.external_id = d.external_id || null;
     d.country_code = (d.country_code || "TW").toUpperCase();
     d.currency_code = (d.currency_code || "TWD").toUpperCase();
@@ -312,15 +371,16 @@
     msg("app-message", id ? "展覽已更新" : "展覽已建立", "ok");
   }
   async function archive(id) {
-    if (!confirm("確定封存這筆展覽？公開頁將不再顯示。")) return;
+    const target = events.find((x) => String(x.id) === String(id));
+    if (target?.publication_status === "published" && profile?.role !== "publisher")
+      return msg("app-message", "只有 publisher 可以封存已發布展覽", "error");
+    if (!confirm("確定封存這筆展覽？公開頁將不再顯示，後台仍可查詢及恢復。")) return;
     await request("/rest/v1/trade_events?id=eq." + encodeURIComponent(id), {
       method: "PATCH",
-      body: JSON.stringify({
-        deleted_at: new Date().toISOString(),
-        publication_status: "draft",
-      }),
+      body: JSON.stringify({ publication_status: "archived" }),
     });
     await loadEvents();
+    msg("app-message", "展覽已封存，可在「已封存」篩選中重新編輯", "ok");
   }
   async function parseFile(file) {
     const data = await file.arrayBuffer();
@@ -339,7 +399,8 @@
   async function importRows(rows, sourceId) {
     const required = ["title_zh", "starts_at", "ends_at"];
     const valid = [],
-      errors = [];
+      errors = [],
+      seenKeys = new Set();
     for (let i = 0; i < rows.length; i++) {
       const r = rows[i];
       const missing = required.filter((k) => !String(r[k] || "").trim());
@@ -349,7 +410,7 @@
       }
       const start = new Date(r.starts_at),
         end = new Date(r.ends_at);
-      if (Number.isNaN(start) || Number.isNaN(end) || end < start) {
+      if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end < start) {
         errors.push("第 " + (i + 2) + " 列日期無效");
         continue;
       }
@@ -369,7 +430,21 @@
           r.organizer_name || "",
         ].join("|"),
       );
+      const canonicalKey = "curated:" + sourceId + ":" + fingerprint;
+      if (seenKeys.has(canonicalKey)) continue;
+      const allowedCategories = ["b2b_trade_show","b2c_consumer_fair","arts_exhibition","other_event"];
+      if (r.exhibition_category && !allowedCategories.includes(String(r.exhibition_category).trim())) {
+        errors.push("第 " + (i + 2) + " 列分類代碼不正確");
+        continue;
+      }
+      const checkedAt = String(r.source_checked_at || "").trim();
+      if (checkedAt && (!/^\d{4}-\d{2}-\d{2}$/.test(checkedAt) || Number.isNaN(Date.parse(checkedAt + "T00:00:00+08:00")))) {
+        errors.push("第 " + (i + 2) + " 列官方來源查核日期格式不正確（YYYY-MM-DD）");
+        continue;
+      }
+      seenKeys.add(canonicalKey);
       valid.push({
+        canonical_key: canonicalKey,
         title_zh: String(r.title_zh).trim(),
         starts_at: start.toISOString(),
         ends_at: end.toISOString(),
@@ -379,6 +454,8 @@
         organizer_name: r.organizer_name || null,
         official_url: r.official_url || null,
         summary: r.summary_zh || null,
+        exhibition_category: ["b2b_trade_show","b2c_consumer_fair","arts_exhibition","other_event"].includes(String(r.exhibition_category || "")) ? r.exhibition_category : null,
+        source_checked_at: checkedAt ? new Date(checkedAt + "T00:00:00+08:00").toISOString() : null,
         external_id: r.external_id || null,
         source_id: sourceId,
         country_code: String(r.country_code || "TW").toUpperCase(),
@@ -392,13 +469,19 @@
     }
     if (errors.length) throw new Error(errors.slice(0, 8).join("；"));
     if (!valid.length) throw new Error("沒有可匯入的資料");
-    for (let i = 0; i < valid.length; i += 100)
-      await request("/rest/v1/trade_events?on_conflict=source_id,dedupe_key", {
+    // Requires a unique index on canonical_key; ignore conflicts atomically.
+    // No merge: never overwrite existing editorial changes or published events.
+    let inserted = 0;
+    for (let i = 0; i < valid.length; i += 50) {
+      const batch = valid.slice(i, i + 50);
+      const result = await request("/rest/v1/trade_events?on_conflict=canonical_key&select=id", {
         method: "POST",
-        headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
-        body: JSON.stringify(valid.slice(i, i + 100)),
+        headers: { Prefer: "resolution=ignore-duplicates,return=representation" },
+        body: JSON.stringify(batch),
       });
-    return valid.length;
+      inserted += Array.isArray(result) ? result.length : 0;
+    }
+    return inserted;
   }
   $("login-form").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -456,7 +539,7 @@
   $("open-import").addEventListener("click", () =>
     $("import-dialog").showModal(),
   );
-  for (const id of ["search", "status-filter", "source-filter"])
+  for (const id of ["search", "status-filter", "source-filter", "trade-only", "category-filter"])
     $(id).addEventListener(id === "search" ? "input" : "change", render);
   document.querySelectorAll("[data-status]").forEach((b) =>
     b.addEventListener("click", () => {

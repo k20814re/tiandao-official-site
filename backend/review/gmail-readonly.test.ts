@@ -1,0 +1,21 @@
+import assert from "node:assert/strict";
+import {listReviewMessageIds,getReviewMessage,type GmailHttp} from "./gmail-readonly.ts";
+const token="test-access-token";
+let calls=0;
+const http:GmailHttp=async(url,init)=>{
+ calls++;
+ assert.equal(init.method,"GET");assert.equal(init.headers.authorization,"Bearer "+token);
+ assert.equal(init.redirect,"error");
+ if(url.includes("?format=full"))return {ok:true,status:200,json:async()=>({id:"abc123",payload:{mimeType:"text/plain"}})};
+ assert.equal(new URL(url).searchParams.get("maxResults"),"25");
+ return {ok:true,status:200,json:async()=>({messages:[{id:"abc123",threadId:"thread123"}]})};
+};
+assert.deepEqual(await listReviewMessageIds(token,"label:TIANDAO_REVIEW",http),{ok:true,messages:[{id:"abc123",threadId:"thread123"}]});
+assert.deepEqual(await getReviewMessage(token,"abc123",http),{ok:true,id:"abc123",payload:{mimeType:"text/plain"}});
+assert.equal(calls,2);
+assert.equal((await listReviewMessageIds(token,"in:anywhere",http)).ok,false);
+assert.equal((await getReviewMessage(token,"../escape",http)).ok,false);
+assert.equal(calls,2);
+assert.deepEqual(await listReviewMessageIds(token,"label:TIANDAO_REVIEW",async()=>({ok:true,status:200,json:async()=>({})})),{ok:true,messages:[]});
+assert.equal((await listReviewMessageIds(token,"label:TIANDAO_REVIEW",async()=>({ok:true,status:200,json:async()=>({messages:[{id:"bad"}]})}))).ok,false);
+console.log("Gmail read-only adapter tests PASS");
