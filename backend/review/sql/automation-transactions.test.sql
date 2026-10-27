@@ -1,0 +1,54 @@
+update exhibition_automation.settings set enabled=true,apply_changes=false,job_token_hash=encode(sha256(convert_to('ci-only-token','UTF8')),'hex');
+set role service_role;
+select set_config('request.jwt.claim.role','service_role',false);
+do $$
+declare runid uuid;live_run uuid;r jsonb;p jsonb;ev jsonb;before_count int;rid uuid;begin
+ begin perform public.exhibition_automation_start(null);raise exception 'null token accepted';exception when insufficient_privilege then null;end;
+ begin perform public.exhibition_automation_start('wrong');raise exception 'wrong token accepted';exception when insufficient_privilege then null;end;
+ r:=public.exhibition_automation_start('ci-only-token');runid:=(r->>'run_id')::uuid;
+ if not (public.exhibition_automation_start('ci-only-token')->>'busy')::boolean then raise exception 'run lease not enforced';end if;
+ if not public.exhibition_automation_feed(runid,'moc-exhibitions',10,true) then raise exception 'valid feed rejected';end if;
+ if public.exhibition_automation_feed(runid,'taipei-travel-activity',0,true) then raise exception 'empty feed accepted';end if;
+ p:='{"canonical_key":"moc:ci-one","external_id":"ci-one","title_zh":"CI only exhibition","starts_at":"2026-11-01T00:00:00+08:00","ends_at":"2026-11-03T23:59:59+08:00","city":"臺北市","venue_name":"CI venue","official_url":"https://example.invalid/ci","exhibition_category":"arts_exhibition"}'::jsonb;
+ ev:='{"policy_version":"2026-10-27.v1","detail_http":200,"list_url":"https://cloud.culture.tw/list","detail_url":"https://cloud.culture.tw/detail","gates":{"licensed":true,"identity":true,"title":true,"dates":true,"place":true,"detail":true}}'::jsonb;
+ select count(*) into before_count from public.trade_events;
+ r:=public.exhibition_automation_submit(runid,'moc-exhibitions',p,ev,repeat('a',64));
+ if r->>'action'<>'would_publish' or (r->>'score')::int<>80 then raise exception '80-point dry run failed: %',r;end if;
+ if (select count(*) from public.trade_events)<>before_count then raise exception 'dry run wrote production facts';end if;
+ perform public.exhibition_automation_finish(runid,'{}',true);
+ update exhibition_automation.settings set apply_changes=true;
+ r:=public.exhibition_automation_start('ci-only-token');live_run:=(r->>'run_id')::uuid;
+ perform public.exhibition_automation_feed(live_run,'moc-exhibitions',10,true);
+ r:=public.exhibition_automation_submit(live_run,'moc-exhibitions',p,ev,repeat('a',64));
+ if r->>'action'<>'published' then raise exception '80-point publish failed: %',r;end if;
+ if not exists(select 1 from public.trade_events where canonical_key='moc:ci-one' and publication_status='published') then raise exception 'published record missing';end if;
+ r:=public.exhibition_automation_submit(live_run,'moc-exhibitions',jsonb_set(p,'{canonical_key}','"moc:ci-low"'),jsonb_set(ev,'{gates,place}','false'),repeat('b',64));
+ if r->>'action'<>'manual_review' or (r->>'score')::int>=80 then raise exception 'below80 bypass';end if;
+ if not exists(select 1 from exhibition_automation.mail_queue where canonical_key='moc:ci-low' and status='pending') then raise exception 'below80 mail not queued';end if;
+ if exists(select 1 from public.trade_events where canonical_key='moc:ci-low') then raise exception 'low confidence published';end if;
+ -- Concurrent/manual edits must not be overwritten from a stale observed version.
+ r:=public.exhibition_automation_submit(live_run,'moc-exhibitions',p||'{"canonical_key":"moc:ci-stale"}',ev,repeat('c',64));
+ perform public.exhibition_automation_finish(live_run,'{}',true);
+ r:=public.exhibition_automation_start('ci-only-token');live_run:=(r->>'run_id')::uuid;perform public.exhibition_automation_feed(live_run,'moc-exhibitions',10,true);
+ r:=public.exhibition_automation_submit(live_run,'moc-exhibitions',p||'{"canonical_key":"moc:ci-stale","expected_updated_at":"2000-01-01T00:00:00Z"}',ev,repeat('d',64));
+ if r->>'action'<>'manual_review' then raise exception 'stale version overwrote event';end if;
+ -- Missing source: timeouts never count; three spaced successful negatives required.
+ r:=public.exhibition_automation_missing(live_run,'moc:ci-one',false,'https://cloud.culture.tw/detail',503);
+ if (r->>'confirmations')::int<>0 or r->>'action'='archived' then raise exception '503 treated as removal';end if;
+ perform public.exhibition_automation_finish(live_run,'{}',true);
+ r:=public.exhibition_automation_start('ci-only-token');live_run:=(r->>'run_id')::uuid;perform public.exhibition_automation_feed(live_run,'moc-exhibitions',10,true);
+ r:=public.exhibition_automation_missing(live_run,'moc:ci-one',true,'https://cloud.culture.tw/detail',200);
+ if (r->>'confirmations')::int<>1 or r->>'action'='archived' then raise exception 'first miss removed event';end if;
+ update exhibition_automation.state set absent_checks=2,missing_since=now()-interval '25 hours',last_missing_at=now()-interval '7 hours' where canonical_key='moc:ci-one';
+ perform public.exhibition_automation_finish(live_run,'{}',true);
+ r:=public.exhibition_automation_start('ci-only-token');live_run:=(r->>'run_id')::uuid;perform public.exhibition_automation_feed(live_run,'moc-exhibitions',10,true);
+ r:=public.exhibition_automation_missing(live_run,'moc:ci-one',true,'https://cloud.culture.tw/detail',200);
+ if r->>'action'<>'archived' then raise exception 'confirmed removal not archived: %',r;end if;
+ if not exists(select 1 from public.trade_events where canonical_key='moc:ci-one' and publication_status='archived' and deleted_at is null) then raise exception 'record was physically deleted';end if;
+ if not exists(select 1 from exhibition_automation.evidence where canonical_key='moc:ci-one' and decision='archived' and before_event is not null and after_event is not null) then raise exception 'removal audit missing';end if;
+ if public.exhibition_automation_feed(live_run,'moc-exhibitions',1,true) then raise exception '90 percent source drop accepted';end if;
+ if has_function_privilege('anon','public.exhibition_automation_start(text)','EXECUTE') or has_function_privilege('authenticated','public.exhibition_automation_submit(uuid,text,jsonb,jsonb,text)','EXECUTE') then raise exception 'public automation RPC';end if;
+ perform public.exhibition_automation_finish(live_run,'{}',true);
+end $$;
+reset role;
+select 'Automation PostgreSQL 80-point gates, dry run, mail queue, stale-version and reversible removal checks PASS' as result;

@@ -30,3 +30,6 @@ do $$ begin
 end $$;
 select 'PostgreSQL two-session one-time authorization checks PASS' as result;
 SQL
+psql -X -v ON_ERROR_STOP=1 -f backend/review/sql/automation-fixture.sql
+psql -X -v ON_ERROR_STOP=1 -f supabase/migrations/20261027071034_exhibition_automation_v1.sql
+psql -X -v ON_ERROR_STOP=1 -f backend/review/sql/automation-transactions.test.sql
