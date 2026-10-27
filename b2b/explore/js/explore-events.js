@@ -121,7 +121,17 @@ async function load(){
    all.push(...batch);
    if(batch.length<FETCH_PAGE_SIZE){complete=true;break;}
   }
-  if(!complete)throw new Error('資料筆數超過目前安全載入上限，請改用伺服器分頁');
+  if(!complete){
+   const probe=new window.URL(base.href);
+   probe.searchParams.set('select','id');
+   probe.searchParams.set('limit','1');
+   probe.searchParams.set('offset',String(MAX_FETCH_PAGES*FETCH_PAGE_SIZE));
+   const response=await fetch(probe,{headers:{apikey:KEY,Accept:'application/json'}});
+   if(!response.ok)throw new Error('HTTP '+response.status);
+   const overflow=await response.json();
+   if(!Array.isArray(overflow))throw new Error('資料格式錯誤');
+   if(overflow.length)throw new Error('資料筆數超過目前安全載入上限，請改用伺服器分頁');
+  }
   events=all;apply();restoreSelectedEvent();
  }catch(e){
   console.error('Trade event load failed',e);
