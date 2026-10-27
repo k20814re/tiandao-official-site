@@ -5,6 +5,7 @@ node --experimental-strip-types backend/review/exhibition-anomaly-rules.test.ts
 node --experimental-strip-types backend/review/anomaly-email-template.test.ts
 node --experimental-strip-types backend/review/resend-notifier.test.ts
 node --experimental-strip-types backend/review/gmail-oauth.test.ts
+node --experimental-strip-types backend/review/gmail-oauth-state.test.ts
 node --experimental-strip-types backend/review/gmail-token-exchange.test.ts
 node --experimental-strip-types backend/review/gmail-review-reply.test.ts
 node --experimental-strip-types backend/review/gmail-review-gate.test.ts
