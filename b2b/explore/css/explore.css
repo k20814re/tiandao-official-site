@@ -8,3 +8,12 @@
 @media(max-width:900px){.planner-layout{grid-template-columns:1fr}.planner-copy{display:grid;grid-template-columns:1fr 220px;align-items:center}.planner-copy img{grid-column:2;grid-row:1/4;width:210px;margin:0}.journey-panel{grid-template-columns:1fr}.journey-tabs{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:680px){.detail-section,.journey-section,.planner-section{padding:64px 0}.search-actions{grid-column:1/-1}.web-search-button,.filter-reset{flex:1}.planner-copy{display:block}.planner-copy img{width:min(100%,300px);margin:12px auto}.planner-form{padding:16px}.planner-grid{grid-template-columns:1fr}.planner-grid label.full{grid-column:auto}.journey-tabs{grid-template-columns:repeat(3,1fr)}.detail-shell .source-list li{grid-template-columns:86px 1fr}.event-date b{font-size:14px}.coverage-note{font-size:10px}}
 @media(max-width:420px){.search-actions{grid-column:auto}.journey-tabs{grid-template-columns:repeat(2,1fr)}}
+
+/* Public preview: visible coverage, sources and empty categories. */
+.launch-badge{display:inline-block;margin:18px 0 0;padding:5px 12px;border:1px solid #e8b85e66;border-radius:999px;color:var(--gold-light);background:#e8b85e12;font-size:12px;font-weight:700}
+.preview-notice{margin-bottom:24px;padding:20px 24px;border:1px solid #e8b85e55;border-left:4px solid var(--gold);border-radius:12px;background:#e8b85e0b}
+.preview-notice strong{color:var(--gold-light);font-size:16px}.preview-notice p{margin:8px 0;color:#d1ced1;font-size:13px}.preview-notice a,.source-list a,.source-layout p a{color:var(--gold-light);text-decoration:underline;text-underline-offset:3px}
+.event-status{grid-column:1/-1}.event-source-links{display:flex;align-items:center;flex-wrap:wrap;gap:12px}.source-meta{overflow-wrap:anywhere}.event-card .detail-reference{margin:12px 0 20px;padding:12px;border-left:3px solid var(--gold);background:#e8b85e0b;color:#e4d6b7}
+.event-section,.detail-section,.source-section,.route-section{scroll-margin-top:80px}
+.source-list a{display:inline-block;margin:3px 4px 3px 0}.event-date span{line-height:1.6;margin-top:5px}.event-filters .full-row{min-width:0}
+@media(max-width:680px){.preview-notice{padding:16px}.choice-chips.category-chips{grid-template-columns:repeat(2,minmax(0,1fr))}.event-source-links{width:100%;justify-content:space-between}.data-bar{flex-wrap:wrap}.launch-badge{font-size:11px}}

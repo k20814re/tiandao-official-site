@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#080b18">
-  <meta name="description" content="天道商貿台灣商務探索：聚焦台灣商展、產業、城市與商務旅程資訊。">
+  <meta name="description" content="天道商貿展覽資訊試營運：探索全臺國際貿易商展、消費展與文藝展覽。所有資訊僅供參考，未收錄資料持續補充，展期以官方公告為準。">
   <title>台灣商務探索｜天道商貿 B2B</title>
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/explore.css">
+  <link rel="stylesheet" href="css/explore.css?v=20261028-preview1">
 <style>
 /* Click-first controls */
 .easy-search{grid-template-columns:2fr 1fr 1fr 1fr auto}.full-row{grid-column:1/-1}.quick-row{display:grid;grid-template-columns:125px 1fr;align-items:center;gap:12px}.quick-label{color:var(--cream);font-size:12px;font-weight:800}.choice-chips{display:flex;flex-wrap:wrap;gap:8px}.choice-chips button{min-height:36px;padding:7px 14px;border:1px solid #ffffff24;border-radius:999px;background:#12192a;color:#d5d1d4;cursor:pointer}.choice-chips button:hover,.choice-chips button:focus-visible,.choice-chips button.is-selected{border-color:var(--gold);background:#2b241d;color:var(--gold-light);box-shadow:0 0 0 2px #e8b85e15}.tap-hint{margin:0 0 18px;padding:12px 14px;border-left:3px solid var(--gold);background:#e8b85e0d;color:#cbc6ca;font-size:12px}@media(max-width:1020px){.easy-search{grid-template-columns:2fr 1fr 1fr}.easy-search .search-actions{grid-column:1/-1}}@media(max-width:680px){.easy-search{grid-template-columns:1fr 1fr}.quick-row{grid-template-columns:1fr;gap:7px}.choice-chips{display:grid;grid-template-columns:repeat(3,1fr)}.choice-chips button{padding-inline:8px}.easy-search .search-field,.easy-search .search-actions{grid-column:1/-1}}@media(max-width:420px){.choice-chips{grid-template-columns:repeat(2,1fr)}.easy-search{grid-template-columns:1fr}.easy-search .search-field,.easy-search .search-actions{grid-column:auto}}
@@ -39,10 +39,11 @@
       <div class="wrap hero-grid">
         <div class="hero-copy">
           <p class="eyebrow">TAIWAN BUSINESS EXPLORATION · 台灣商務探索</p>
-          <h1 id="hero-title">先把台灣商展，<br><span>查清楚再出發。</span></h1>
-          <p class="hero-lead">先聚焦台灣各地商展、產業與城市資訊，跟著黑金刺鴨一步步整理商務探索路徑；資料不足時不猜測，也不假裝有即時答案。</p>
+          <p class="launch-badge">試營運 · 資訊持續補充</p>
+          <h1 id="hero-title">商展與文藝展，<br><span>從台灣開始探索。</span></h1>
+          <p class="hero-lead">查找全臺各地的國際貿易商展、消費展與文藝展覽。現有資料先提供瀏覽，未收錄資訊後續補上；所有資訊僅供參考，實際安排請確認主辦單位最新公告。</p>
           <div class="hero-actions">
-            <a class="button" href="#route">開始探索 <span aria-hidden="true">↘</span></a>
+            <a class="button" href="#events">查看展覽 <span aria-hidden="true">↘</span></a>
             
           </div>
         </div>
@@ -61,27 +62,33 @@
     <section class="event-section" id="events" aria-labelledby="events-title">
       <div class="wrap">
         <div class="section-intro split-intro event-intro">
-          <div><p class="eyebrow">TAIWAN TRADE FAIR SEARCH</p><h2 id="events-title">搜尋台灣各地商展</h2></div>
+          <div><p class="eyebrow">TAIWAN EXHIBITIONS · PREVIEW</p><h2 id="events-title">全臺展覽資訊</h2></div>
         </div>
-        <form class="event-filters easy-search" id="event-filters" role="search" aria-label="台灣商展搜尋"><input type="hidden" name="country" value="TW">
-          <div class="quick-row full-row"><span class="quick-label">① 想看哪一類？</span><div class="choice-chips" data-target="event-query"><button class="is-selected" type="button" data-value="">全部展覽</button><button type="button" data-value="食品">食品</button><button type="button" data-value="工具機">工具機</button><button type="button" data-value="電子科技">電子科技</button><button type="button" data-value="醫療生技">醫療生技</button><button type="button" data-value="汽車零件">汽車零件</button><button type="button" data-value="文創設計">文創設計</button></div></div>
-          <div class="quick-row full-row"><span class="quick-label">② 想去哪裡？</span><div class="choice-chips" data-target="event-country"><button type="button" data-value="">全台灣</button><button type="button" data-value="台北">台北</button><button type="button" data-value="桃園">桃園</button><button type="button" data-value="台中">台中</button><button type="button" data-value="台南">台南</button><button type="button" data-value="高雄">高雄</button></div></div>
+        <aside class="preview-notice" aria-label="試營運與資料說明">
+          <strong>試營運｜所有資訊僅供參考</strong>
+          <p>商展、文藝與其他展覽同步開放瀏覽，目前尚未完整收錄全臺活動。沒有資料的類型會標示「資料整理中，後續補上」；展期、地點、票價與活動異動，請以主辦單位最新公告為準。</p>
+          <a href="#sources">查看資料來源與官方查詢連結 ↗</a>
+        </aside>
+        <form class="event-filters easy-search" id="event-filters" role="search" aria-label="全臺展覽搜尋"><input type="hidden" name="country" value="TW"><input type="hidden" id="event-category" name="category" value="">
+          <div class="quick-row full-row"><span class="quick-label">展覽類型</span><div class="choice-chips category-chips" data-target="event-category"><button class="is-selected" type="button" data-value="" aria-pressed="true">全部展覽</button><button type="button" data-value="b2b_trade_show" aria-pressed="false">國際貿易商展</button><button type="button" data-value="b2c_consumer_fair" aria-pressed="false">消費展</button><button type="button" data-value="arts_exhibition" aria-pressed="false">文藝展覽</button><button type="button" data-value="other_event" aria-pressed="false">其他／待分類</button></div></div>
+          <div class="quick-row full-row"><span class="quick-label">① 想找什麼主題？</span><div class="choice-chips" data-target="event-query"><button class="is-selected" type="button" data-value="">不限主題</button><button type="button" data-value="食品">食品</button><button type="button" data-value="工具機">工具機</button><button type="button" data-value="電子科技">電子科技</button><button type="button" data-value="醫療生技">醫療生技</button><button type="button" data-value="汽車零件">汽車零件</button><button type="button" data-value="文創設計">文創設計</button></div></div>
+          <div class="quick-row full-row"><span class="quick-label">② 想去哪裡？</span><div class="choice-chips" data-target="event-country"><button class="is-selected" type="button" data-value="">全台灣</button><button type="button" data-value="台北市">台北</button><button type="button" data-value="桃園市">桃園</button><button type="button" data-value="台中市">台中</button><button type="button" data-value="台南市">台南</button><button type="button" data-value="高雄市">高雄</button></div></div>
           <div class="quick-row full-row"><span class="quick-label">③ 什麼時候？</span><div class="choice-chips date-chips"><button type="button" data-date-range="30">未來 30 天</button><button type="button" data-date-range="90">未來 3 個月</button><button type="button" data-date-range="365">今年內</button></div></div>
           <label class="search-field"><span>也可以直接說想找什麼</span><input id="event-query" name="query" type="search" placeholder="全部展覽（不限制產業）" autocomplete="off"></label>
-          <label><span>城市</span><select id="event-country" name="city"><option value="">全台灣</option><option>台北</option><option>桃園</option><option>台中</option><option>台南</option><option>高雄</option><option>其他地區</option></select></label>
+          <label><span>縣市</span><select id="event-country" name="city"><option value="">全台灣</option><option>基隆市</option><option>台北市</option><option>新北市</option><option>桃園市</option><option>新竹市</option><option>新竹縣</option><option>苗栗縣</option><option>台中市</option><option>彰化縣</option><option>南投縣</option><option>雲林縣</option><option>嘉義市</option><option>嘉義縣</option><option>台南市</option><option>高雄市</option><option>屏東縣</option><option>宜蘭縣</option><option>花蓮縣</option><option>台東縣</option><option>澎湖縣</option><option>金門縣</option><option>連江縣</option><option>其他地區</option></select></label>
           <label><span>開始日期</span><input id="event-from" name="from" type="date"></label>
           <label><span>結束日期</span><input id="event-to" name="to" type="date"></label>
-          <div class="search-actions"><button class="web-search-button" type="submit">幫我找商展</button><button class="filter-reset" id="filter-reset" type="reset">重選</button></div>
+          <div class="search-actions"><button class="web-search-button" type="submit">搜尋展覽</button><button class="filter-reset" id="filter-reset" type="reset">重選</button></div>
         </form>
-        <div class="event-grid" id="event-results" aria-label="商展搜尋結果"><div class="event-status"><p><b>目前沒有搜尋結果</b><br>真實網路搜尋服務接通後，結果才會顯示在這裡。</p></div></div>
+        <div class="event-grid" id="event-results" aria-label="展覽搜尋結果" aria-live="polite"><div class="event-status"><p><b>正在載入展覽參考資訊</b><br>資料持續補充，請以官方最新公告為準。</p></div></div>
         <noscript><div class="event-status is-error"><p>請啟用 JavaScript 使用搜尋表單。</p></div></noscript>
       </div>
     </section>
 
     <section class="detail-section" id="event-detail" aria-labelledby="detail-title">
       <div class="wrap">
-        <div class="section-intro"><p class="eyebrow">SELECTED EVENT</p><h2 id="detail-title">商展詳細資料</h2></div>
-        <div class="detail-shell" id="detail-shell"><div class="event-status"><p><b>尚未選擇商展</b><br>選擇商展後，這裡會顯示日期、開放時段、場館、主辦單位、報名方式與來源。</p></div></div>
+        <div class="section-intro"><p class="eyebrow">SELECTED EVENT</p><h2 id="detail-title">展覽詳細資料</h2></div>
+        <div class="detail-shell" id="detail-shell"><div class="event-status"><p><b>尚未選擇展覽</b><br>選擇展覽後，這裡會顯示日期、場館、主辦單位與來源網址；缺漏欄位標示待確認，所有資訊僅供參考。</p></div></div>
       </div>
     </section>
 
@@ -91,7 +98,7 @@
         <div class="journey-tabs" role="tablist" aria-label="旅程情報分類">
           <button class="journey-tab is-active" type="button" data-journey="food">食<small>美食</small></button><button class="journey-tab" type="button" data-journey="wear">衣<small>天氣穿搭</small></button><button class="journey-tab" type="button" data-journey="stay">住<small>住宿</small></button><button class="journey-tab" type="button" data-journey="move">行<small>交通</small></button><button class="journey-tab" type="button" data-journey="play">玩<small>觀光</small></button><button class="journey-tab" type="button" data-journey="leisure">樂<small>休閒</small></button>
         </div>
-        <div class="journey-panel" id="journey-panel"><div><span class="status-chip">P1 · 尚未接通</span><h3>食類資料尚未接通</h3><p>選定有可靠來源的商展並接入相應資料服務後，才會顯示內容。</p></div><div class="pending-card"><b>目前沒有資料</b><span>不使用固定推薦或虛構即時資訊。</span></div></div>
+        <div class="journey-panel" id="journey-panel"><div><span class="status-chip">資料整理中</span><h3>美食資訊後續補上</h3><p>目前尚無可顯示的美食資料；後續提供的資訊也將附上來源，僅供參考。</p></div><div class="pending-card"><b>資料整理中，後續補上</b><span>實際價格、營業時間與服務內容以業者公告為準。</span></div></div>
       </div>
     </section>
 
@@ -99,7 +106,7 @@
       <div class="wrap planner-layout">
         <div class="planner-copy"><p class="eyebrow">SPIKY DUCK TAIWAN BUSINESS ASSISTANT</p><h2 id="planner-title">刺鴨台灣商務旅程助手</h2><img src="assets/guide-black-gold.png" alt="黑金刺鴨旅程助手" width="1280" height="1280"></div>
         <form class="planner-form" id="planner-form">
-          <p class="tap-hint">大多數條件用選的就好；商展接通後，選中的展覽會自動帶入。</p>
+          <p class="tap-hint">上方選中的展覽會自動帶入。智慧行程功能仍在準備中，目前可填選條件，但尚不產生或儲存行程。</p>
           <div class="planner-grid">
             <label><span>從哪裡出發</span><select name="origin" required><option value="">請選擇</option><option>基隆</option><option>台北</option><option>新北</option><option>桃園</option><option>新竹</option><option>台中</option><option>彰化</option><option>嘉義</option><option>台南</option><option>高雄</option><option>屏東</option><option>宜蘭</option><option>花蓮</option><option>台東</option></select></label><label><span>要去哪裡</span><select name="destination" required><option value="">請選擇</option><option>台北</option><option>南港</option><option>桃園</option><option>台中</option><option>台南</option><option>高雄</option><option>其他地區</option></select></label>
             <label class="full"><span>展覽名稱</span><select name="event" required><option value="">請先從上方搜尋並選擇商展</option></select></label>
@@ -109,7 +116,7 @@
             <label><span>飲食需求</span><select name="diet"><option>無特殊需求</option><option>素食</option><option>全素</option><option>清真</option><option>不吃牛</option></select></label><label><span>住宿需求</span><select name="stay"><option>展館附近</option><option>車站附近</option><option>價格優先</option><option>交通便利優先</option><option>不需要住宿</option></select></label>
             <label class="full"><span>旅程重點</span><select name="preferences"><option>商展優先</option><option>商展＋商務洽談</option><option>商展＋附近觀光</option><option>輕鬆不趕行程</option></select></label>
           </div>
-          <button class="button planner-submit" type="submit">建立智慧行程</button>
+          <button class="button planner-submit" type="submit">查看行程功能狀態</button>
           <p class="form-fineprint">目前不會傳送或儲存表單內容。AI 排程、即時交通、房價與餐廳資料尚未接通。</p>
         </form>
       </div>
@@ -172,38 +179,41 @@
       </div>
     </section>
 
-    <section class="source-section" aria-labelledby="source-title">
+    <section class="source-section" id="sources" aria-labelledby="source-title">
       <div class="wrap source-layout">
         <div><p class="eyebrow">SOURCE &amp; SAFETY</p><h2 id="source-title">先查台灣官方來源</h2><p>目前提供已發布的臺灣展覽資料，涵蓋藝文及其他展覽；全臺商展來源仍持續建置，尚未涵蓋所有展覽。展期與入場資訊請以主辦單位公告為準。</p><p>資料來源：文化部「展覽資訊」開放資料（2013 年上架，資料版本以來源公告為準）。此開放資料依<a href="https://data.gov.tw/license" target="_blank" rel="noopener noreferrer">政府資料開放授權條款第 1 版</a>釋出，使用者於遵守條款各項規定之前提下得利用；<a href="https://data.gov.tw/dataset/6012" target="_blank" rel="noopener noreferrer">查看資料集</a>。</p></div>
         <ul class="source-list">
           <li><b>官方連結</b><span>每筆資料保留來源與查核日期</span></li>
           <li><b>台灣優先</b><span>第一階段提供臺灣各類展覽與境內旅程資訊</span></li>
-          <li><b>界線透明</b><span>未接通的功能明確標示，不以寫死資料代替搜尋結果</span></li>
+          <li><b>商展來源</b><span>商展資料尚待收錄。經濟部提供的<a href="https://data.gov.tw/dataset/11585" target="_blank" rel="noopener noreferrer">主要會展中心歷史資料 ↗</a>仍待更新；近期活動可前往<a href="https://mice.meettaiwan.com/meettaiwan/home/zh-tw/" target="_blank" rel="noopener noreferrer">臺灣會展網 ↗</a>查詢並核對主辦單位公告。</span></li>
+          <li><b>僅供參考</b><span>缺漏資訊後續補上，實際展期、地點與活動異動以官方最新公告為準。</span></li>
         </ul>
       </div>
     </section>
   </main>
 
-  <footer class="footer"><div class="wrap"><p class="service-disclaimer">天道商貿提供台灣商展、商務旅程、交通、住宿、美食與觀光等資訊整理及智慧行程建議。本平台不提供車票、飯店或展覽門票之代訂及代收款服務。各項價格、開放時間、班次與活動資訊可能異動，請以官方公告為準。</p><div class="footer-inner"><span>© 2026 TianDao B2B · 台灣商務探索</span><span><a href="../../index.html">返回天道原網站</a> · <a href="../index.html">B2B 首頁</a></span></div></div></footer>
+  <footer class="footer"><div class="wrap"><p class="service-disclaimer">本頁所有資訊僅供參考。天道商貿提供展覽與商務旅程資訊整理，尚未收錄的內容將陸續補上。本平台不提供車票、飯店或展覽門票之代訂及代收款服務。各項價格、開放時間、班次與活動資訊可能異動，請以官方最新公告為準。</p><div class="footer-inner"><span>© 2026 TianDao B2B · 台灣商務探索 · 試營運</span><span><a href="../../index.html">返回天道原網站</a> · <a href="../index.html">B2B 首頁</a></span></div></div></footer>
   <script src="js/explore.js"></script>
-  <script src="js/explore-events.js?v=64f2f6a"></script>
+  <script src="js/explore-events.js?v=20261028-preview1"></script>
 <script>
 (() => {
   const byId = id => document.getElementById(id);
-  document.querySelectorAll('.choice-chips').forEach(group => group.addEventListener('click', event => {
+  document.querySelectorAll('.choice-chips[data-target]').forEach(group => group.addEventListener('click', event => {
     const button = event.target.closest('button[data-value]');
     if (!button) return;
     byId(group.dataset.target).value = button.dataset.value;
-    group.querySelectorAll('button').forEach(item => item.classList.toggle('is-selected', item === button));
+    group.querySelectorAll('button').forEach(item => { item.classList.toggle('is-selected', item === button); item.setAttribute('aria-pressed', String(item === button)); });
+    byId(group.dataset.target).dispatchEvent(new Event('change', { bubbles: true }));
   }));
   document.querySelectorAll('[data-date-range]').forEach(button => button.addEventListener('click', () => {
     const start = new Date(); const end = new Date(start);
-    end.setDate(end.getDate() + Number(button.dataset.dateRange));
-    const toValue = date => date.toISOString().slice(0, 10);
+    if (button.dataset.dateRange === '365') end.setMonth(11, 31); else end.setDate(end.getDate() + Number(button.dataset.dateRange));
+    const toValue = date => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Taipei' }).format(date);
     byId('event-from').value = toValue(start); byId('event-to').value = toValue(end);
-    document.querySelectorAll('[data-date-range]').forEach(item => item.classList.toggle('is-selected', item === button));
+    document.querySelectorAll('[data-date-range]').forEach(item => { item.classList.toggle('is-selected', item === button); item.setAttribute('aria-pressed', String(item === button)); });
+    byId('event-to').dispatchEvent(new Event('change', { bubbles: true }));
   }));
-  byId('event-filters').addEventListener('reset', () => requestAnimationFrame(() => { document.querySelectorAll('.choice-chips button').forEach(item => item.classList.remove('is-selected')); document.querySelector('.choice-chips[data-target="event-query"] button[data-value=""]').classList.add('is-selected'); }));
+  byId('event-filters').addEventListener('reset', () => requestAnimationFrame(() => { document.querySelectorAll('.choice-chips[data-target]').forEach(group => group.querySelectorAll('button').forEach(item => { const selected = item.dataset.value === byId(group.dataset.target)?.value; item.classList.toggle('is-selected', selected); item.setAttribute('aria-pressed', String(selected)); })); document.querySelectorAll('[data-date-range]').forEach(item => { item.classList.remove('is-selected'); item.setAttribute('aria-pressed', 'false'); }); }));
 })();
 </script>
 <!-- Cloudflare Web Analytics --><script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"1bc011f45a4b4e9ab0f36963e4c43844"}'></script><!-- End Cloudflare Web Analytics -->
