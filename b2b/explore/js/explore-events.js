@@ -180,6 +180,26 @@ async function journeyInfo(tab){
   let response;try{response=await fetch(VENUE_API+'?venue='+encodeURIComponent(venue)+'&kind='+type,{headers:{apikey:KEY},signal:controller.signal});}finally{clearTimeout(timeout);}
   const data=await response.json();if(seq!==journeySequence)return;
   if(!response.ok||data.status!=='ok'){panel.innerHTML='<div class="event-status"><b>動態資料尚無法提供</b><p>'+esc(data.message||'官方 API 暫時不可用，請稍後重試。')+'</p></div>'+liveFooter();return;}
+  if(['move','play','leisure'].includes(type)){
+   const items=Array.isArray(data.items)?data.items:[];
+   const cards=items.map((x,i)=>localCard(x.name||x.station||'公開資訊',type==='move'?[
+     ['營運業者',x.operator],['站名',x.station],['路線編號',x.line||x.route],['終點站',x.destination],
+     ['預定發車時間',x.departure],['預定抵達時間',x.arrival],['官方票價',x.price],
+     ['資料查核時間',data.checked_at],['資料來源',x.source||data.source]
+   ]:[
+     ['地址',x.address],['開放時間',x.hours],['票價',x.price],
+     ['活動開始',x.starts_at],['活動結束',x.ends_at],['距離（公里，直線）',x.km],
+     ['更新時間',x.updated_at],['資料來源',x.source||data.source]
+   ])+'<button class="official-link" type="button" data-save-extra="'+i+'">加入／移除本次對照表</button>').join('');
+   panel.innerHTML='<p><b>'+esc(type==='move'?'交通預定時刻':type==='play'?'周邊景點':'周邊活動')+'</b></p><p>'+esc(type==='move'?'本表呈現官方預定時刻表，非即時誤點狀況。':'直線距離非步行距離；開放資訊以業者公告為準。')+'</p>'+(cards||'<div class="event-status">目前沒有可核實的官方資料。</div>')+liveFooter();
+   panel.querySelectorAll('[data-save-extra]').forEach(b=>b.addEventListener('click',()=>{
+     const x=items[Number(b.dataset.saveExtra)];if(!x)return;
+     bookmark({id:venue+':'+type+':'+clean(x.station||x.name)+':'+clean(x.departure||x.address),kind:type,
+       name:clean(x.name||x.station||'公開資訊'),location:clean(x.station||x.address),
+       details:type==='move'?'發車：'+clean(x.departure||'來源未提供')+'；抵達：'+clean(x.arrival||'來源未提供')+'；票價：'+clean(x.price||'來源未提供'):'開放：'+clean(x.hours||'來源未提供')+'；距離：'+clean(x.km||'來源未提供')+'公里（直線）',
+       source:clean(x.source||data.source||'官方公開資料')});
+   }));return;
+  }
   if(type==='weather'){
    const cards=(data.series||[]).map((e,i)=>localCard(e.element,(e.periods||[]).slice(0,7).map(t=>[t.start+' ～ '+t.end,t.value||'資料未提供']))+'<button class="official-link" type="button" data-save-weather="'+i+'">加入／移除本次對照表</button>').join('');
    panel.innerHTML='<p><b>'+esc(data.district)+'｜中央氣象署一週預報</b></p><p>此為預報，不是即時觀測溫度。資料取得：'+esc(data.updated_at)+'</p>'+(cards||'<p>目前無可顯示的預報值。</p>')+liveFooter();
