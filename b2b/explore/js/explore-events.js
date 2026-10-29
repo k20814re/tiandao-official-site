@@ -205,9 +205,9 @@ async function journeyInfo(tab){
    }));return;
   }
   if(type==='weather'){
-   const cards=(data.series||[]).map((e,i)=>localCard(e.element,(e.periods||[]).slice(0,7).map(t=>[t.start+' ～ '+t.end,t.value||'資料未提供']))+'<button class="official-link" type="button" data-save-weather="'+i+'">加入／移除本次對照表</button>').join('');
-   panel.innerHTML='<p><b>'+esc(data.district)+'｜中央氣象署一週預報</b></p><p>此為預報，不是即時觀測溫度。資料取得：'+esc(data.updated_at)+'</p>'+(cards||'<p>目前無可顯示的預報值。</p>')+liveFooter();
-   panel.querySelectorAll('[data-save-weather]').forEach(b=>b.addEventListener('click',()=>{const x=(data.series||[])[Number(b.dataset.saveWeather)];if(!x)return;bookmark({id:venue+':weather:'+x.element,kind:'weather',name:clean(data.district)+' '+clean(x.element),location:clean(data.district),details:(x.periods||[]).slice(0,7).map(t=>clean(t.start)+' '+clean(t.value)).join('；'),source:'中央氣象署預報 '+clean(data.updated_at)});}));return;
+   const cards=(data.series||[]).map((e,i)=>localCard(e.label||e.element,(e.periods||[]).slice(0,14).map(t=>[t.start+' ～ '+t.end,(t.value===null||t.value===undefined||t.value===''?'來源未提供':String(t.value)+(t.value==='來源未提供'?'':(e.unit||'')))]))+'<button class="official-link" type="button" data-save-weather="'+i+'">加入／移除本次對照表</button>').join('');
+   panel.innerHTML='<p><b>'+esc(data.district)+'｜中央氣象署一週預報</b></p><p>此為預報，不是即時觀測溫度。資料取得：'+esc(data.checked_at||data.updated_at||'來源未提供')+'</p>'+(cards||'<p>目前無可顯示的預報值。</p>')+liveFooter();
+   panel.querySelectorAll('[data-save-weather]').forEach(b=>b.addEventListener('click',()=>{const x=(data.series||[])[Number(b.dataset.saveWeather)];if(!x)return;bookmark({id:venue+':weather:'+x.element,kind:'weather',name:clean(data.district)+' '+clean(x.label||x.element),location:clean(data.district),details:(x.periods||[]).slice(0,7).map(t=>clean(t.start)+' '+clean(t.value)).join('；'),source:clean(data.source||'中央氣象署預報')+' '+clean(data.checked_at||data.updated_at)});}));return;
   }
   const cards=(data.items||[]).map((x,i)=>localCard(x.name,[['地址',x.address],['電話',x.phone],['距展館',x.km+' 公里（直線距離，非步行）'],...(type==='stay'?[['合法登記編號',x.registration],['參考房價',x.price]]:[['營業時段',x.hours],['公開價格',x.price]]),['資料更新',x.updated_at]])+'<button class="official-link" type="button" data-save-local="'+i+'">加入／移除本次對照表</button>').join('');
   panel.innerHTML='<p><b>'+esc(type==='stay'?'合法旅宿公開資料':'餐飲公開資料')+'｜距場館 3 公里內</b></p><p>來源：'+esc(data.source||'交通部觀光署／TDX')+'；無法由登記資料推導實際價格、訂位或營業時段。</p>'+(cards||'<div class="event-status">目前沒有符合條件且可驗證的公開資料。</div>')+liveFooter();
