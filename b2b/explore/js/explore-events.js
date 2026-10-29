@@ -5,7 +5,8 @@ const KEY='sb_publishable_nJ8cX-FtOkbzfgdz8Z2IJA_tcg58qfE';
 const $ = id => document.getElementById(id);
 const form = $('event-filters'), results = $('event-results'), detail = $('detail-shell');
 const categoryNames = {b2b_trade_show:'國際貿易商展',b2c_consumer_fair:'消費展',arts_exhibition:'文藝展覽',other_event:'其他展覽'};
-const REFERENCE_EVENTS = [{"id": "reference-boat-2026", "title_zh": "2026 台灣國際遊艇展", "starts_at": "2026-11-13", "ends_at": "2026-11-15", "city": "高雄市", "venue_name": "亞灣、嘉信22號、愛河灣亞果及高雄港第三船渠遊艇碼頭", "organizer_name": "經濟部國際貿易署、高雄市政府", "official_url": "https://www.boatshow.tw/zh-tw/menu/BC7BC6360A3813FBD0636733C6861689/info.html", "exhibition_category": "b2b_trade_show", "reference_only": true, "summary": "人工整理的商展參考資訊，非自動稽核結果。資料整理日：2026/10/29；票價、報名及異動請查看來源公告。"}, {"id": "reference-health-2026", "title_zh": "2026 台灣醫療科技展", "starts_at": "2026-12-03", "ends_at": "2026-12-06", "city": "臺北市", "venue_name": "台北南港展覽館1館", "organizer_name": "財團法人生技醫療科技政策研究中心（場館公告所列）", "official_url": "https://www.tainex.com.tw/event/696", "exhibition_category": "b2b_trade_show", "reference_only": true, "summary": "人工整理的商展參考資訊，非自動稽核結果。資料整理日：2026/10/29；票價、報名及異動請查看來源公告。"}, {"id": "reference-timtos-2027", "title_zh": "2027 台北國際工具機展 TIMTOS", "starts_at": "2027-03-02", "ends_at": "2027-03-06", "city": "臺北市", "venue_name": "台北南港展覽館1館、2館", "organizer_name": "中華民國對外貿易發展協會、臺灣機械工業同業公會", "official_url": "https://www.timtos.com.tw/zh-tw/menu/61A553D4CE0B4443D0636733C6861689/info.html", "exhibition_category": "b2b_trade_show", "reference_only": true, "summary": "人工整理的商展參考資訊，非自動稽核結果。資料整理日：2026/10/29；票價、報名及異動請查看來源公告。"}];
+// Independently checked against organizer/venue pages 2026-10-29; labeled as manual references, not official CSV ingest.
+const REFERENCE_EVENTS = [{"id": "reference-boat-2026", "title_zh": "2026 台灣國際遊艇展", "starts_at": "2026-11-13", "ends_at": "2026-11-15", "city": "高雄市", "venue_name": "亞灣、嘉信22號、愛河灣亞果及高雄港第三船渠遊艇碼頭", "organizer_name": "經濟部國際貿易署、高雄市政府", "official_url": "https://www.boatshow.tw/zh-tw/menu/BC7BC6360A3813FBD0636733C6861689/info.html", "exhibition_category": "b2b_trade_show", "reference_only": true, "summary": "人工整理的商展參考資訊，非自動稽核結果。資料整理日：2026/10/29；票價、報名及異動請查看來源公告。"}, {"id": "reference-health-2026", "title_zh": "2026 台灣醫療科技展", "starts_at": "2026-12-03", "ends_at": "2026-12-06", "city": "臺北市", "venue_name": "台北南港展覽館1館", "organizer_name": "財團法人生技醫療科技政策研究中心（場館公告所列）", "official_url": "https://expo.taiwan-healthcare.org/zh/", "exhibition_category": "b2b_trade_show", "reference_only": true, "summary": "人工整理的商展參考資訊，非自動稽核結果。資料整理日：2026/10/29；票價、報名及異動請查看來源公告。"}, {"id": "reference-timtos-2027", "title_zh": "2027 台北國際工具機展 TIMTOS", "starts_at": "2027-03-02", "ends_at": "2027-03-06", "city": "臺北市", "venue_name": "台北南港展覽館1館、2館", "organizer_name": "中華民國對外貿易發展協會、臺灣機械工業同業公會", "official_url": "https://www.timtos.com.tw/zh-tw/menu/61A553D4CE0B4443D0636733C6861689/info.html", "exhibition_category": "b2b_trade_show", "reference_only": true, "summary": "人工整理的商展參考資訊，非自動稽核結果。資料整理日：2026/10/29；票價、報名及異動請查看來源公告。"}];
 const PAGE_SIZE = 10;
 let events = [], sources = new Map(), currentPage = 0;
 let activeController = null, isLoading = false, lastLoadAt = 0;
@@ -43,6 +44,7 @@ function filters() {const d=new FormData(form);return {category:clean(d.get('cat
 function apply() {
   const f=filters(), cities=[...$('event-country').options].map(o=>o.value.replace(/^台/,'臺')).filter(c=>c&&c!=='其他地區');
   const list=events.filter(x=>{
+    if (x.exhibition_category !== 'b2b_trade_show') return false;
     const text=clean([x.title_zh,x.summary,x.organizer_name,x.city,x.venue_name,x.address,x.industry].filter(Boolean).join(' ')).toLowerCase();
     const c=clean(x.city).replace(/^台/,'臺'),s=day(x.starts_at),e=day(x.ends_at)||s;
     const cityOk=!f.city||(f.city==='其他地區'?!cities.includes(c):c===f.city.replace(/^台/,'臺'));
@@ -76,6 +78,8 @@ function render(list, f) {
 function hours(value) {if(!Array.isArray(value)||!value.length)return '待確認（後續補充）';return value.slice(0,8).map(v=>[clean(v.time||v.start||v.raw),clean(v.endTime||v.end),clean(v.locationName)].filter(Boolean).join('－')).filter(Boolean).join('； ')||'待確認（後續補充）';}
 function pick(id) {
   const x=events.find(v=>String(v.id)===String(id));if(!x)return;
+  selectedVenueEvent=x;
+  const activeTab=document.querySelector('.journey-tab.is-active');if(activeTab)journeyInfo(activeTab);
   const source=sourceInfo(x);
   detail.innerHTML=`<article class="event-card"><p class="eyebrow">EXHIBITION REFERENCE · 展覽參考資訊</p><h3>${esc(x.title_zh)}</h3><p class="detail-reference">僅供參考。展期、地點、票價與活動異動，以主辦單位最新公告為準；缺漏資訊後續補充。</p><p>${esc(clean(x.summary)||'簡介待補充。')}</p><ul class="source-list"><li><b>展覽類型</b><span>${esc(eventCategoryLabel(x))}</span></li><li><b>展期狀態</b><span>${esc(dateState(x))}${longRange(x)?'｜日期跨度較長，請核對官方頁面':''}</span></li><li><b>日期</b><span>${esc(date(x.starts_at))}－${esc(date(x.ends_at))}</span></li><li><b>每日時段</b><span>${esc(hours(x.daily_hours))}</span></li><li><b>場館</b><span>${esc(x.venue_name||'待確認（後續補充）')}</span></li><li><b>地址</b><span>${esc(x.address||'待確認（後續補充）')}</span></li><li><b>主辦單位</b><span>${esc(x.organizer_name||'待確認（後續補充）')}</span></li><li><b>票價／報名</b><span>${esc(x.ticket_info||'待確認（後續補充）')}</span></li><li><b>資料來源</b><span>${esc(source.name)}</span></li><li><b>資料查核</b><span>${esc(x.reference_only?'2026/10/29 整理；非自動稽核':verified(x.last_verified_at))}</span></li></ul><div class="hero-actions">${sourceLinks(x,true)}</div></article>`;
   $('event-detail')?.scrollIntoView({behavior:'smooth',block:'start'});
@@ -100,7 +104,9 @@ async function load() {
     sourceUrl.searchParams.set('select','id,name,homepage_url,license_url');
     const [data,sourceData]=await Promise.all([readList(u,controller.signal),readList(sourceUrl,controller.signal).catch(()=>[])]);
     if(controller.signal.aborted)throw new DOMException('Request timed out','AbortError');
-    events=[...data,...REFERENCE_EVENTS.filter(r=>!data.some(x=>x.official_url===r.official_url||clean(x.title_zh)===clean(r.title_zh)))];sources=new Map(sourceData.map(s=>[s.id,s]));apply();
+    const approved=data.filter(x=>x.exhibition_category==='b2b_trade_show');
+    const curated=REFERENCE_EVENTS.filter(r=>!approved.some(x=>x.official_url===r.official_url||clean(x.title_zh)===clean(r.title_zh)));
+    events=[...approved,...curated];sources=new Map(sourceData.map(s=>[s.id,s]));apply();
   } catch (error) {
     const timedOut=controller.signal.aborted;
     status(timedOut?'展覽資料讀取逾時（10 秒）':'展覽資訊暫時無法載入',timedOut?'網路回應超過 10 秒，請按「重新載入」重試；目前資料並非零筆。':'請稍後重試或前往官方來源查詢；這不代表目前沒有展覽，資訊仍以官方公告為準。',true,true,true);
@@ -117,11 +123,62 @@ if(Object.hasOwn(categoryNames,requestedCategory)) {
   $('event-category').value=requestedCategory;
   document.querySelectorAll('.category-chips button').forEach(b=>{const selected=b.dataset.value===requestedCategory;b.classList.toggle('is-selected',selected);b.setAttribute('aria-pressed',String(selected));});
 }
+// Module 06: venue-linked, on-page official information. No affiliate or booking integration.
+const VENUE_GUIDES = [
+ {pattern:/南港展覽館|TaiNEX/i,area:'臺北市南港區',transit:'捷運南港展覽館站',
+  food:['臺北旅遊網','https://www.travel.taipei/zh-tw/'],
+  stay:['交通部觀光署旅宿網','https://taiwanstay.net.tw/'],
+  move:['臺北捷運官方網站','https://www.metro.taipei/'],
+  play:['臺北旅遊網','https://www.travel.taipei/zh-tw/']},
+ {pattern:/世貿一館|台北世貿|臺北世貿/i,area:'臺北市信義區',transit:'捷運台北101/世貿站',
+  food:['臺北旅遊網','https://www.travel.taipei/zh-tw/'],
+  stay:['交通部觀光署旅宿網','https://taiwanstay.net.tw/'],
+  move:['臺北捷運官方網站','https://www.metro.taipei/'],
+  play:['臺北旅遊網','https://www.travel.taipei/zh-tw/']},
+ {pattern:/高雄展覽館/i,area:'高雄市前鎮區',transit:'高雄捷運與輕軌',
+  food:['高雄旅遊網','https://khh.travel/'],
+  stay:['交通部觀光署旅宿網','https://taiwanstay.net.tw/'],
+  move:['高雄捷運官方網站','https://www.krtc.com.tw/'],
+  play:['高雄旅遊網','https://khh.travel/']}
+];
+let selectedVenueEvent = null;
+function journeyInfo(tab) {
+  const name=tab.querySelector('small')?.textContent||tab.textContent.trim();
+  const venue=selectedVenueEvent?.venue_name||'';
+  const guide=VENUE_GUIDES.find(v=>v.pattern.test(venue));
+  const kind=tab.dataset.journey;
+  const official=kind==='wear'?(guide?.area.startsWith('臺北市')?['中央氣象署｜臺北市預報（可選行政區）','https://www.cwa.gov.tw/V8/C/W/County/County.html?CID=63']:['中央氣象署｜官方氣象入口','https://www.cwa.gov.tw/']):
+    guide?.[kind] || (kind==='move'?['臺灣高鐵官方網站','https://www.thsrc.com.tw/']:
+    kind==='stay'?['交通部觀光署旅宿網','https://taiwanstay.net.tw/']:
+    ['交通部觀光署','https://www.taiwan.net.tw/']);
+  const where=guide?.area || clean(selectedVenueEvent?.city) || '地點待確認';
+  const venueText=selectedVenueEvent ? '目前選擇：'+clean(selectedVenueEvent.title_zh)+'｜'+where+(guide?.transit?'｜鄰近交通：'+guide.transit:'') : '請先點選一筆展覽的「查看詳情」，即可關聯所在地參考資訊。';
+  $('journey-panel').innerHTML=`<div><span class="status-chip">官方參考資訊</span><h3>${esc(name)}｜${esc(where)}</h3><p>${esc(venueText)}</p><p>本區提供展館與城市參考入口，非即時店家清單；班次、價格、空房與營業時間請至來源查證。</p></div><div class="pending-card"><b>${esc(official[0])}</b><a class="official-link" href="${esc(official[1])}" target="_blank" rel="noopener noreferrer" data-journey-outbound>查看官方資訊 ↗</a><span>本站不代訂、不收款、不自動排行程。</span></div>`;
+}
+
+// One accessible consent dialog for informational outbound links, no advertisements.
+const journeyConsent=document.createElement('dialog');
+journeyConsent.setAttribute('aria-label','第三方網站離站確認');
+journeyConsent.innerHTML='<form method="dialog"><h3>即將離開天道商貿</h3><p>您即將前往第三方平台。天道商貿僅提供資訊參考，不經手您的個資與金流；交易條款請以第三方平台公告為準。</p><div class="hero-actions"><button value="cancel" type="submit">取消</button><button value="confirm" type="submit">確認前往</button></div></form>';
+document.body.appendChild(journeyConsent);
+let pendingJourneyLink='';
+$('journey-panel')?.addEventListener('click',event=>{
+  const link=event.target.closest('a[data-journey-outbound]');
+  if(!link)return;
+  event.preventDefault();
+  const url=safeLink(link.href);
+  if(!url)return;
+  pendingJourneyLink=url;
+  journeyConsent.showModal();
+});
+journeyConsent.addEventListener('close',()=>{
+  const url=pendingJourneyLink;pendingJourneyLink='';
+  if(journeyConsent.returnValue==='confirm'&&url)window.open(url,'_blank','noopener,noreferrer');
+});
+
 document.querySelectorAll('.journey-tab').forEach(tab=>tab.addEventListener('click',()=>{
   document.querySelectorAll('.journey-tab').forEach(x=>x.classList.toggle('is-active',x===tab));
-  const label=tab.querySelector('small')?.textContent||tab.childNodes[0].textContent.trim();
-  const isPartner=['stay','move'].includes(tab.dataset.journey);
-  $('journey-panel').innerHTML=`<div><span class="status-chip">資訊整理中</span><h3>${esc(label)}資訊後續補上</h3><p>${isPartner?'台灣在地合作平台及導流連結尚待法遵、來源與費用核實；目前不提供訂房、購票、代收款或未核准的聯盟網址。':'目前尚無可顯示的資料；後續提供的資訊將附上來源，僅供參考。'}</p></div><div class="pending-card"><b>${isPartner?'合作連結審核中':'資料整理中，後續補上'}</b><span>實際價格、時間與服務內容以官方或業者最新公告為準。</span></div>`;
+  journeyInfo(tab);
 }));
 // Module 06: allowlisted HTTPS affiliate redirects only, with explicit consent.
 // No partner URLs are enabled until the owner verifies the affiliate contract and destination.
