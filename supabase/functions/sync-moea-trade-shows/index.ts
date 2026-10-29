@@ -57,8 +57,19 @@ Deno.serve(async(req)=>{
     if(!response.ok)throw Error("official feed HTTP "+response.status);
     const bytes=new Uint8Array(await response.arrayBuffer());
     if(bytes.length<50||bytes.length>8_000_000)throw Error("unexpected feed size");
-    const raw=new TextDecoder("utf-8",{fatal:true}).decode(bytes);
+    // Explicitly validate encoding; reject unknown formats rather than corrupting text.
+    const charset=(response.headers.get("content-type")||"").match(/charset=([a-z0-9_-]+)/i)?.[1]?.toLowerCase();
+    if(charset && !["utf-8","utf8","big5","big-5"].includes(charset))throw Error("unsupported feed charset");
+    let raw="",encoding="";
+    const encodings=charset?[charset.startsWith("big")?"big5":"utf-8"]:["utf-8","big5"];
+    for(const enc of encodings){try{const v=new TextDecoder(enc,{fatal:true}).decode(bytes);
+      if(!v.includes("展覽")||v.includes("\uFFFD"))continue;
+      raw=v;encoding=enc;break;
+    }catch{/* inspect next allowed encoding */}}
+    if(!encoding)throw Error("feed encoding unverified: no writes");
     const rows=parseCSV(raw);
+    const headers=Object.keys(rows[0]||{}).join("|");
+    if(!/展覽名稱|活動名稱/.test(headers)||!/展覽起日|開始日期|展期起/.test(headers)||!/展覽迄日|結束日期|展期迄/.test(headers))throw Error("unverified official CSV schema: no writes");
     const now=new Date();const cutoff=new Date(now.getTime()-7*86400000).toISOString().slice(0,10);
     const candidates:Record<string,unknown>[]=[];const rejected:Record<string,string>[]=[];
     for(const row of rows){
@@ -70,7 +81,13 @@ Deno.serve(async(req)=>{
       const organizer=field(row,["主辦單位中文名稱","主辦單位"]);
       const reason= !title||!venue||!start||!end?"missing required fields":end<start?"invalid date range":end<cutoff?"historical event":NEGATIVE.test(title)?"non-B2B title":!(POSITIVE.test(title)||POSITIVE.test(organizer))?"B2B not established":!allowedVenues.test(venue)?"venue not approved":"";
       if(reason){rejected.push({title:title.slice(0,90),reason});continue;}
-      const score=20+20+20+20+10+10; // title, start, end, venue, official dataset, business evidence
+      // Completeness and B2B evidence are separate independent checks.
+      const completeness=[title,start,end,venue,organizer,official].filter(Boolean).length/6*100;
+      const explicitTrade=/國際.*展|貿易.*展|產業.*展|工業.*展|商務.*展|專業.*展|工具機展|電子展|半導體展|醫療科技展|機械展|智慧製造展/i.test(title);
+      const organizerEvidence=/貿易|外貿|公會|產業|工商|經濟部|展覽協會/i.test(organizer);
+      const b2bEvidence=Number(explicitTrade)*60+Number(organizerEvidence)*40;
+      const score=Math.round(completeness);
+      if(score<80||b2bEvidence<100){rejected.push({title:title.slice(0,90),reason:"insufficient completeness or B2B evidence"});continue;}
       const canonical_key="moea11:"+stableKey([title,start,venue].join("|"));
       candidates.push({canonical_key,title_zh:title,venue_name:venue,organizer_name:organizer||null,starts_at:encodeDay(start!),ends_at:encodeDay(end!,true),official_url:official,source_id:source.id,exhibition_category:"b2b_trade_show",publication_status:score>=80?"published":"draft",verification_status:"single_official_source",last_verified_at:new Date().toISOString(),source_checked_at:new Date().toISOString(),last_seen_at:new Date().toISOString(),published_at:score>=80?new Date().toISOString():null,country_code:"TW",timezone:"Asia/Taipei",status:"scheduled",summary:"經濟部國際貿易署公開資料整理，展期及參觀資訊請以主辦單位公告為準。"});
     }
@@ -80,6 +97,6 @@ Deno.serve(async(req)=>{
       const saved=await fetch(url+"/rest/v1/trade_events?on_conflict=canonical_key",{method:"POST",headers:{...headers,Prefer:"resolution=merge-duplicates,return=minimal"},body:JSON.stringify(candidates)});
       if(!saved.ok)throw Error("upsert failed: "+(await saved.text()).slice(0,250));
     }
-    return Response.json({dry_run:dryRun,feed:FEED,rows:rows.length,accepted:candidates.length,rejected:rejected.length,examples:candidates.slice(0,4).map(x=>({title:x.title_zh,starts_at:x.starts_at})),rejection_examples:rejected.slice(0,6)});
+    return Response.json({dry_run:dryRun,feed:FEED,encoding,rows:rows.length,accepted:candidates.length,rejected:rejected.length,examples:candidates.slice(0,4).map(x=>({title:x.title_zh,starts_at:x.starts_at})),rejection_examples:rejected.slice(0,6)});
   }catch(e){return Response.json({ok:false,error:String(e)},{status:502});}
 });
