@@ -43,6 +43,7 @@ function filters() {const d=new FormData(form);return {category:clean(d.get('cat
 function apply() {
   const f=filters(), cities=[...$('event-country').options].map(o=>o.value.replace(/^台/,'臺')).filter(c=>c&&c!=='其他地區');
   const list=events.filter(x=>{
+    if (x.exhibition_category !== 'b2b_trade_show' || x.reference_only === true) return false;
     const text=clean([x.title_zh,x.summary,x.organizer_name,x.city,x.venue_name,x.address,x.industry].filter(Boolean).join(' ')).toLowerCase();
     const c=clean(x.city).replace(/^台/,'臺'),s=day(x.starts_at),e=day(x.ends_at)||s;
     const cityOk=!f.city||(f.city==='其他地區'?!cities.includes(c):c===f.city.replace(/^台/,'臺'));
@@ -102,7 +103,7 @@ async function load() {
     sourceUrl.searchParams.set('select','id,name,homepage_url,license_url');
     const [data,sourceData]=await Promise.all([readList(u,controller.signal),readList(sourceUrl,controller.signal).catch(()=>[])]);
     if(controller.signal.aborted)throw new DOMException('Request timed out','AbortError');
-    events=[...data,...REFERENCE_EVENTS.filter(r=>!data.some(x=>x.official_url===r.official_url||clean(x.title_zh)===clean(r.title_zh)))];sources=new Map(sourceData.map(s=>[s.id,s]));apply();
+    events=data.filter(x=>x.exhibition_category==='b2b_trade_show');sources=new Map(sourceData.map(s=>[s.id,s]));apply();
   } catch (error) {
     const timedOut=controller.signal.aborted;
     status(timedOut?'展覽資料讀取逾時（10 秒）':'展覽資訊暫時無法載入',timedOut?'網路回應超過 10 秒，請按「重新載入」重試；目前資料並非零筆。':'請稍後重試或前往官方來源查詢；這不代表目前沒有展覽，資訊仍以官方公告為準。',true,true,true);
