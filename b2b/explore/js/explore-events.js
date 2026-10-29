@@ -62,7 +62,7 @@ function filters() {const d=new FormData(form);return {category:clean(d.get('cat
 function apply() {
   const f=filters(), cities=[...$('event-country').options].map(o=>o.value.replace(/^台/,'臺')).filter(c=>c&&c!=='其他地區');
   const list=events.filter(x=>{
-    if (x.exhibition_category !== 'b2b_trade_show') return false;
+    // Category chips determine visibility; never hide published cultural exhibitions.
     const text=clean([x.title_zh,x.summary,x.organizer_name,x.city,x.venue_name,x.address,x.industry].filter(Boolean).join(' ')).toLowerCase();
     const c=clean(x.city).replace(/^台/,'臺'),s=day(x.starts_at),e=day(x.ends_at)||s;
     const cityOk=!f.city||(f.city==='其他地區'?!cities.includes(c):c===f.city.replace(/^台/,'臺'));
@@ -128,7 +128,7 @@ async function load() {
     sourceUrl.searchParams.set('select','id,name,homepage_url,license_url');
     const [data,sourceData]=await Promise.all([readList(u,controller.signal),readList(sourceUrl,controller.signal).catch(()=>[])]);
     if(controller.signal.aborted)throw new DOMException('Request timed out','AbortError');
-    const approved=data.filter(x=>x.exhibition_category==='b2b_trade_show');
+    const approved=data.filter(x=>['b2b_trade_show','b2c_consumer_fair','arts_exhibition','other_event'].includes(x.exhibition_category)||!x.exhibition_category);
     events=approved;sources=new Map(sourceData.map(s=>[s.id,s]));apply();
   } catch (error) {
     // Only on genuine transport/API errors; never replace a healthy zero-result response.
@@ -169,7 +169,7 @@ async function journeyInfo(tab){
  const panel=$('journey-panel');if(!panel)return;
  const seq=++journeySequence,venue=venueKey(selectedVenueEvent),kind=tab.dataset.journey;
  if(!selectedVenueEvent){panel.innerHTML='<div class="event-status">請先選擇商展並點選「查看詳情」。</div>';return;}
- if(!venue){panel.innerHTML='<div class="event-status">此展館尚未完成動態資料來源對應，資訊核實中。</div>'+liveFooter();return;}
+ if(!venue){panel.innerHTML='<div class="event-status">展覽周邊生活圈資訊安全核實整合中，敬請期待</div>'+liveFooter();return;}
  if(!['food','stay','wear','move','play','leisure'].includes(kind)){
    panel.innerHTML='<div class="event-status"><b>交通與周邊資料 API 整合中</b><p>尚未取得可驗證的站點出口、即時班次、停車費率或周邊活動動態來源，暫不顯示過時資訊。</p></div>'+liveFooter();return;
  }
