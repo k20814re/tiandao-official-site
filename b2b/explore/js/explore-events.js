@@ -8,6 +8,30 @@ const categoryNames = {b2b_trade_show:'國際貿易商展',b2c_consumer_fair:'�
 // Independently checked against organizer/venue pages 2026-10-29; labeled as manual references, not official CSV ingest.
 // No hand-authored exhibition cards. Published B2B events are read from the verified database.
 const REFERENCE_EVENTS=[];
+// Local, opt-in bookmarks. No account, server writes, or itinerary generation.
+const SAVED_KEY='tiandao_b2b_saved_v1',SAVED_LIMIT=100;
+let savedItems=[];
+try{const raw=JSON.parse(localStorage.getItem(SAVED_KEY)||'[]');if(Array.isArray(raw))savedItems=raw.filter(x=>x&&typeof x.id==='string'&&['event','food','stay'].includes(x.kind)).slice(0,SAVED_LIMIT);}catch{/* storage unavailable */}
+function persistSaved(){try{localStorage.setItem(SAVED_KEY,JSON.stringify(savedItems));return true;}catch{return false;}}
+function bookmark(item){
+ if(!item?.id||!item?.name)return;
+ const i=savedItems.findIndex(x=>x.id===item.id&&x.kind===item.kind);
+ if(i>=0)savedItems.splice(i,1);else {if(savedItems.length>=SAVED_LIMIT){alert('收藏最多 100 筆，請先移除舊資料。');return;}savedItems.unshift({...item,savedAt:new Date().toISOString()});}
+ if(!persistSaved())alert('此瀏覽器不允許永久儲存；收藏僅於本次頁面有效。');
+ renderSaved();
+}
+function renderSaved(){
+ const el=$('saved-items'),count=$('saved-count');if(!el)return;
+ if(count)count.textContent=String(savedItems.length);
+ el.innerHTML=savedItems.length?savedItems.map((x,i)=>'<article class="event-card" style="margin:0 0 10px"><h3>'+esc(x.name)+'</h3><p>'+esc(x.kind==='event'?'商展':x.kind==='stay'?'住宿':'餐飲')+'｜'+esc(x.location||'地點待確認')+'</p><p>'+esc(x.details||'')+'</p><p class="source-meta">收藏時資料快照；最新內容仍以官方資料為準。'+(x.source?'來源：'+esc(x.source):'')+'</p><div class="hero-actions">'+(x.kind==='event'?'<button type="button" class="official-link" data-saved-open="'+i+'">查看展覽</button>':'')+'<button type="button" class="official-link" data-saved-remove="'+i+'">移除收藏</button></div></article>').join(''):'<p class="event-status">尚未收藏任何商展或周邊資訊。瀏覽時點選「加入收藏」即可保留。</p>';
+ el.querySelectorAll('[data-saved-remove]').forEach(b=>b.addEventListener('click',()=>{savedItems.splice(Number(b.dataset.savedRemove),1);persistSaved();renderSaved();}));
+ el.querySelectorAll('[data-saved-open]').forEach(b=>b.addEventListener('click',()=>{
+   const x=savedItems[Number(b.dataset.savedOpen)];if(!x)return;
+   if(events.some(e=>String(e.id)===String(x.id)))pick(x.id);
+   else {detail.innerHTML='<article class="event-card"><h3>'+esc(x.name)+'</h3><p>'+esc(x.details||'')+'</p><p>此為本機收藏快照，該商展目前不在已載入的公開資料中；請重新查證。</p></article>';$('event-detail')?.scrollIntoView({behavior:'smooth'});}
+ }));
+}
+function eventBookmark(x){bookmark({id:String(x.id),kind:'event',name:clean(x.title_zh),location:clean([x.city,x.venue_name].filter(Boolean).join(' · ')),details:date(x.starts_at)+'－'+date(x.ends_at),source:sourceInfo(x).name});}
 const PAGE_SIZE = 10;
 let events = [], sources = new Map(), currentPage = 0;
 let activeController = null, isLoading = false, lastLoadAt = 0;
@@ -71,10 +95,11 @@ function render(list, f) {
     const s=day(x.starts_at),md=s?s.slice(5).replace('-','/'):'待定',state=dateState(x),source=sourceInfo(x);
     const loc=[x.city,x.venue_name].filter(Boolean).join(' · ')||'地點待確認（後續補充）',desc=clean(x.summary)||'簡介待補充。';
     const rangeNote=longRange(x)?'<span class="event-tag is-warning">日期跨度較長｜請核對官方</span>':'';
-    return `<article class="event-card"><div class="event-top"><div><span class="eyebrow">${esc(x.city||'台灣')}</span><h3>${esc(x.title_zh||'展覽名稱待確認')}</h3><p class="event-location">${esc(loc)}</p></div><div class="event-date"><b>${esc(state==='展出中'?'展出中':md)}</b><span>${esc(state==='展出中'?'以官方公告為準':s?s.slice(0,4):'日期')}</span></div></div><div class="event-tags"><span class="event-tag is-type">${esc(eventCategoryLabel(x))}</span><span class="event-tag is-state">${esc(state)}</span><span class="event-tag">${esc(date(x.starts_at))}－${esc(date(x.ends_at))}</span>${rangeNote}<span class="event-tag">僅供參考</span></div><p>${esc(desc.slice(0,150))}${desc.length>150?'…':''}</p><div class="event-footer"><span class="source-meta">${esc(source.name)}<br>查核：${esc(x.reference_only?'2026/10/29 整理；非自動稽核':verified(x.last_verified_at))}</span><div class="event-source-links">${sourceLinks(x)}<button class="official-link detail-button" type="button" data-pick="${esc(x.id)}">查看詳情</button></div></div></article>`;
+    return `<article class="event-card"><div class="event-top"><div><span class="eyebrow">${esc(x.city||'台灣')}</span><h3>${esc(x.title_zh||'展覽名稱待確認')}</h3><p class="event-location">${esc(loc)}</p></div><div class="event-date"><b>${esc(state==='展出中'?'展出中':md)}</b><span>${esc(state==='展出中'?'以官方公告為準':s?s.slice(0,4):'日期')}</span></div></div><div class="event-tags"><span class="event-tag is-type">${esc(eventCategoryLabel(x))}</span><span class="event-tag is-state">${esc(state)}</span><span class="event-tag">${esc(date(x.starts_at))}－${esc(date(x.ends_at))}</span>${rangeNote}<span class="event-tag">僅供參考</span></div><p>${esc(desc.slice(0,150))}${desc.length>150?'…':''}</p><div class="event-footer"><span class="source-meta">${esc(source.name)}<br>查核：${esc(x.reference_only?'2026/10/29 整理；非自動稽核':verified(x.last_verified_at))}</span><div class="event-source-links">${sourceLinks(x)}<button class="official-link" type="button" data-save-event="${esc(x.id)}">加入／取消收藏</button><button class="official-link detail-button" type="button" data-pick="${esc(x.id)}">查看詳情</button></div></div></article>`;
   }).join('')+pagination;
   results.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>{currentPage=Number(b.dataset.page);render(list,f);results.scrollIntoView({behavior:'smooth',block:'start'});results.querySelector('.event-pagination').focus({preventScroll:true});}));
   results.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>pick(b.dataset.pick)));
+  results.querySelectorAll('[data-save-event]').forEach(b=>b.addEventListener('click',()=>{const x=events.find(e=>String(e.id)===b.dataset.saveEvent);if(x)eventBookmark(x);}));
 }
 function hours(value) {if(!Array.isArray(value)||!value.length)return '待確認（後續補充）';return value.slice(0,8).map(v=>[clean(v.time||v.start||v.raw),clean(v.endTime||v.end),clean(v.locationName)].filter(Boolean).join('－')).filter(Boolean).join('； ')||'待確認（後續補充）';}
 function pick(id) {
@@ -83,6 +108,7 @@ function pick(id) {
   const activeTab=document.querySelector('.journey-tab.is-active');if(activeTab)journeyInfo(activeTab);
   const source=sourceInfo(x);
   detail.innerHTML=`<article class="event-card"><p class="eyebrow">EXHIBITION REFERENCE · 展覽參考資訊</p><h3>${esc(x.title_zh)}</h3><p class="detail-reference">僅供參考。展期、地點、票價與活動異動，以主辦單位最新公告為準；缺漏資訊後續補充。</p><p>${esc(clean(x.summary)||'簡介待補充。')}</p><ul class="source-list"><li><b>展覽類型</b><span>${esc(eventCategoryLabel(x))}</span></li><li><b>展期狀態</b><span>${esc(dateState(x))}${longRange(x)?'｜日期跨度較長，請核對官方頁面':''}</span></li><li><b>日期</b><span>${esc(date(x.starts_at))}－${esc(date(x.ends_at))}</span></li><li><b>每日時段</b><span>${esc(hours(x.daily_hours))}</span></li><li><b>場館</b><span>${esc(x.venue_name||'待確認（後續補充）')}</span></li><li><b>地址</b><span>${esc(x.address||'待確認（後續補充）')}</span></li><li><b>主辦單位</b><span>${esc(x.organizer_name||'待確認（後續補充）')}</span></li><li><b>票價／報名</b><span>${esc(x.ticket_info||'待確認（後續補充）')}</span></li><li><b>資料來源</b><span>${esc(source.name)}</span></li><li><b>資料查核</b><span>${esc(x.reference_only?'2026/10/29 整理；非自動稽核':verified(x.last_verified_at))}</span></li></ul><div class="hero-actions">${sourceLinks(x,true)}</div></article>`;
+  const save=document.createElement('button');save.type='button';save.className='official-link';save.textContent='加入／取消收藏';save.addEventListener('click',()=>eventBookmark(x));detail.querySelector('.hero-actions')?.prepend(save);
   $('event-detail')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
 async function readList(url, signal) {
@@ -159,8 +185,9 @@ async function journeyInfo(tab){
    const cards=(data.series||[]).map(e=>localCard(e.element,(e.periods||[]).slice(0,7).map(t=>[t.start+' ～ '+t.end,t.value||'資料未提供']))).join('');
    panel.innerHTML='<p><b>'+esc(data.district)+'｜中央氣象署一週預報</b></p><p>此為預報，不是即時觀測溫度。資料取得：'+esc(data.updated_at)+'</p>'+(cards||'<p>目前無可顯示的預報值。</p>')+liveFooter();return;
   }
-  const cards=(data.items||[]).map(x=>localCard(x.name,[['地址',x.address],['電話',x.phone],['距展館',x.km+' 公里（直線距離，非步行）'],...(type==='stay'?[['合法登記編號',x.registration],['參考房價',x.price]]:[['營業時段',x.hours],['公開價格',x.price]]),['資料更新',x.updated_at]])).join('');
+  const cards=(data.items||[]).map((x,i)=>localCard(x.name,[['地址',x.address],['電話',x.phone],['距展館',x.km+' 公里（直線距離，非步行）'],...(type==='stay'?[['合法登記編號',x.registration],['參考房價',x.price]]:[['營業時段',x.hours],['公開價格',x.price]]),['資料更新',x.updated_at]])+'<button class="official-link" type="button" data-save-local="'+i+'">加入／取消收藏</button>').join('');
   panel.innerHTML='<p><b>'+esc(type==='stay'?'合法旅宿公開資料':'餐飲公開資料')+'｜距場館 3 公里內</b></p><p>來源：'+esc(data.source||'交通部觀光署／TDX')+'；無法由登記資料推導實際價格、訂位或營業時段。</p>'+(cards||'<div class="event-status">目前沒有符合條件且可驗證的公開資料。</div>')+liveFooter();
+  panel.querySelectorAll('[data-save-local]').forEach(b=>b.addEventListener('click',()=>{const x=(data.items||[])[Number(b.dataset.saveLocal)];if(!x)return;bookmark({id:venue+':'+type+':'+clean(x.name)+':'+clean(x.address),kind:type,name:clean(x.name),location:clean(x.address),details:'電話：'+clean(x.phone)+'；距展館 '+x.km+' 公里（直線）',source:data.source||'TDX'});}));
  }catch(e){if(seq!==journeySequence)return;panel.innerHTML='<div class="event-status">政府資料暫時無法讀取（可能逾時或網路異常），請稍後再試。</div>'+liveFooter();}
 }
 document.querySelectorAll('.journey-tab').forEach(tab=>tab.addEventListener('click',()=>{
@@ -185,5 +212,6 @@ $('partner-outbound-confirm')?.addEventListener('click',()=>{
   const url=validPartnerUrl(pendingPartnerUrl);pendingPartnerUrl='';outboundDialog?.close();
   if(url)window.open(url,'_blank','noopener,noreferrer');
 });
+renderSaved();
 load();
 })();
