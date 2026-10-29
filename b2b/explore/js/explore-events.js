@@ -10,7 +10,6 @@ const REFERENCE_EVENTS=[{"id":"reference-boat-2026","title_zh":"2026 台灣國�
 // Ephemeral comparison matrix: page-memory only; no persistent storage or network writes.
 let savedItems=[];
 const SAVED_LIMIT=100;
-function persistSaved(){return true;}
 function bookmark(item){
  if(!item?.id||!item?.name)return;
  const i=savedItems.findIndex(x=>x.id===item.id&&x.kind===item.kind);
@@ -98,6 +97,10 @@ function render(list, f) {
 function hours(value) {if(!Array.isArray(value)||!value.length)return '待確認（後續補充）';return value.slice(0,8).map(v=>[clean(v.time||v.start||v.raw),clean(v.endTime||v.end),clean(v.locationName)].filter(Boolean).join('－')).filter(Boolean).join('； ')||'待確認（後續補充）';}
 function pick(id) {
   const x=events.find(v=>String(v.id)===String(id));if(!x)return;
+  if(selectedVenueEvent&&String(selectedVenueEvent.id)!==String(x.id)&&savedItems.length){
+    if(!window.confirm('切換展覽後，是否清空目前對照表？\n按「確定」清空並切換；按「取消」保留對照表並停留在原展覽。'))return;
+    savedItems=[];renderSaved();
+  }
   selectedVenueEvent=x;
   const activeTab=document.querySelector('.journey-tab.is-active');if(activeTab)journeyInfo(activeTab);
   const source=sourceInfo(x);
@@ -148,7 +151,7 @@ if(Object.hasOwn(categoryNames,requestedCategory)) {
 }
 // v13.6 LIVE: read-only dynamic venue proxy, no static merchant or weather records.
 const VENUE_API='https://ibvmfmgikraatiobpmmz.supabase.co/functions/v1/b2b-venue-live';
-const LIVE_ATTRIBUTION='資料來源：經濟部、交通部觀光署、中央氣象署及商工行政公開登記數據。本站僅提供公開客觀數據之加值導覽參考，非旅行業、亦不經手或代訂任何站內交易金流。資訊請以業者現場最新公告為準。';
+const LIVE_ATTRIBUTION='資料來源：經濟部、交通部觀光署、中央氣象署及商工行政公開登記數據（依實際顯示來源為準）。本表由使用者自行選取公開展覽及周邊資訊，僅供本次瀏覽時比較參考，不構成旅遊行程安排、交通住宿代訂或交易確認。本站不收款、不代訂、不保證空位、房價或班次。所有資料以官方及業者最新公告為準；重新整理或關閉頁面後，已選資訊將清空。';
 let selectedVenueEvent=null,journeySequence=0;
 function venueKey(x){
  const v=clean(x?.venue_name);
