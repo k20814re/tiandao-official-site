@@ -150,7 +150,7 @@ if(Object.hasOwn(categoryNames,requestedCategory)) {
   document.querySelectorAll('.category-chips button').forEach(b=>{const selected=b.dataset.value===requestedCategory;b.classList.toggle('is-selected',selected);b.setAttribute('aria-pressed',String(selected));});
 }
 // v13.6 LIVE: read-only dynamic venue proxy, no static merchant or weather records.
-const VENUE_API='https://ibvmfmgikraatiobpmmz.supabase.co/functions/v1/b2b-venue-live';
+const VENUE_API='https://ibvmfmgikraatiobpmmz.supabase.co/functions/v1/b2b-venue-v137-staging';
 const LIVE_ATTRIBUTION='資料來源：經濟部、交通部觀光署、中央氣象署及商工行政公開登記數據（依實際顯示來源為準）。本表由使用者自行選取公開展覽及周邊資訊，僅供本次瀏覽時比較參考，不構成旅遊行程安排、交通住宿代訂或交易確認。本站不收款、不代訂、不保證空位、房價或班次。所有資料以官方及業者最新公告為準；重新整理或關閉頁面後，已選資訊將清空。';
 let selectedVenueEvent=null,journeySequence=0;
 function venueKey(x){
@@ -170,7 +170,7 @@ async function journeyInfo(tab){
  const seq=++journeySequence,venue=venueKey(selectedVenueEvent),kind=tab.dataset.journey;
  if(!selectedVenueEvent){panel.innerHTML='<div class="event-status">請先選擇商展並點選「查看詳情」。</div>';return;}
  if(!venue){panel.innerHTML='<div class="event-status">此展館尚未完成動態資料來源對應，資訊核實中。</div>'+liveFooter();return;}
- if(!['food','stay','wear'].includes(kind)){
+ if(!['food','stay','wear','move','play','leisure'].includes(kind)){
    panel.innerHTML='<div class="event-status"><b>交通與周邊資料 API 整合中</b><p>尚未取得可驗證的站點出口、即時班次、停車費率或周邊活動動態來源，暫不顯示過時資訊。</p></div>'+liveFooter();return;
  }
  const type=kind==='wear'?'weather':kind;
