@@ -76,6 +76,8 @@ function render(list, f) {
 function hours(value) {if(!Array.isArray(value)||!value.length)return '待確認（後續補充）';return value.slice(0,8).map(v=>[clean(v.time||v.start||v.raw),clean(v.endTime||v.end),clean(v.locationName)].filter(Boolean).join('－')).filter(Boolean).join('； ')||'待確認（後續補充）';}
 function pick(id) {
   const x=events.find(v=>String(v.id)===String(id));if(!x)return;
+  selectedVenueEvent=x;
+  const activeTab=document.querySelector('.journey-tab.is-active');if(activeTab)journeyInfo(activeTab);
   const source=sourceInfo(x);
   detail.innerHTML=`<article class="event-card"><p class="eyebrow">EXHIBITION REFERENCE · 展覽參考資訊</p><h3>${esc(x.title_zh)}</h3><p class="detail-reference">僅供參考。展期、地點、票價與活動異動，以主辦單位最新公告為準；缺漏資訊後續補充。</p><p>${esc(clean(x.summary)||'簡介待補充。')}</p><ul class="source-list"><li><b>展覽類型</b><span>${esc(eventCategoryLabel(x))}</span></li><li><b>展期狀態</b><span>${esc(dateState(x))}${longRange(x)?'｜日期跨度較長，請核對官方頁面':''}</span></li><li><b>日期</b><span>${esc(date(x.starts_at))}－${esc(date(x.ends_at))}</span></li><li><b>每日時段</b><span>${esc(hours(x.daily_hours))}</span></li><li><b>場館</b><span>${esc(x.venue_name||'待確認（後續補充）')}</span></li><li><b>地址</b><span>${esc(x.address||'待確認（後續補充）')}</span></li><li><b>主辦單位</b><span>${esc(x.organizer_name||'待確認（後續補充）')}</span></li><li><b>票價／報名</b><span>${esc(x.ticket_info||'待確認（後續補充）')}</span></li><li><b>資料來源</b><span>${esc(source.name)}</span></li><li><b>資料查核</b><span>${esc(x.reference_only?'2026/10/29 整理；非自動稽核':verified(x.last_verified_at))}</span></li></ul><div class="hero-actions">${sourceLinks(x,true)}</div></article>`;
   $('event-detail')?.scrollIntoView({behavior:'smooth',block:'start'});
@@ -117,11 +119,42 @@ if(Object.hasOwn(categoryNames,requestedCategory)) {
   $('event-category').value=requestedCategory;
   document.querySelectorAll('.category-chips button').forEach(b=>{const selected=b.dataset.value===requestedCategory;b.classList.toggle('is-selected',selected);b.setAttribute('aria-pressed',String(selected));});
 }
+// Module 06: venue-linked, on-page official information. No affiliate or booking integration.
+const VENUE_GUIDES = [
+ {pattern:/南港展覽館|TaiNEX/i,area:'臺北市南港區',transit:'捷運南港展覽館站',
+  food:['臺北旅遊網','https://www.travel.taipei/zh-tw/'],
+  stay:['交通部觀光署旅宿網','https://taiwanstay.net.tw/'],
+  move:['臺北捷運官方網站','https://www.metro.taipei/'],
+  play:['臺北旅遊網','https://www.travel.taipei/zh-tw/']},
+ {pattern:/世貿一館|台北世貿|臺北世貿/i,area:'臺北市信義區',transit:'捷運台北101/世貿站',
+  food:['臺北旅遊網','https://www.travel.taipei/zh-tw/'],
+  stay:['交通部觀光署旅宿網','https://taiwanstay.net.tw/'],
+  move:['臺北捷運官方網站','https://www.metro.taipei/'],
+  play:['臺北旅遊網','https://www.travel.taipei/zh-tw/']},
+ {pattern:/高雄展覽館/i,area:'高雄市前鎮區',transit:'高雄捷運與輕軌',
+  food:['高雄旅遊網','https://khh.travel/'],
+  stay:['交通部觀光署旅宿網','https://taiwanstay.net.tw/'],
+  move:['高雄捷運官方網站','https://www.krtc.com.tw/'],
+  play:['高雄旅遊網','https://khh.travel/']}
+];
+let selectedVenueEvent = null;
+function journeyInfo(tab) {
+  const name=tab.querySelector('small')?.textContent||tab.textContent.trim();
+  const venue=selectedVenueEvent?.venue_name||'';
+  const guide=VENUE_GUIDES.find(v=>v.pattern.test(venue));
+  const kind=tab.dataset.journey;
+  const official=kind==='wear'?['中央氣象署','https://www.cwa.gov.tw/']:
+    guide?.[kind] || (kind==='move'?['臺灣高鐵官方網站','https://www.thsrc.com.tw/']:
+    kind==='stay'?['交通部觀光署旅宿網','https://taiwanstay.net.tw/']:
+    ['交通部觀光署','https://www.taiwan.net.tw/']);
+  const where=guide?.area || clean(selectedVenueEvent?.city) || '臺灣';
+  const venueText=selectedVenueEvent ? '目前選擇：'+clean(selectedVenueEvent.title_zh)+'｜'+where+(guide?.transit?'｜鄰近交通：'+guide.transit:'') : '請先點選一筆展覽的「查看詳情」，即可關聯所在地參考資訊。';
+  $('journey-panel').innerHTML=`<div><span class="status-chip">官方參考資訊</span><h3>${esc(name)}｜${esc(where)}</h3><p>${esc(venueText)}</p><p>本區提供展館與城市參考入口，非即時店家清單；班次、價格、空房與營業時間請至來源查證。</p></div><div class="pending-card"><b>${esc(official[0])}</b><a class="official-link" href="${esc(official[1])}" target="_blank" rel="noopener noreferrer">查看官方資訊 ↗</a><span>本站不代訂、不收款、不自動排行程。</span></div>`;
+}
+
 document.querySelectorAll('.journey-tab').forEach(tab=>tab.addEventListener('click',()=>{
   document.querySelectorAll('.journey-tab').forEach(x=>x.classList.toggle('is-active',x===tab));
-  const label=tab.querySelector('small')?.textContent||tab.childNodes[0].textContent.trim();
-  const isPartner=['stay','move'].includes(tab.dataset.journey);
-  $('journey-panel').innerHTML=`<div><span class="status-chip">資訊整理中</span><h3>${esc(label)}資訊後續補上</h3><p>${isPartner?'台灣在地合作平台及導流連結尚待法遵、來源與費用核實；目前不提供訂房、購票、代收款或未核准的聯盟網址。':'目前尚無可顯示的資料；後續提供的資訊將附上來源，僅供參考。'}</p></div><div class="pending-card"><b>${isPartner?'合作連結審核中':'資料整理中，後續補上'}</b><span>實際價格、時間與服務內容以官方或業者最新公告為準。</span></div>`;
+  journeyInfo(tab);
 }));
 // Module 06: allowlisted HTTPS affiliate redirects only, with explicit consent.
 // No partner URLs are enabled until the owner verifies the affiliate contract and destination.
