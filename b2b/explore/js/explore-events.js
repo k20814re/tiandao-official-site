@@ -5,33 +5,27 @@ const KEY='sb_publishable_nJ8cX-FtOkbzfgdz8Z2IJA_tcg58qfE';
 const $ = id => document.getElementById(id);
 const form = $('event-filters'), results = $('event-results'), detail = $('detail-shell');
 const categoryNames = {b2b_trade_show:'國際貿易商展',b2c_consumer_fair:'消費展',arts_exhibition:'文藝展覽',other_event:'其他展覽'};
-// Independently checked against organizer/venue pages 2026-10-29; labeled as manual references, not official CSV ingest.
-// No hand-authored exhibition cards. Published B2B events are read from the verified database.
-const REFERENCE_EVENTS=[];
-// Local, opt-in bookmarks. No account, server writes, or itinerary generation.
-const SAVED_KEY='tiandao_b2b_saved_v1',SAVED_LIMIT=100;
+// Offline-only, dated and clearly labeled emergency references. Never merge into healthy API results.
+const REFERENCE_EVENTS=[{"id":"reference-boat-2026","title_zh":"2026 台灣國際遊艇展","starts_at":"2026-11-13","ends_at":"2026-11-15","city":"高雄市","venue_name":"亞灣、嘉信22號、愛河灣亞果及高雄港第三船渠遊艇碼頭","official_url":"https://www.boatshow.tw/zh-tw/menu/BC7BC6360A3813FBD0636733C6861689/info.html","exhibition_category":"b2b_trade_show","reference_only":true,"summary":"API 異常時人工來源備援；2026/10/29 整理，非即時同步，請核對主辦公告。"},{"id":"reference-health-2026","title_zh":"2026 台灣醫療科技展","starts_at":"2026-12-03","ends_at":"2026-12-06","city":"臺北市","venue_name":"台北南港展覽館1館","official_url":"https://expo.taiwan-healthcare.org/zh/","exhibition_category":"b2b_trade_show","reference_only":true,"summary":"API 異常時人工來源備援；2026/10/29 整理，非即時同步，請核對主辦公告。"},{"id":"reference-timtos-2027","title_zh":"2027 台北國際工具機展 TIMTOS","starts_at":"2027-03-02","ends_at":"2027-03-06","city":"臺北市","venue_name":"台北南港展覽館1館、2館","official_url":"https://www.timtos.com.tw/zh-tw/menu/61A553D4CE0B4443D0636733C6861689/info.html","exhibition_category":"b2b_trade_show","reference_only":true,"summary":"API 異常時人工來源備援；2026/10/29 整理，非即時同步，請核對主辦公告。"}];
+// Ephemeral comparison matrix: page-memory only; no persistent storage or network writes.
 let savedItems=[];
-try{const raw=JSON.parse(localStorage.getItem(SAVED_KEY)||'[]');if(Array.isArray(raw))savedItems=raw.filter(x=>x&&typeof x.id==='string'&&['event','food','stay'].includes(x.kind)).slice(0,SAVED_LIMIT);}catch{/* storage unavailable */}
-function persistSaved(){try{localStorage.setItem(SAVED_KEY,JSON.stringify(savedItems));return true;}catch{return false;}}
+const SAVED_LIMIT=100;
+function persistSaved(){return true;}
 function bookmark(item){
  if(!item?.id||!item?.name)return;
  const i=savedItems.findIndex(x=>x.id===item.id&&x.kind===item.kind);
- if(i>=0)savedItems.splice(i,1);else {if(savedItems.length>=SAVED_LIMIT){alert('收藏最多 100 筆，請先移除舊資料。');return;}savedItems.unshift({...item,savedAt:new Date().toISOString()});}
- if(!persistSaved())alert('此瀏覽器不允許永久儲存；收藏僅於本次頁面有效。');
+ if(i>=0)savedItems.splice(i,1);else {if(savedItems.length>=SAVED_LIMIT){alert('本次對照表最多 100 筆。');return;}savedItems.push({...item,savedAt:new Date().toISOString()});}
  renderSaved();
 }
 function renderSaved(){
  const el=$('saved-items'),count=$('saved-count');if(!el)return;
  if(count)count.textContent=String(savedItems.length);
- el.innerHTML=savedItems.length?savedItems.map((x,i)=>'<article class="event-card" style="margin:0 0 10px"><h3>'+esc(x.name)+'</h3><p>'+esc(x.kind==='event'?'商展':x.kind==='stay'?'住宿':'餐飲')+'｜'+esc(x.location||'地點待確認')+'</p><p>'+esc(x.details||'')+'</p><p class="source-meta">收藏時資料快照；最新內容仍以官方資料為準。'+(x.source?'來源：'+esc(x.source):'')+'</p><div class="hero-actions">'+(x.kind==='event'?'<button type="button" class="official-link" data-saved-open="'+i+'">查看展覽</button>':'')+'<button type="button" class="official-link" data-saved-remove="'+i+'">移除收藏</button></div></article>').join(''):'<p class="event-status">尚未收藏任何商展或周邊資訊。瀏覽時點選「加入收藏」即可保留。</p>';
- el.querySelectorAll('[data-saved-remove]').forEach(b=>b.addEventListener('click',()=>{savedItems.splice(Number(b.dataset.savedRemove),1);persistSaved();renderSaved();}));
- el.querySelectorAll('[data-saved-open]').forEach(b=>b.addEventListener('click',()=>{
-   const x=savedItems[Number(b.dataset.savedOpen)];if(!x)return;
-   if(events.some(e=>String(e.id)===String(x.id)))pick(x.id);
-   else {detail.innerHTML='<article class="event-card"><h3>'+esc(x.name)+'</h3><p>'+esc(x.details||'')+'</p><p>此為本機收藏快照，該商展目前不在已載入的公開資料中；請重新查證。</p></article>';$('event-detail')?.scrollIntoView({behavior:'smooth'});}
- }));
+ el.innerHTML=savedItems.length?savedItems.map((x,i)=>'<article class="event-card" style="margin:0 0 10px"><h3>'+esc(x.name)+'</h3><p>'+esc(x.kind==='event'?'商展':x.kind==='stay'?'住宿':x.kind==='food'?'餐飲':x.kind==='weather'?'天氣':x.kind==='move'?'交通':'周邊')+'｜'+esc(x.location||'地點待確認')+'</p><p>'+esc(x.details||'')+'</p><p class="source-meta">本次瀏覽資料對照；非預訂、非行程安排。'+(x.source?'來源：'+esc(x.source):'')+'</p><div class="hero-actions"><button type="button" class="official-link" data-saved-remove="'+i+'">移除此項</button></div></article>').join(''):'<p class="event-status">尚未選取任何資訊。選取商展或周邊資料後會列在此表。</p>';
+ el.querySelectorAll('[data-saved-remove]').forEach(b=>b.addEventListener('click',()=>{savedItems.splice(Number(b.dataset.savedRemove),1);renderSaved();}));
+ const clear=$('saved-clear');if(clear)clear.disabled=!savedItems.length;
 }
 function eventBookmark(x){bookmark({id:String(x.id),kind:'event',name:clean(x.title_zh),location:clean([x.city,x.venue_name].filter(Boolean).join(' · ')),details:date(x.starts_at)+'－'+date(x.ends_at),source:sourceInfo(x).name});}
+$('saved-clear')?.addEventListener('click',()=>{savedItems=[];renderSaved();});
 const PAGE_SIZE = 10;
 let events = [], sources = new Map(), currentPage = 0;
 let activeController = null, isLoading = false, lastLoadAt = 0;
@@ -132,11 +126,13 @@ async function load() {
     const [data,sourceData]=await Promise.all([readList(u,controller.signal),readList(sourceUrl,controller.signal).catch(()=>[])]);
     if(controller.signal.aborted)throw new DOMException('Request timed out','AbortError');
     const approved=data.filter(x=>x.exhibition_category==='b2b_trade_show');
-    const curated=REFERENCE_EVENTS.filter(r=>!approved.some(x=>x.official_url===r.official_url||clean(x.title_zh)===clean(r.title_zh)));
-    events=[...approved,...curated];sources=new Map(sourceData.map(s=>[s.id,s]));apply();
+    events=approved;sources=new Map(sourceData.map(s=>[s.id,s]));apply();
   } catch (error) {
-    const timedOut=controller.signal.aborted;
-    status(timedOut?'展覽資料讀取逾時（10 秒）':'展覽資訊暫時無法載入',timedOut?'網路回應超過 10 秒，請按「重新載入」重試；目前資料並非零筆。':'請稍後重試或前往官方來源查詢；這不代表目前沒有展覽，資訊仍以官方公告為準。',true,true,true);
+    // Only on genuine transport/API errors; never replace a healthy zero-result response.
+    events=REFERENCE_EVENTS.filter(active);sources=new Map();apply();
+    const note=document.createElement('div');note.className='event-status is-error';
+    note.innerHTML='<p><b>政府／資料庫 API 暫時無法讀取，顯示人工備援商展</b><br>以下為 2026/10/29 整理的歷史快照，非即時官方同步；已結束的展覽不顯示。請核對活動來源。</p><button class="retry-button" type="button">重新連線</button>';
+    note.querySelector('button').addEventListener('click',load);results.prepend(note);
   } finally {
     clearTimeout(timeout);isLoading=false;
     if(activeController===controller)activeController=null;
