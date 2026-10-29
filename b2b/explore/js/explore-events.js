@@ -183,7 +183,7 @@ async function journeyInfo(tab){
   if(['move','play','leisure'].includes(type)){
    const items=Array.isArray(data.items)?data.items:[];
    const cards=items.map((x,i)=>localCard(x.name||x.station||'公開資訊',type==='move'?[
-     ['營運業者',x.operator],['站名',x.station],['路線編號',x.line||x.route],['終點站',x.destination],
+     ['營運業者',x.operator],['車次編號',x.train_no],['出發站',x.station],['路線編號',x.line||x.route],['終點站',x.destination],
      ['預定發車時間',x.departure],['預定抵達時間',x.arrival],['官方票價',x.price],
      ['資料查核時間',data.checked_at],['資料來源',x.source||data.source]
    ]:[
@@ -191,7 +191,7 @@ async function journeyInfo(tab){
      ['活動開始',x.starts_at],['活動結束',x.ends_at],['距離（公里，直線）',x.km],
      ['更新時間',x.updated_at],['資料來源',x.source||data.source]
    ])+'<button class="official-link" type="button" data-save-extra="'+i+'">加入／移除本次對照表</button>').join('');
-   panel.innerHTML='<p><b>'+esc(type==='move'?'交通預定時刻':type==='play'?'周邊景點':'周邊活動')+'</b></p><p>'+esc(type==='move'?'本表呈現官方預定時刻表，非即時誤點狀況。':'直線距離非步行距離；開放資訊以業者公告為準。')+'</p>'+(cards||'<div class="event-status">目前沒有可核實的官方資料。</div>')+liveFooter();
+   panel.innerHTML='<p><b>'+esc(type==='move'?'交通預定時刻':type==='play'?'周邊景點':'周邊活動')+'</b></p><p>'+esc(type==='move'?'本表呈現官方預定時刻表，非即時誤點狀況。':'直線距離非步行距離；開放資訊以業者公告為準。')+'</p>'+(Array.isArray(data.warnings)&&data.warnings.length?'<p class="event-status">'+esc(data.warnings.join('；'))+'</p>':'')+(cards||'<div class="event-status">目前沒有可核實的官方資料。</div>')+liveFooter();
    panel.querySelectorAll('[data-save-extra]').forEach(b=>b.addEventListener('click',()=>{
      const x=items[Number(b.dataset.saveExtra)];if(!x)return;
      bookmark({id:venue+':'+type+':'+clean(x.station||x.name)+':'+clean(x.departure||x.address),kind:type,
