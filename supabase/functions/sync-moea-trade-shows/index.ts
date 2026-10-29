@@ -6,6 +6,7 @@ const SOURCE_CODE = "moea-trade-venues";
 const POSITIVE = /國際|貿易|商展|產業|工業|科技|工具機|電子|半導體|醫療|機械|智慧|製造|設備|能源|食品|建材|車輛|物流|專業|商務|採購|供應鏈/i;
 const NEGATIVE = /個展|聯展|攝影展|畫展|藝術|插畫|博物館|文藝|畢業展|音樂|動漫|演唱|親子|文化節|生活節/i;
 const allowedVenues = /南港|世貿|會展|展覽館|展覽中心|貿易中心|高雄展覽|台北國際會議/i;
+const contradictoryTitle = (zh:string,en:string) => /工具機/.test(zh) && /\bPLAS\b/i.test(en);
 const field = (row: Record<string,string>, keys: string[]) => {
   for (const k of keys) { const hit=Object.keys(row).find(x=>x.replace(/\s/g,"").includes(k)); if(hit && row[hit]?.trim())return row[hit].trim(); }
   return "";
@@ -71,17 +72,18 @@ Deno.serve(async(req)=>{
     if(!encoding)throw Error("feed encoding unverified: no writes");
     const rows=parseCSV(raw);
     const headers=Object.keys(rows[0]||{}).join("|");
-    if(!/展覽名稱|活動名稱/.test(headers)||!/展覽起日|開始日期|展期起/.test(headers)||!/展覽迄日|結束日期|展期迄/.test(headers))throw Error("unverified official CSV schema: no writes");
+    if(!/展覽名稱|展覽中文名稱|活動名稱/.test(headers)||!/展覽起日|開始日期|展期起/.test(headers)||!/展覽迄日|結束日期|展期迄/.test(headers))throw Error("unverified official CSV schema: no writes");
     const now=new Date();const cutoff=new Date(now.getTime()-7*86400000).toISOString().slice(0,10);
     const candidates:Record<string,unknown>[]=[];const rejected:Record<string,string>[]=[];
     for(const row of rows){
       const title=field(row,["展覽名稱中文名稱","展覽中文名稱","展覽名稱","活動名稱"]);
+      const titleEn=field(row,["展覽名稱英文名稱","展覽英文名稱"]);
       const venue=field(row,["展館中文名稱","展覽地點中文名稱","展館名稱","展覽地點"]);
       const start=localDay(field(row,["展覽起日","展覽展期開始日期","開始日期","展期起"]));
       const end=localDay(field(row,["展覽迄日","展覽展期結束日期","結束日期","展期迄"]));
       const official=safeOfficial(field(row,["網站連結","網站網址","活動網址"]))||DATASET;
       const organizer=field(row,["主辦單位中文名稱","主辦單位"]);
-      const reason= !title||!venue||!start||!end?"missing required fields":end<start?"invalid date range":end<cutoff?"historical event":NEGATIVE.test(title)?"non-B2B title":!(POSITIVE.test(title)||POSITIVE.test(organizer))?"B2B not established":!allowedVenues.test(venue)?"venue not approved":"";
+      const reason= !title||!venue||!start||!end?"missing required fields":contradictoryTitle(title,titleEn)?"conflicting bilingual exhibition titles; manual review required":end<start?"invalid date range":end<cutoff?"historical event":NEGATIVE.test(title)?"non-B2B title":!(POSITIVE.test(title)||POSITIVE.test(organizer))?"B2B not established":!allowedVenues.test(venue)?"venue not approved":"";
       if(reason){rejected.push({title:title.slice(0,90),reason});continue;}
       // Completeness and B2B evidence are separate independent checks.
       const completeness=[title,start,end,venue,organizer,official].filter(Boolean).length/6*100;
