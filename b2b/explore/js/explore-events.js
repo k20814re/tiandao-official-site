@@ -173,6 +173,10 @@ async function journeyInfo(tab){
  if(!['food','stay','wear','move','play','leisure'].includes(kind)){
    panel.innerHTML='<div class="event-status"><b>交通與周邊資料 API 整合中</b><p>尚未取得可驗證的站點出口、即時班次、停車費率或周邊活動動態來源，暫不顯示過時資訊。</p></div>'+liveFooter();return;
  }
+ if(kind==='play'||kind==='leisure'){
+   panel.innerHTML='<div class="event-status"><b>資料核實整合中，敬請期待</b><p>本分類尚未完成官方動態資料驗證，目前不提供景點或活動建議。</p></div>'+liveFooter();
+   return;
+ }
  const type=kind==='wear'?'weather':kind;
  panel.innerHTML='<div class="event-status"><span class="spinner"></span>正在取得政府動態資料，請稍候…</div>'+liveFooter();
  try{
