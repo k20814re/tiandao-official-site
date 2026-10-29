@@ -2,7 +2,7 @@
 // Deploy with JWT verification; schedule only after source format and dates pass acceptance.
 const FEED = "https://www.trade.gov.tw/OpenData/getOpenData.aspx?oid=7B98079D47D2133B";
 const DATASET = "https://data.gov.tw/dataset/11585";
-const SOURCE_CODE = "moea_trade_show_csv_v11";
+const SOURCE_CODE = "moea-trade-venues";
 const POSITIVE = /國際|貿易|商展|產業|工業|科技|工具機|電子|半導體|醫療|機械|智慧|製造|設備|能源|食品|建材|車輛|物流|專業|商務|採購|供應鏈/i;
 const NEGATIVE = /個展|聯展|攝影展|畫展|藝術|插畫|博物館|文藝|畢業展|音樂|動漫|演唱|親子|文化節|生活節/i;
 const allowedVenues = /南港|世貿|會展|展覽館|展覽中心|貿易中心|高雄展覽|台北國際會議/i;
