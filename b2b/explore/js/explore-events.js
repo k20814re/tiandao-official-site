@@ -10,7 +10,6 @@ const REFERENCE_EVENTS=[{"id":"reference-boat-2026","title_zh":"2026 台灣國�
 // Ephemeral comparison matrix: page-memory only; no persistent storage or network writes.
 let savedItems=[];
 const SAVED_LIMIT=100;
-function persistSaved(){return true;}
 function bookmark(item){
  if(!item?.id||!item?.name)return;
  const i=savedItems.findIndex(x=>x.id===item.id&&x.kind===item.kind);
@@ -98,6 +97,10 @@ function render(list, f) {
 function hours(value) {if(!Array.isArray(value)||!value.length)return '待確認（後續補充）';return value.slice(0,8).map(v=>[clean(v.time||v.start||v.raw),clean(v.endTime||v.end),clean(v.locationName)].filter(Boolean).join('－')).filter(Boolean).join('； ')||'待確認（後續補充）';}
 function pick(id) {
   const x=events.find(v=>String(v.id)===String(id));if(!x)return;
+  if(selectedVenueEvent&&String(selectedVenueEvent.id)!==String(x.id)&&savedItems.length){
+    if(!window.confirm('切換展覽後，是否清空目前對照表？\n按「確定」清空並切換；按「取消」保留對照表並停留在原展覽。'))return;
+    savedItems=[];renderSaved();
+  }
   selectedVenueEvent=x;
   const activeTab=document.querySelector('.journey-tab.is-active');if(activeTab)journeyInfo(activeTab);
   const source=sourceInfo(x);
@@ -147,8 +150,8 @@ if(Object.hasOwn(categoryNames,requestedCategory)) {
   document.querySelectorAll('.category-chips button').forEach(b=>{const selected=b.dataset.value===requestedCategory;b.classList.toggle('is-selected',selected);b.setAttribute('aria-pressed',String(selected));});
 }
 // v13.6 LIVE: read-only dynamic venue proxy, no static merchant or weather records.
-const VENUE_API='https://ibvmfmgikraatiobpmmz.supabase.co/functions/v1/b2b-venue-live';
-const LIVE_ATTRIBUTION='資料來源：經濟部、交通部觀光署、中央氣象署及商工行政公開登記數據。本站僅提供公開客觀數據之加值導覽參考，非旅行業、亦不經手或代訂任何站內交易金流。資訊請以業者現場最新公告為準。';
+const VENUE_API='https://ibvmfmgikraatiobpmmz.supabase.co/functions/v1/b2b-venue-v137-staging';
+const LIVE_ATTRIBUTION='資料來源：經濟部、交通部觀光署、中央氣象署及商工行政公開登記數據（依實際顯示來源為準）。本表由使用者自行選取公開展覽及周邊資訊，僅供本次瀏覽時比較參考，不構成旅遊行程安排、交通住宿代訂或交易確認。本站不收款、不代訂、不保證空位、房價或班次。所有資料以官方及業者最新公告為準；重新整理或關閉頁面後，已選資訊將清空。';
 let selectedVenueEvent=null,journeySequence=0;
 function venueKey(x){
  const v=clean(x?.venue_name);
@@ -167,8 +170,12 @@ async function journeyInfo(tab){
  const seq=++journeySequence,venue=venueKey(selectedVenueEvent),kind=tab.dataset.journey;
  if(!selectedVenueEvent){panel.innerHTML='<div class="event-status">請先選擇商展並點選「查看詳情」。</div>';return;}
  if(!venue){panel.innerHTML='<div class="event-status">此展館尚未完成動態資料來源對應，資訊核實中。</div>'+liveFooter();return;}
- if(!['food','stay','wear'].includes(kind)){
+ if(!['food','stay','wear','move','play','leisure'].includes(kind)){
    panel.innerHTML='<div class="event-status"><b>交通與周邊資料 API 整合中</b><p>尚未取得可驗證的站點出口、即時班次、停車費率或周邊活動動態來源，暫不顯示過時資訊。</p></div>'+liveFooter();return;
+ }
+ if(kind==='play'||kind==='leisure'){
+   panel.innerHTML='<div class="event-status"><b>資料核實整合中，敬請期待</b><p>本分類尚未完成官方動態資料驗證，目前不提供景點或活動建議。</p></div>'+liveFooter();
+   return;
  }
  const type=kind==='wear'?'weather':kind;
  panel.innerHTML='<div class="event-status"><span class="spinner"></span>正在取得政府動態資料，請稍候…</div>'+liveFooter();
@@ -177,6 +184,26 @@ async function journeyInfo(tab){
   let response;try{response=await fetch(VENUE_API+'?venue='+encodeURIComponent(venue)+'&kind='+type,{headers:{apikey:KEY},signal:controller.signal});}finally{clearTimeout(timeout);}
   const data=await response.json();if(seq!==journeySequence)return;
   if(!response.ok||data.status!=='ok'){panel.innerHTML='<div class="event-status"><b>動態資料尚無法提供</b><p>'+esc(data.message||'官方 API 暫時不可用，請稍後重試。')+'</p></div>'+liveFooter();return;}
+  if(['move','play','leisure'].includes(type)){
+   const items=Array.isArray(data.items)?data.items:[];
+   const cards=items.map((x,i)=>localCard(x.name||x.station||'公開資訊',type==='move'?[
+     ['營運業者',x.operator],['車次編號',x.train_no],['出發站',x.station],['路線編號',x.line||x.route],['終點站',x.destination],
+     ['預定發車時間',x.departure],['預定抵達時間',x.arrival],['官方票價',x.price],
+     ['資料查核時間',data.checked_at],['資料來源',x.source||data.source]
+   ]:[
+     ['地址',x.address],['開放時間',x.hours],['票價',x.price],
+     ['活動開始',x.starts_at],['活動結束',x.ends_at],['距離（公里，直線）',x.km],
+     ['更新時間',x.updated_at],['資料來源',x.source||data.source]
+   ])+'<button class="official-link" type="button" data-save-extra="'+i+'">加入／移除本次對照表</button>').join('');
+   panel.innerHTML='<p><b>'+esc(type==='move'?'交通預定時刻':type==='play'?'周邊景點':'周邊活動')+'</b></p><p>'+esc(type==='move'?'本表呈現官方預定時刻表，非即時誤點狀況。':'直線距離非步行距離；開放資訊以業者公告為準。')+'</p>'+(Array.isArray(data.warnings)&&data.warnings.length?'<p class="event-status">'+esc(data.warnings.join('；'))+'</p>':'')+(cards||'<div class="event-status">目前沒有可核實的官方資料。</div>')+liveFooter();
+   panel.querySelectorAll('[data-save-extra]').forEach(b=>b.addEventListener('click',()=>{
+     const x=items[Number(b.dataset.saveExtra)];if(!x)return;
+     bookmark({id:venue+':'+type+':'+clean(x.station||x.name)+':'+clean(x.departure||x.address),kind:type,
+       name:clean(x.name||x.station||'公開資訊'),location:clean(x.station||x.address),
+       details:type==='move'?'發車：'+clean(x.departure||'來源未提供')+'；抵達：'+clean(x.arrival||'來源未提供')+'；票價：'+clean(x.price||'來源未提供'):'開放：'+clean(x.hours||'來源未提供')+'；距離：'+clean(x.km||'來源未提供')+'公里（直線）',
+       source:clean(x.source||data.source||'官方公開資料')});
+   }));return;
+  }
   if(type==='weather'){
    const cards=(data.series||[]).map((e,i)=>localCard(e.element,(e.periods||[]).slice(0,7).map(t=>[t.start+' ～ '+t.end,t.value||'資料未提供']))+'<button class="official-link" type="button" data-save-weather="'+i+'">加入／移除本次對照表</button>').join('');
    panel.innerHTML='<p><b>'+esc(data.district)+'｜中央氣象署一週預報</b></p><p>此為預報，不是即時觀測溫度。資料取得：'+esc(data.updated_at)+'</p>'+(cards||'<p>目前無可顯示的預報值。</p>')+liveFooter();

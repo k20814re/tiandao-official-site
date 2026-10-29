@@ -12,6 +12,11 @@
 /* Click-first controls */
 .easy-search{grid-template-columns:2fr 1fr 1fr 1fr auto}.full-row{grid-column:1/-1}.quick-row{display:grid;grid-template-columns:125px 1fr;align-items:center;gap:12px}.quick-label{color:var(--cream);font-size:12px;font-weight:800}.choice-chips{display:flex;flex-wrap:wrap;gap:8px}.choice-chips button{min-height:36px;padding:7px 14px;border:1px solid #ffffff24;border-radius:999px;background:#12192a;color:#d5d1d4;cursor:pointer}.choice-chips button:hover,.choice-chips button:focus-visible,.choice-chips button.is-selected{border-color:var(--gold);background:#2b241d;color:var(--gold-light);box-shadow:0 0 0 2px #e8b85e15}.tap-hint{margin:0 0 18px;padding:12px 14px;border-left:3px solid var(--gold);background:#e8b85e0d;color:#cbc6ca;font-size:12px}@media(max-width:1020px){.easy-search{grid-template-columns:2fr 1fr 1fr}.easy-search .search-actions{grid-column:1/-1}}@media(max-width:680px){.easy-search{grid-template-columns:1fr 1fr}.quick-row{grid-template-columns:1fr;gap:7px}.choice-chips{display:grid;grid-template-columns:repeat(3,1fr)}.choice-chips button{padding-inline:8px}.easy-search .search-field,.easy-search .search-actions{grid-column:1/-1}}@media(max-width:420px){.choice-chips{grid-template-columns:repeat(2,1fr)}.easy-search{grid-template-columns:1fr}.easy-search .search-field,.easy-search .search-actions{grid-column:auto}}
 
+
+/* Session-only comparison: responsive side-by-side fact cards. */
+#saved-items:has(> .event-card){display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:14px;align-items:stretch}
+#saved-items>.event-card{margin:0!important;min-width:0;overflow-wrap:anywhere}
+#saved-items>.event-card .source-meta{font-size:12px}
 </style>
 </head>
 <body>
@@ -87,8 +92,8 @@
 
     <section class="event-section" id="saved" aria-labelledby="saved-title">
       <div class="wrap">
-        <div class="section-intro"><p class="eyebrow">MY SAVED REFERENCES</p><h2 id="saved-title">本次參展資訊對照表（<span id="saved-count">0</span>）</h2><p>由使用者自行選取的商展、餐飲、住宿資訊會在切換分類時保留於本頁對照表；不登入、不儲存、不代訂、不安排旅程。重新整理或關閉頁面後即清空。所有班次、價格與營業資訊以來源最新公告為準。</p></div>
-        <p><button id="saved-clear" type="button" class="filter-reset" disabled>清空本次對照表</button></p><div id="saved-items" aria-live="polite"><p>正在讀取本機收藏…</p></div>
+        <div class="section-intro"><p class="eyebrow">MY SAVED REFERENCES</p><h2 id="saved-title">本次參展資訊對照表（<span id="saved-count">0</span>）</h2><p>由使用者自行選取的商展、交通、餐飲、住宿、天氣與周邊資訊會在切換分類時保留於本頁對照表；不登入、不儲存、不代訂、不安排旅程。重新整理或關閉頁面後即清空。所有班次、價格與營業資訊以來源最新公告為準。</p></div>
+        <p><button id="saved-clear" type="button" class="filter-reset" disabled>清空本次對照表</button></p><div id="saved-items" aria-live="polite"><p>尚未選取任何資訊。</p></div>
       </div>
     </section>
 
@@ -183,7 +188,7 @@
 
   <footer class="footer"><div class="wrap"><p class="service-disclaimer">資料來源：經濟部國際貿易署展覽資訊開放資料。本網站依政府資料開放授權條款第1版加值利用。<a href="https://data.gov.tw/dataset/11585" target="_blank" rel="noopener noreferrer">資料集</a> · <a href="https://data.gov.tw/license" target="_blank" rel="noopener noreferrer">授權條款</a>。本網站非政府官方網站，未獲政府機關背書。</p><p class="service-disclaimer">本頁所有資訊僅供參考。天道商貿提供展覽與周邊資訊整理，不提供自動行程安排，尚未收錄的內容將陸續補上。本平台不提供車票、飯店或展覽門票之代訂及代收款服務。各項價格、開放時間、班次與活動資訊可能異動，請以官方最新公告為準。</p><div class="footer-inner"><span>© 2026 TianDao B2B · 台灣商務探索 · 試營運</span><span><a href="../../index.html">返回天道原網站</a> · <a href="../index.html">B2B 首頁</a></span></div></div></footer>
   <script src="js/explore.js"></script>
-  <script src="js/explore-events.js?v=20261029-v137-live-matrix-weather-20261029"></script>
+  <script src="js/explore-events.js?v=v137-live-api-journey-final"></script>
 <script>
 (() => {
   const byId = id => document.getElementById(id);
