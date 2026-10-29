@@ -5,7 +5,8 @@ const KEY='sb_publishable_nJ8cX-FtOkbzfgdz8Z2IJA_tcg58qfE';
 const $ = id => document.getElementById(id);
 const form = $('event-filters'), results = $('event-results'), detail = $('detail-shell');
 const categoryNames = {b2b_trade_show:'國際貿易商展',b2c_consumer_fair:'消費展',arts_exhibition:'文藝展覽',other_event:'其他展覽'};
-const REFERENCE_EVENTS = [{"id": "reference-boat-2026", "title_zh": "2026 台灣國際遊艇展", "starts_at": "2026-11-13", "ends_at": "2026-11-15", "city": "高雄市", "venue_name": "亞灣、嘉信22號、愛河灣亞果及高雄港第三船渠遊艇碼頭", "organizer_name": "經濟部國際貿易署、高雄市政府", "official_url": "https://www.boatshow.tw/zh-tw/menu/BC7BC6360A3813FBD0636733C6861689/info.html", "exhibition_category": "b2b_trade_show", "reference_only": true, "summary": "人工整理的商展參考資訊，非自動稽核結果。資料整理日：2026/10/29；票價、報名及異動請查看來源公告。"}, {"id": "reference-health-2026", "title_zh": "2026 台灣醫療科技展", "starts_at": "2026-12-03", "ends_at": "2026-12-06", "city": "臺北市", "venue_name": "台北南港展覽館1館", "organizer_name": "財團法人生技醫療科技政策研究中心（場館公告所列）", "official_url": "https://www.tainex.com.tw/event/696", "exhibition_category": "b2b_trade_show", "reference_only": true, "summary": "人工整理的商展參考資訊，非自動稽核結果。資料整理日：2026/10/29；票價、報名及異動請查看來源公告。"}, {"id": "reference-timtos-2027", "title_zh": "2027 台北國際工具機展 TIMTOS", "starts_at": "2027-03-02", "ends_at": "2027-03-06", "city": "臺北市", "venue_name": "台北南港展覽館1館、2館", "organizer_name": "中華民國對外貿易發展協會、臺灣機械工業同業公會", "official_url": "https://www.timtos.com.tw/zh-tw/menu/61A553D4CE0B4443D0636733C6861689/info.html", "exhibition_category": "b2b_trade_show", "reference_only": true, "summary": "人工整理的商展參考資訊，非自動稽核結果。資料整理日：2026/10/29；票價、報名及異動請查看來源公告。"}];
+// Independently checked against organizer/venue pages 2026-10-29; labeled as manual references, not official CSV ingest.
+const REFERENCE_EVENTS = [{"id": "reference-boat-2026", "title_zh": "2026 台灣國際遊艇展", "starts_at": "2026-11-13", "ends_at": "2026-11-15", "city": "高雄市", "venue_name": "亞灣、嘉信22號、愛河灣亞果及高雄港第三船渠遊艇碼頭", "organizer_name": "經濟部國際貿易署、高雄市政府", "official_url": "https://www.boatshow.tw/zh-tw/menu/BC7BC6360A3813FBD0636733C6861689/info.html", "exhibition_category": "b2b_trade_show", "reference_only": true, "summary": "人工整理的商展參考資訊，非自動稽核結果。資料整理日：2026/10/29；票價、報名及異動請查看來源公告。"}, {"id": "reference-health-2026", "title_zh": "2026 台灣醫療科技展", "starts_at": "2026-12-03", "ends_at": "2026-12-06", "city": "臺北市", "venue_name": "台北南港展覽館1館", "organizer_name": "財團法人生技醫療科技政策研究中心（場館公告所列）", "official_url": "https://expo.taiwan-healthcare.org/zh/", "exhibition_category": "b2b_trade_show", "reference_only": true, "summary": "人工整理的商展參考資訊，非自動稽核結果。資料整理日：2026/10/29；票價、報名及異動請查看來源公告。"}, {"id": "reference-timtos-2027", "title_zh": "2027 台北國際工具機展 TIMTOS", "starts_at": "2027-03-02", "ends_at": "2027-03-06", "city": "臺北市", "venue_name": "台北南港展覽館1館、2館", "organizer_name": "中華民國對外貿易發展協會、臺灣機械工業同業公會", "official_url": "https://www.timtos.com.tw/zh-tw/menu/61A553D4CE0B4443D0636733C6861689/info.html", "exhibition_category": "b2b_trade_show", "reference_only": true, "summary": "人工整理的商展參考資訊，非自動稽核結果。資料整理日：2026/10/29；票價、報名及異動請查看來源公告。"}];
 const PAGE_SIZE = 10;
 let events = [], sources = new Map(), currentPage = 0;
 let activeController = null, isLoading = false, lastLoadAt = 0;
@@ -43,7 +44,7 @@ function filters() {const d=new FormData(form);return {category:clean(d.get('cat
 function apply() {
   const f=filters(), cities=[...$('event-country').options].map(o=>o.value.replace(/^台/,'臺')).filter(c=>c&&c!=='其他地區');
   const list=events.filter(x=>{
-    if (x.exhibition_category !== 'b2b_trade_show' || x.reference_only === true) return false;
+    if (x.exhibition_category !== 'b2b_trade_show') return false;
     const text=clean([x.title_zh,x.summary,x.organizer_name,x.city,x.venue_name,x.address,x.industry].filter(Boolean).join(' ')).toLowerCase();
     const c=clean(x.city).replace(/^台/,'臺'),s=day(x.starts_at),e=day(x.ends_at)||s;
     const cityOk=!f.city||(f.city==='其他地區'?!cities.includes(c):c===f.city.replace(/^台/,'臺'));
@@ -103,7 +104,9 @@ async function load() {
     sourceUrl.searchParams.set('select','id,name,homepage_url,license_url');
     const [data,sourceData]=await Promise.all([readList(u,controller.signal),readList(sourceUrl,controller.signal).catch(()=>[])]);
     if(controller.signal.aborted)throw new DOMException('Request timed out','AbortError');
-    events=data.filter(x=>x.exhibition_category==='b2b_trade_show');sources=new Map(sourceData.map(s=>[s.id,s]));apply();
+    const approved=data.filter(x=>x.exhibition_category==='b2b_trade_show');
+    const curated=REFERENCE_EVENTS.filter(r=>!approved.some(x=>x.official_url===r.official_url||clean(x.title_zh)===clean(r.title_zh)));
+    events=[...approved,...curated];sources=new Map(sourceData.map(s=>[s.id,s]));apply();
   } catch (error) {
     const timedOut=controller.signal.aborted;
     status(timedOut?'展覽資料讀取逾時（10 秒）':'展覽資訊暫時無法載入',timedOut?'網路回應超過 10 秒，請按「重新載入」重試；目前資料並非零筆。':'請稍後重試或前往官方來源查詢；這不代表目前沒有展覽，資訊仍以官方公告為準。',true,true,true);
