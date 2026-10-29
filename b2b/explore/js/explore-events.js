@@ -6,7 +6,8 @@ const $ = id => document.getElementById(id);
 const form = $('event-filters'), results = $('event-results'), detail = $('detail-shell');
 const categoryNames = {b2b_trade_show:'國際貿易商展',b2c_consumer_fair:'消費展',arts_exhibition:'文藝展覽',other_event:'其他展覽'};
 // Independently checked against organizer/venue pages 2026-10-29; labeled as manual references, not official CSV ingest.
-const REFERENCE_EVENTS = [{"id": "reference-boat-2026", "title_zh": "2026 台灣國際遊艇展", "starts_at": "2026-11-13", "ends_at": "2026-11-15", "city": "高雄市", "venue_name": "亞灣、嘉信22號、愛河灣亞果及高雄港第三船渠遊艇碼頭", "organizer_name": "經濟部國際貿易署、高雄市政府", "official_url": "https://www.boatshow.tw/zh-tw/menu/BC7BC6360A3813FBD0636733C6861689/info.html", "exhibition_category": "b2b_trade_show", "reference_only": true, "summary": "人工整理的商展參考資訊，非自動稽核結果。資料整理日：2026/10/29；票價、報名及異動請查看來源公告。"}, {"id": "reference-health-2026", "title_zh": "2026 台灣醫療科技展", "starts_at": "2026-12-03", "ends_at": "2026-12-06", "city": "臺北市", "venue_name": "台北南港展覽館1館", "organizer_name": "財團法人生技醫療科技政策研究中心（場館公告所列）", "official_url": "https://expo.taiwan-healthcare.org/zh/", "exhibition_category": "b2b_trade_show", "reference_only": true, "summary": "人工整理的商展參考資訊，非自動稽核結果。資料整理日：2026/10/29；票價、報名及異動請查看來源公告。"}, {"id": "reference-timtos-2027", "title_zh": "2027 台北國際工具機展 TIMTOS", "starts_at": "2027-03-02", "ends_at": "2027-03-06", "city": "臺北市", "venue_name": "台北南港展覽館1館、2館", "organizer_name": "中華民國對外貿易發展協會、臺灣機械工業同業公會", "official_url": "https://www.timtos.com.tw/zh-tw/menu/61A553D4CE0B4443D0636733C6861689/info.html", "exhibition_category": "b2b_trade_show", "reference_only": true, "summary": "人工整理的商展參考資訊，非自動稽核結果。資料整理日：2026/10/29；票價、報名及異動請查看來源公告。"}];
+// No hand-authored exhibition cards. Published B2B events are read from the verified database.
+const REFERENCE_EVENTS=[];
 const PAGE_SIZE = 10;
 let events = [], sources = new Map(), currentPage = 0;
 let activeController = null, isLoading = false, lastLoadAt = 0;
@@ -123,69 +124,47 @@ if(Object.hasOwn(categoryNames,requestedCategory)) {
   $('event-category').value=requestedCategory;
   document.querySelectorAll('.category-chips button').forEach(b=>{const selected=b.dataset.value===requestedCategory;b.classList.toggle('is-selected',selected);b.setAttribute('aria-pressed',String(selected));});
 }
-// Module 06 v13.6: first-party factual venue cards. No booking, payment or scraped descriptions.
-const LOCAL_ATTRIBUTION='資訊來源：各場館官方公告、主辦單位及公開商業登記數據。本站僅提供公開客觀數據之加值導覽參考，非旅行業、亦不經手或處理任何站內交易。實際營業時間、房價、車資、費率等資訊，請一律以業者與現場最新公告為準。';
-const LOCAL_GUIDES={
-  nangang:{
-    area:'臺北市南港區',label:'南港展覽館 1 館',source:'台北南港展覽館交通公告；店家公開商業資訊',
-    hotels:[
-      {name:'台北漢來大飯店',address:'臺北市南港區經貿一路168號',phone:'02-2788-6868',stars:'星級待官方核實',distance:'實際步行距離待核實',price:'房價隨日期變動，待業者公開報價核實'},
-      {name:'南港老爺行旅',address:'臺北市南港區經貿二路196號10樓',phone:'02-7750-0588',stars:'星級待官方核實',distance:'實際步行距離待核實',price:'房價隨日期變動，待業者公開報價核實'}],
-    food:[
-      {name:'欣葉小聚 南港店',type:'臺菜',address:'臺北市南港區經貿二路166號1樓',phone:'02-2785-1819',hours:'每日 11:00–14:30、17:00–21:00（以店家公告為準）',price:'每人消費待菜單核實',dish:'臺式飯菜'},
-      {name:'武侍酒 日式居酒屋',type:'日式居酒屋',address:'臺北市南港區南港路一段111號',phone:'02-2653-6773',hours:'午餐及晚餐時段；每日時段可能不同',price:'每人消費待菜單核實',dish:'燒肉料理'}],
-    transit:[
-      ['捷運','板南線／文湖線「南港展覽館站」1 號出口，沿左側至 1 館；2 館走地下連通道'],
-      ['高鐵／臺鐵','南港站轉捷運板南線至南港展覽館站'],
-      ['公車','南港展覽館站（1 館）：589、817、951、藍22、藍15 等；班次以即時公告為準'],
-      ['停車','展館停車費率待場館最新公告核實'],
-      ['末班車','依搭乘路線、方向及日期而異；未取得可核實班次，不顯示推估時間']],
-    weather:'臺北市南港區',weatherNote:'目前尚未接入具合法授權與穩定更新的行政區天氣 API，無法提供即時溫度、降雨機率或一週預報。'
-  },
-  kaohsiung:{
-    area:'高雄市前鎮區',label:'高雄展覽館／亞灣遊艇展區',source:'高雄展覽館交通公告；店家公開商業資訊',
-    hotels:[
-      {name:'高雄洲際酒店',address:'高雄市前鎮區新光路33號',phone:'07-339-1888',stars:'星級待官方核實',distance:'實際步行距離待核實',price:'房價隨日期變動，待業者公開報價核實'},
-      {name:'高雄日航酒店',address:'高雄市前鎮區林森四路268號',phone:'07-537-8800',stars:'星級待官方核實',distance:'實際步行距離待核實',price:'房價隨日期變動，待業者公開報價核實'}],
-    food:[
-      {name:'Belon 貝隆餐酒館',type:'西式海鮮餐飲',address:'高雄市前鎮區成功二路39-1號',phone:'0908-888-382',hours:'多為 16:30 起晚間營業；每日以業者公告為準',price:'每人消費待菜單核實',dish:'海鮮料理'},
-      {name:'Sauga Bar 鯊加碼頭餐酒館',type:'西式餐酒館',address:'高雄市前鎮區成功二路周邊碼頭區（門牌待核實）',phone:'07-537-1558',hours:'晚間時段；每日以業者公告為準',price:'每人消費待菜單核實',dish:'西式餐點'}],
-    transit:[
-      ['捷運','紅線 R8 三多商圈站 2 號出口，場館公告步行約 10 分鐘'],
-      ['輕軌','C8 高雄展覽館站，場館公告步行約 7 分鐘'],
-      ['高鐵','左營站轉捷運紅線至 R8 三多商圈站'],
-      ['公車','高雄展覽館站：紅21；輕軌高雄展覽館站附近：214A'],
-      ['停車','高雄展覽館汽車前 30 分鐘免費；一般每半小時 30 元、展會每半小時 40 元；每日上限依公告'],
-      ['末班車','依路線、方向及日期而異；請於出發前核實，不提供推估時間']],
-    weather:'高雄市前鎮區',weatherNote:'目前尚未接入具合法授權與穩定更新的行政區天氣 API，無法提供即時溫度、降雨機率或一週預報。'
+// v13.6 LIVE: read-only dynamic venue proxy, no static merchant or weather records.
+const VENUE_API='https://ibvmfmgikraatiobpmmz.supabase.co/functions/v1/b2b-venue-live';
+const LIVE_ATTRIBUTION='資料來源：經濟部、交通部觀光署、中央氣象署及商工行政公開登記數據。本站僅提供公開客觀數據之加值導覽參考，非旅行業、亦不經手或代訂任何站內交易金流。資訊請以業者現場最新公告為準。';
+let selectedVenueEvent=null,journeySequence=0;
+function venueKey(x){
+ const v=clean(x?.venue_name);
+ if(/南港展覽館|TaiNEX/i.test(v))return 'nangang';
+ if(/高雄展覽館|亞灣|遊艇碼頭|愛河灣|第三船渠/i.test(v))return 'kaohsiung';
+ return null;
+}
+function localCard(title,rows){
+ return '<article class="event-card" style="margin:0 0 12px"><h4>'+esc(title)+'</h4><ul class="source-list">'+rows.map(([k,v])=>'<li><b>'+esc(k)+'</b><span>'+esc(v===null||v===undefined||v===''?'來源未提供':v)+'</span></li>').join('')+'</ul></article>';
+}
+function liveFooter(){
+ return '<p class="service-disclaimer"><b>資料來源與法遵聲明</b><br>'+esc(LIVE_ATTRIBUTION)+'</p>';
+}
+async function journeyInfo(tab){
+ const panel=$('journey-panel');if(!panel)return;
+ const seq=++journeySequence,venue=venueKey(selectedVenueEvent),kind=tab.dataset.journey;
+ if(!selectedVenueEvent){panel.innerHTML='<div class="event-status">請先選擇商展並點選「查看詳情」。</div>';return;}
+ if(!venue){panel.innerHTML='<div class="event-status">此展館尚未完成動態資料來源對應，資訊核實中。</div>'+liveFooter();return;}
+ if(!['food','stay','wear'].includes(kind)){
+   panel.innerHTML='<div class="event-status"><b>交通與周邊資料 API 整合中</b><p>尚未取得可驗證的站點出口、即時班次、停車費率或周邊活動動態來源，暫不顯示過時資訊。</p></div>'+liveFooter();return;
+ }
+ const type=kind==='wear'?'weather':kind;
+ panel.innerHTML='<div class="event-status"><span class="spinner"></span>正在取得政府動態資料，請稍候…</div>'+liveFooter();
+ try{
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),10000);
+  let response;try{response=await fetch(VENUE_API+'?venue='+encodeURIComponent(venue)+'&kind='+type,{headers:{apikey:KEY},signal:controller.signal});}finally{clearTimeout(timeout);}
+  const data=await response.json();if(seq!==journeySequence)return;
+  if(!response.ok||data.status!=='ok'){panel.innerHTML='<div class="event-status"><b>動態資料尚無法提供</b><p>'+esc(data.message||'官方 API 暫時不可用，請稍後重試。')+'</p></div>'+liveFooter();return;}
+  if(type==='weather'){
+   const cards=(data.series||[]).map(e=>localCard(e.element,(e.periods||[]).slice(0,7).map(t=>[t.start+' ～ '+t.end,t.value||'資料未提供']))).join('');
+   panel.innerHTML='<p><b>'+esc(data.district)+'｜中央氣象署一週預報</b></p><p>此為預報，不是即時觀測溫度。資料取得：'+esc(data.updated_at)+'</p>'+(cards||'<p>目前無可顯示的預報值。</p>')+liveFooter();return;
   }
-};
-let selectedVenueEvent=null;
-function currentGuide(){
-  const v=clean(selectedVenueEvent?.venue_name),city=clean(selectedVenueEvent?.city);
-  if(/南港展覽館|TaiNEX/i.test(v))return LOCAL_GUIDES.nangang;
-  if(/亞灣|遊艇碼頭|高雄展覽館|愛河灣|第三船渠/i.test(v))return LOCAL_GUIDES.kaohsiung;
-  if(city.includes('高雄') && /遊艇/.test(clean(selectedVenueEvent?.title_zh)))return LOCAL_GUIDES.kaohsiung;
-  return null;
-}
-function localCard(title,items){
-  return '<article class="event-card" style="margin:0 0 12px"><h4>'+esc(title)+'</h4><ul class="source-list">'+items.map(([k,v])=>'<li><b>'+esc(k)+'</b><span>'+esc(v||'待核實')+'</span></li>').join('')+'</ul></article>';
-}
-function journeyInfo(tab){
-  const panel=$('journey-panel');if(!panel)return;
-  const guide=currentGuide(),kind=tab.dataset.journey;
-  if(!guide){panel.innerHTML='<div class="event-status"><b>請先選擇展覽</b><p>選取展覽「查看詳情」後，這裡會顯示該展區已查核的生活圈資料。</p></div>';return;}
-  let cards='';
-  if(kind==='stay')cards=guide.hotels.map(h=>localCard(h.name,[['地址',h.address],['電話',h.phone],['星級',h.stars],['距展館',h.distance],['公開房價',h.price]])).join('');
-  else if(kind==='food')cards=guide.food.map(h=>localCard(h.name,[['料理',h.type],['地址',h.address],['電話',h.phone],['營業時間',h.hours],['平均消費',h.price],['特色料理',h.dish]])).join('');
-  else if(kind==='move')cards=guide.transit.map(([a,b])=>localCard(a,[['路線／資訊',b]])).join('');
-  else if(kind==='wear')cards=localCard(guide.weather,[['即時溫度','尚無已驗證即時數據'],['降雨機率','尚無已驗證即時數據'],['未來一週','尚無已驗證預報'],['更新狀態',guide.weatherNote]]);
-  else cards=localCard('周邊活動',[['展區',guide.area],['資料狀態','周邊活動清單核實整理中，尚無可發布紀錄']]);
-  panel.innerHTML='<section aria-label="展館生活圈站內資訊"><p><b>'+esc(guide.label)+'｜'+esc(guide.area)+'</b></p><p>本站直接展示已核實客觀資料，不提供代訂、交易或自動排行程；未確認欄位保留「待核實」。</p>'+cards+'<p class="service-disclaimer"><b>資訊與法遵說明</b><br>'+esc(LOCAL_ATTRIBUTION)+'<br>本批資料整理日：2026/10/29；來源：'+esc(guide.source)+'。遊艇展涉及多個碼頭，所列高雄展覽館周邊資料不代表每一碼頭皆在步行範圍內。</p></section>';
+  const cards=(data.items||[]).map(x=>localCard(x.name,[['地址',x.address],['電話',x.phone],['距展館',x.km+' 公里（直線距離，非步行）'],...(type==='stay'?[['合法登記編號',x.registration],['參考房價',x.price]]:[['營業時段',x.hours],['公開價格',x.price]]),['資料更新',x.updated_at]])).join('');
+  panel.innerHTML='<p><b>'+esc(type==='stay'?'合法旅宿公開資料':'餐飲公開資料')+'｜距場館 3 公里內</b></p><p>來源：'+esc(data.source||'交通部觀光署／TDX')+'；無法由登記資料推導實際價格、訂位或營業時段。</p>'+(cards||'<div class="event-status">目前沒有符合條件且可驗證的公開資料。</div>')+liveFooter();
+ }catch(e){if(seq!==journeySequence)return;panel.innerHTML='<div class="event-status">政府資料暫時無法讀取（可能逾時或網路異常），請稍後再試。</div>'+liveFooter();}
 }
 document.querySelectorAll('.journey-tab').forEach(tab=>tab.addEventListener('click',()=>{
-  document.querySelectorAll('.journey-tab').forEach(x=>x.classList.toggle('is-active',x===tab));
-  journeyInfo(tab);
+ document.querySelectorAll('.journey-tab').forEach(x=>x.classList.toggle('is-active',x===tab));journeyInfo(tab);
 }));
 // Module 06: allowlisted HTTPS affiliate redirects only, with explicit consent.
 // No partner URLs are enabled until the owner verifies the affiliate contract and destination.
