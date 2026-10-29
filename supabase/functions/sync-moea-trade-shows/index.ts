@@ -39,7 +39,10 @@ function encodeDay(day:string,end=false){return day+(end?"T23:59:59+08:00":"T00:
 Deno.serve(async(req)=>{
   if(req.method!=="POST")return Response.json({error:"POST required"},{status:405});
   // Supabase Edge Function verify_jwt must remain true.
-  const dryRun=new URL(req.url).searchParams.get("commit")!=="true";
+  const commitRequested=new URL(req.url).searchParams.get("commit")==="true";
+  const expected=Deno.env.get("SYNC_MOEA_SECRET");
+  if(commitRequested && (!expected || expected.length<32 || req.headers.get("x-sync-secret")!==expected))return Response.json({error:"backend sync authorization required"},{status:403});
+  const dryRun=!commitRequested;
   try{
     const url=Deno.env.get("SUPABASE_URL"),key=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if(!url||!key)throw Error("server secrets missing");
