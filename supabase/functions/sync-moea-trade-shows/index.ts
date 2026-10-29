@@ -23,6 +23,8 @@ function parseCSV(raw: string): Record<string,string>[] {
   if(rows.length<2)throw Error("CSV missing rows");
   const header=rows.shift()!.map(x=>x.replace(/^\uFEFF/,"").trim());
   if(header.length<5)throw Error("CSV unexpected columns");
+  if(new Set(header).size!==header.length)throw Error("CSV duplicate headers");
+  if(rows.some(c=>c.length!==header.length))throw Error("CSV row width mismatch: no writes");
   return rows.map(c=>Object.fromEntries(header.map((h,i)=>[h,c[i]??""])));
 }
 function localDay(raw:string):string|null {
@@ -74,9 +76,9 @@ Deno.serve(async(req)=>{
     const candidates:Record<string,unknown>[]=[];const rejected:Record<string,string>[]=[];
     for(const row of rows){
       const title=field(row,["展覽名稱中文名稱","展覽中文名稱","展覽名稱","活動名稱"]);
-      const venue=field(row,["展館中文名稱","展館名稱","展覽地點"]);
-      const start=localDay(field(row,["展覽起日","開始日期","展期起"]));
-      const end=localDay(field(row,["展覽迄日","結束日期","展期迄"]));
+      const venue=field(row,["展館中文名稱","展覽地點中文名稱","展館名稱","展覽地點"]);
+      const start=localDay(field(row,["展覽起日","展覽展期開始日期","開始日期","展期起"]));
+      const end=localDay(field(row,["展覽迄日","展覽展期結束日期","結束日期","展期迄"]));
       const official=safeOfficial(field(row,["網站連結","網站網址","活動網址"]))||DATASET;
       const organizer=field(row,["主辦單位中文名稱","主辦單位"]);
       const reason= !title||!venue||!start||!end?"missing required fields":end<start?"invalid date range":end<cutoff?"historical event":NEGATIVE.test(title)?"non-B2B title":!(POSITIVE.test(title)||POSITIVE.test(organizer))?"B2B not established":!allowedVenues.test(venue)?"venue not approved":"";
