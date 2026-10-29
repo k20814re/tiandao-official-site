@@ -143,14 +143,34 @@ function journeyInfo(tab) {
   const venue=selectedVenueEvent?.venue_name||'';
   const guide=VENUE_GUIDES.find(v=>v.pattern.test(venue));
   const kind=tab.dataset.journey;
-  const official=kind==='wear'?['中央氣象署','https://www.cwa.gov.tw/']:
+  const official=kind==='wear'?(guide?.area.startsWith('臺北市')?['中央氣象署｜臺北市預報（可選行政區）','https://www.cwa.gov.tw/V8/C/W/County/County.html?CID=63']:['中央氣象署｜官方氣象入口','https://www.cwa.gov.tw/']):
     guide?.[kind] || (kind==='move'?['臺灣高鐵官方網站','https://www.thsrc.com.tw/']:
     kind==='stay'?['交通部觀光署旅宿網','https://taiwanstay.net.tw/']:
     ['交通部觀光署','https://www.taiwan.net.tw/']);
-  const where=guide?.area || clean(selectedVenueEvent?.city) || '臺灣';
+  const where=guide?.area || clean(selectedVenueEvent?.city) || '地點待確認';
   const venueText=selectedVenueEvent ? '目前選擇：'+clean(selectedVenueEvent.title_zh)+'｜'+where+(guide?.transit?'｜鄰近交通：'+guide.transit:'') : '請先點選一筆展覽的「查看詳情」，即可關聯所在地參考資訊。';
-  $('journey-panel').innerHTML=`<div><span class="status-chip">官方參考資訊</span><h3>${esc(name)}｜${esc(where)}</h3><p>${esc(venueText)}</p><p>本區提供展館與城市參考入口，非即時店家清單；班次、價格、空房與營業時間請至來源查證。</p></div><div class="pending-card"><b>${esc(official[0])}</b><a class="official-link" href="${esc(official[1])}" target="_blank" rel="noopener noreferrer">查看官方資訊 ↗</a><span>本站不代訂、不收款、不自動排行程。</span></div>`;
+  $('journey-panel').innerHTML=`<div><span class="status-chip">官方參考資訊</span><h3>${esc(name)}｜${esc(where)}</h3><p>${esc(venueText)}</p><p>本區提供展館與城市參考入口，非即時店家清單；班次、價格、空房與營業時間請至來源查證。</p></div><div class="pending-card"><b>${esc(official[0])}</b><a class="official-link" href="${esc(official[1])}" target="_blank" rel="noopener noreferrer" data-journey-outbound>查看官方資訊 ↗</a><span>本站不代訂、不收款、不自動排行程。</span></div>`;
 }
+
+// One accessible consent dialog for informational outbound links, no advertisements.
+const journeyConsent=document.createElement('dialog');
+journeyConsent.setAttribute('aria-label','第三方網站離站確認');
+journeyConsent.innerHTML='<form method="dialog"><h3>即將離開天道商貿</h3><p>您即將前往第三方平台。天道商貿僅提供資訊參考，不經手您的個資與金流；交易條款請以第三方平台公告為準。</p><div class="hero-actions"><button value="cancel" type="submit">取消</button><button value="confirm" type="submit">確認前往</button></div></form>';
+document.body.appendChild(journeyConsent);
+let pendingJourneyLink='';
+$('journey-panel')?.addEventListener('click',event=>{
+  const link=event.target.closest('a[data-journey-outbound]');
+  if(!link)return;
+  event.preventDefault();
+  const url=safeLink(link.href);
+  if(!url)return;
+  pendingJourneyLink=url;
+  journeyConsent.showModal();
+});
+journeyConsent.addEventListener('close',()=>{
+  const url=pendingJourneyLink;pendingJourneyLink='';
+  if(journeyConsent.returnValue==='confirm'&&url)window.open(url,'_blank','noopener,noreferrer');
+});
 
 document.querySelectorAll('.journey-tab').forEach(tab=>tab.addEventListener('click',()=>{
   document.querySelectorAll('.journey-tab').forEach(x=>x.classList.toggle('is-active',x===tab));
